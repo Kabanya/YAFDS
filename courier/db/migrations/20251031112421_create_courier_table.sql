@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE COURIERS (
   empId UUID PRIMARY KEY,
   name TEXT NOT NULL,
@@ -5,3 +7,9 @@ CREATE TABLE COURIERS (
   is_active BOOLEAN NOT NULL,
   geolocation TEXT NOT NULL
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE COURIERS;
+-- +goose StatementEnd

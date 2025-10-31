@@ -1,3 +1,4 @@
+-- +goose up
 CREATE TABLE ORDERS (
   empId UUID PRIMARY KEY,
   customer_id UUID NOT NULL,
@@ -6,3 +7,6 @@ CREATE TABLE ORDERS (
   finished_at TIMESTAMP NOT NULL,
   status TEXT NOT NULL
 );
+
+-- +goose down
+DROP TABLE ORDERS;
