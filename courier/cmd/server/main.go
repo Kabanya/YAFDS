@@ -8,7 +8,8 @@ import (
 func main() {
 	fmt.Println("Hi from courier process!")
 
-	var n int = 10
+	var n int = 180
+	fmt.Println("n =", n)
 	fmt.Println()
 	for i := 0; i < n; i++ {
 		fmt.Println(i, "- Courier", time.Now())

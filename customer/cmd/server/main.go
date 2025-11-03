@@ -7,7 +7,7 @@ import (
 
 func main() {
 	fmt.Println("Hi from customer process!")
-	var n int = 11
+	var n int = 360
 
 	for i := 0; i < n; i++ {
 		fmt.Println(i, "- Customer", time.Now())
