@@ -1,3 +1,14 @@
-.vscode/settings.json
+.vscode/
 **.DS_Store
 .bashrc
+.glide/
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+courier/test.go

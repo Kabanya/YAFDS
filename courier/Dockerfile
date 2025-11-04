@@ -11,7 +11,7 @@ COPY go.mod ./
 
 RUN go mod download
 
-COPY cmd ./cmd
+COPY . .
 
 RUN date > /build-time.txt
 
