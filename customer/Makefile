@@ -1,10 +1,8 @@
 include ../.env
 
 # Variables
-
-DB_CONNECTION_STRING = $(DB_CONNECTION_BASE) dbname=$(1)
-
-MIGRATIONS_DIR := ./cmd/database/migrations
+MIGRATIONS_DIR := ./internal/database/migrations
+TESTDATA_MIGRATIONS_DIR := ./internal/database/testdata
 
 CUSTOMER_DB := customer_db
 
@@ -30,7 +28,7 @@ launch-db:
 		docker start $(DB_CONTAINER_NAME); \
 	else \
 		echo "Container $(DB_CONTAINER_NAME) does not exist. Creating new one..."; \
-		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:13.3; \
+		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:17.6; \
 	fi
 	@sleep 1
 	$(MAKE) create-customer-db
@@ -40,14 +38,24 @@ clear-db:
 	docker rm $(DB_CONTAINER_NAME) || true
 
 # migrations
-migrate-customer-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) up
-
 migrate-up:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) up
 
 migrate-down:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) down
+
+migrate-status:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) status
+
+# test data
+seed-up:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
+
+seed-down:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
+
+seed-status:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
 
 # customer
 build-customer:
@@ -67,16 +75,43 @@ clear-customer:
 	docker stop $(CUSTOMER_CONTAINER_NAME) || true
 	docker rm $(CUSTOMER_CONTAINER_NAME) || true
 
-
-#db's
+# db's
 create-customer-db:
 	docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(CUSTOMER_DB);" 2>/dev/null || true
-	$(MAKE) migrate-customer-up
+	$(MAKE) migrate-up
 
 # logs
 logs-customer:
 	docker logs -f $(CUSTOMER_CONTAINER_NAME)
 
+debug-info-customer:
+	mkdir -p debug-logs
+	docker cp $(CUSTOMER_CONTAINER_NAME):/app/debug_customer.txt ./debug-logs/debug_customer.txt
+
+check-db-customers:
+	docker exec -it yafds-db psql -U postgres -d customer_db -c "SELECT * FROM CUSTOMERS;"
+
+# API test commands
+test-register:
+	@echo "Testing /register endpoint..."
+	curl -X POST http://localhost:8081/register \
+		-H "Content-Type: application/json" \
+		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
+
+test-login:
+	@echo "Testing /login endpoint..."
+	curl -X POST http://localhost:8081/login \
+		-H "Content-Type: application/json" \
+		-d '{"wallet_address":"0x123456789abc"}'
+
+test-api-info:
+	@echo "Getting /register info..."
+	curl -X GET http://localhost:8081/register
+	@echo "\nGetting /login info..."
+	curl -X GET http://localhost:8081/login
+
+test-all-api: test-register test-login test-login-not-found test-register-duplicate
+	@echo "\nAll API tests completed!"
 
 # all
 build-all: launch-db build-customer
@@ -84,17 +119,26 @@ build-all: launch-db build-customer
 launch-all: launch-docker launch-db launch-customer
 
 clear-all: clear-db clear-customer
-	@echo "rm all container!"
+	@echo "All containers removed!"
 
 stop-all:
 	docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) || true
 
+logs-all: debug-info-customer logs-customer
+
+check-all: check-db-customers
+
 # minimalistic
 stop:  stop-all
-logs:  logs-customer
+logs:  logs-all
 clean: clear-all
-build: clear-all build-all # delete db and app, rebuild them
-launch:launch-all          # launch app
+check: check-all
+build: clear-all build-all
+launch: launch-all
 
-# main command
-run:   clear-customer build-all migrate-up launch-all # fully new app (exept db)
+# main commands
+run: clear-customer build-all migrate-up launch-all
+	@echo "Application launched successfully!"
+
+dev: clear-customer build-all migrate-up seed-up launch-all
+	@echo "Application launched with test data!"

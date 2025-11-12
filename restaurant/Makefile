@@ -30,7 +30,7 @@ launch-db:
 		docker start $(DB_CONTAINER_NAME); \
 	else \
 		echo "Container $(DB_CONTAINER_NAME) does not exist. Creating new one..."; \
-		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:13.3; \
+		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:17.6; \
 	fi
 	@sleep 1
 	$(MAKE) create-restaurant-db
