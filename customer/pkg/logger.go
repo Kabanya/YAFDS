@@ -1,5 +1,5 @@
 // use make logs to get debug_customer.txt into your rep
-
+// USE LOG BY GO NOT THIS CLASS
 package logger
 
 import (

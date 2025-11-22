@@ -1,4 +1,4 @@
-package user
+package models
 
 import (
 	"github.com/google/uuid"
@@ -10,7 +10,7 @@ type RegisterRequest struct {
 	Address       string `json:"address"`
 }
 
-type User struct {
+type User struct { //моделька
 	Id            uuid.UUID `json:"id"`
 	Name          string    `json:"name"`
 	WalletAddress string    `json:"wallet_address"`

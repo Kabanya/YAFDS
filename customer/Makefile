@@ -1,10 +1,4 @@
-include ../.env
-
-# Variables
-MIGRATIONS_DIR := ./internal/database/migrations
-TESTDATA_MIGRATIONS_DIR := ./internal/database/testdata
-
-CUSTOMER_DB := customer_db
+include config/.env
 
 # other
 launch-docker:
@@ -93,24 +87,20 @@ check-db-customers:
 
 # API test commands
 test-register:
-	@echo "Testing /register endpoint..."
 	curl -X POST http://localhost:8081/register \
 		-H "Content-Type: application/json" \
 		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
 
 test-login:
-	@echo "Testing /login endpoint..."
 	curl -X POST http://localhost:8081/login \
 		-H "Content-Type: application/json" \
 		-d '{"wallet_address":"0x123456789abc"}'
 
 test-api-info:
-	@echo "Getting /register info..."
 	curl -X GET http://localhost:8081/register
-	@echo "\nGetting /login info..."
 	curl -X GET http://localhost:8081/login
 
-test-all-api: test-register test-login test-login-not-found test-register-duplicate
+test-all-api: test-register test-login
 	@echo "\nAll API tests completed!"
 
 # all

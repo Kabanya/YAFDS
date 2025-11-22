@@ -1,7 +1,7 @@
 package app
 
 import (
-	"customer/modules/user"
+	"customer/modules/modules"
 	logger "customer/pkg"
 	"encoding/json"
 	"net/http"
@@ -20,6 +20,7 @@ func NewHandler(s Service) *Handler {
 	}
 }
 
+// [[depreciated]]
 func (h *Handler) Hello(w http.ResponseWriter, r *http.Request) {
 	logger.PrintLog("Hello of customer app is started")
 	data := h.service.Hello()
@@ -33,7 +34,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req user.RegisterRequest
+	var req modules.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.writeError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -50,7 +51,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.writeJSON(w, user.RegisterResponce{Id: id}, http.StatusCreated)
+	h.writeJSON(w, modules.RegisterResponce{Id: id}, http.StatusCreated)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +60,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req user.LoginRequest
+	var req modules.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.writeError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -76,7 +77,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.writeJSON(w, user.LoginResponse{
+	h.writeJSON(w, modules.LoginResponse{
 		Token:      token,
 		Expiration: expiration,
 	}, http.StatusOK)
@@ -91,5 +92,5 @@ func (h *Handler) writeJSON(w http.ResponseWriter, data interface{}, statusCode 
 func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(user.ErrorResponce{ErrorMessage: message})
+	json.NewEncoder(w).Encode(modules.ErrorResponce{ErrorMessage: message})
 }
