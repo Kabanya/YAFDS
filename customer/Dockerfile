@@ -2,9 +2,6 @@
 
 FROM golang:1.25
 
-ARG BUILD_TIME
-RUN echo "Build time: $BUILD_TIME"
-
 WORKDIR /app
 
 COPY go.mod ./
@@ -12,8 +9,11 @@ COPY go.mod ./
 RUN go mod download
 
 COPY cmd ./cmd
+COPY modules ./modules
+COPY internal ./internal
+COPY pkg ./pkg
 
-RUN date > /build-time.txt
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /customer-app ./cmd/server
 
