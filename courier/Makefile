@@ -32,8 +32,8 @@ launch-db:
 	$(MAKE) create-courier-db
 
 clear-db:
-	docker stop $(DB_CONTAINER_NAME) || true
-	docker rm $(DB_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME)
+	-docker rm $(DB_CONTAINER_NAME)
 
 # migrations
 migrate-courier-up:
@@ -60,8 +60,9 @@ launch-courier:
 	fi
 
 clear-courier:
-	docker stop $(COURIER_CONTAINER_NAME) || true
-	docker rm $(COURIER_CONTAINER_NAME) || true
+	-docker stop $(COURIER_CONTAINER_NAME)
+	-docker rm $(COURIER_CONTAINER_NAME)
+	-docker rmi courier-app
 
 
 #db's

@@ -1,31 +1,49 @@
-// use make logs to get debug_customer.txt into your rep
-// USE LOG BY GO NOT THIS CLASS
-package logger
+package pkg
 
 import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 )
 
-func HelloLog() {
-	log.Println("Start of customer logger!")
+var (
+	globalLogger *log.Logger
+	globalCloser func() error
+	globalOnce   sync.Once
+	globalErr    error
+)
+
+// Singleton
+func InitFileLogger(filename string) error {
+	globalOnce.Do(func() {
+		file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			globalErr = err
+			return
+		}
+		globalLogger = log.New(file, "", log.LstdFlags)
+		globalCloser = func() error {
+			return file.Close()
+		}
+	})
+	return globalErr
 }
 
-func Init(filename string) error {
-	filename = "debug_customer"
-
-	logFile := fmt.Sprintf("%s.txt", filename)
-
-	file, err := os.Create(logFile)
-	if err != nil {
-		return err
+// return logger
+func Logger() (*log.Logger, error) {
+	if globalLogger == nil {
+		return nil, fmt.Errorf("logger has not been initialized")
 	}
-	log.SetOutput(file)
-	HelloLog()
-	return nil
+	return globalLogger, nil
 }
 
-func PrintLog(mess string) {
-	log.Println(mess)
+// close logger
+func CloseLogger() error {
+	if globalCloser == nil {
+		return fmt.Errorf("need to initialize logger via InitFileLogger()")
+	}
+	err := globalCloser()
+	globalCloser = nil
+	return err
 }

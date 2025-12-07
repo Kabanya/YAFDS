@@ -5,6 +5,7 @@ import (
 )
 
 type RegisterRequest struct {
+	Id            string `json:"id"`
 	Name          string `json:"name"`
 	WalletAddress string `json:"wallet_address"`
 	Address       string `json:"address"`

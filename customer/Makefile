@@ -1,35 +1,21 @@
 include config/.env
 
+# Set PATH to include Go binaries
+export PATH := $(USERPROFILE)/go/bin:$(PATH)
+
 # other
 launch-docker:
-	@if ! docker info > /dev/null 2>&1; then \
-		echo "Docker is not running. Starting Docker Desktop..."; \
-		open -a Docker; \
-		sleep 5; \
-		until docker info > /dev/null 2>&1; do \
-			echo "Waiting for Docker to start..."; \
-			sleep 2; \
-		done; \
-		echo "Docker started successfully!"; \
-	else \
-		echo "Docker is already running"; \
-	fi
+	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
 
 # db
 launch-db:
-	@if docker ps -a --format '{{.Names}}' | grep -q '^$(DB_CONTAINER_NAME)$$'; then \
-		echo "Container $(DB_CONTAINER_NAME) exists. Starting..."; \
-		docker start $(DB_CONTAINER_NAME); \
-	else \
-		echo "Container $(DB_CONTAINER_NAME) does not exist. Creating new one..."; \
-		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:17.6; \
-	fi
-	@sleep 1
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:17.6
+	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
 	$(MAKE) create-customer-db
 
 clear-db:
-	docker stop $(DB_CONTAINER_NAME) || true
-	docker rm $(DB_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME)
+	-docker rm $(DB_CONTAINER_NAME)
 
 # migrations
 migrate-up:
@@ -53,25 +39,24 @@ seed-status:
 
 # customer
 build-customer:
-	docker rmi customer-app || true
-	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t customer-app -f Dockerfile .
+	-docker rmi customer-app 2>nul
+	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile .
 
 launch-customer:
-	@if docker ps -a --format '{{.Names}}' | grep -q '^$(CUSTOMER_CONTAINER_NAME)$$'; then \
-		echo "Customer container exists. Starting..."; \
-		docker start $(CUSTOMER_CONTAINER_NAME); \
-	else \
-		echo "Customer container does not exist. Creating new one..."; \
-		docker run --name $(CUSTOMER_CONTAINER_NAME) -p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app; \
-	fi
+	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
+		docker run --name $(CUSTOMER_CONTAINER_NAME) --network bridge \
+			-e DB_HOST=host.docker.internal \
+			-p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app
 
 clear-customer:
-	docker stop $(CUSTOMER_CONTAINER_NAME) || true
-	docker rm $(CUSTOMER_CONTAINER_NAME) || true
+	-docker stop $(CUSTOMER_CONTAINER_NAME)
+	-docker rm $(CUSTOMER_CONTAINER_NAME)
+	-docker rmi customer-app
 
 # db's
 create-customer-db:
-	docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(CUSTOMER_DB);" 2>/dev/null || true
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(CUSTOMER_DB);"
+	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
 
 # logs
@@ -112,7 +97,7 @@ clear-all: clear-db clear-customer
 	@echo "All containers removed!"
 
 stop-all:
-	docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME)
 
 logs-all: debug-info-customer logs-customer
 

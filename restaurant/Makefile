@@ -36,8 +36,8 @@ launch-db:
 	$(MAKE) create-restaurant-db
 
 clear-db:
-	docker stop $(DB_CONTAINER_NAME) || true
-	docker rm $(DB_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME)
+	-docker rm $(DB_CONTAINER_NAME)
 
 # migrations
 migrate-restaurant-up:
@@ -64,8 +64,9 @@ launch-restaurant:
 	fi
 
 clear-restaurant:
-	docker stop $(RESTAURANT_CONTAINER_NAME) || true
-	docker rm $(RESTAURANT_CONTAINER_NAME) || true
+	-docker stop $(RESTAURANT_CONTAINER_NAME)
+	-docker rm $(RESTAURANT_CONTAINER_NAME)
+	-docker rmi restaurant-app
 
 
 #db's
