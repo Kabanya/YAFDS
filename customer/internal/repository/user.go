@@ -2,10 +2,8 @@ package repository
 
 import (
 	"customer/models"
-	logger "customer/pkg"
+	"customer/pkg"
 	"database/sql"
-	"fmt"
-	"log"
 
 	"github.com/google/uuid"
 )
@@ -13,43 +11,80 @@ import (
 // работа с базкой
 // dto - data transfer object. Объект в который парсится результат запрос SQL и из которого он формируется
 
-type user struct { //с маленькой = private; большая - public
+type UserRepo interface {
+	Save(uuid.UUID, string, string, string) error
+	Load(walletAddress string) (models.User, error)
+}
+
+type userRepo struct { //с маленькой = private; большая - public
 	db *sql.DB
 }
 
-func NewUser(db *sql.DB) *user {
-	// user := user{db: db}
-	return &user{db: db}
+func NewUser(db *sql.DB) *userRepo {
+	return &userRepo{db: db}
 }
 
-func (r *user) Save(id uuid.UUID, name string, walletAddress string, address string) error {
+func (r *userRepo) Save(id uuid.UUID, name string, walletAddress string, address string) error {
+	logger, err := pkg.Logger()
+	if err != nil {
+		return err
+	}
 
 	sqlStatement := `
-		INSERT INTO users (empId, name, walletAddress, address)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO CUSTOMERS (empId, name, walletAddress, address)
+		VALUES ($1, $2, $3, $4)
 		`
 	// Prepare the statement for execution
 	stmt, err := r.db.Prepare(sqlStatement)
 	if err != nil {
-		log.Fatal(err)
+		logger.Printf("Failed to prepare statement: %v", err)
 		return err
 	}
 	defer stmt.Close() // Ensure the prepared statement is closed
 
 	_, err = stmt.Exec(id, name, walletAddress, address)
 	if err != nil {
-		log.Fatal(err)
+		logger.Printf("Failed to execute insert: %v", err)
 		return err
 	}
 
-	logger.PrintLog(fmt.Sprintf("inserted user with %s", walletAddress))
-
+	logger.Printf("Successfully saved customer with ID: %s", id)
 	return nil
 }
 
-func (r *user) Load(walletAddress string) (models.User, error) { // должен быть models
+func (r *userRepo) Load(walletAddress string) (models.User, error) {
+	logger, err := pkg.Logger()
+	if err != nil {
+		return models.User{}, err
+	}
 
-	return models.User{}, nil
+	sqlStatement := `
+		SELECT empId, name, walletAddress, address
+		FROM CUSTOMERS
+		WHERE walletAddress = $1
+		LIMIT 1
+	`
+
+	var user models.User
+	err = r.db.QueryRow(sqlStatement, walletAddress).Scan(
+		&user.Id,
+		&user.Name,
+		&user.WalletAddress,
+		&user.Address,
+	)
+
+	if err == sql.ErrNoRows {
+		logger.Printf("No customer found with wallet address: %s", walletAddress)
+		return models.User{}, err
+	}
+
+	if err != nil {
+		logger.Printf("Failed to load customer: %v", err)
+		return models.User{}, err
+	}
+
+	logger.Printf("Successfully loaded customer with wallet address: %s", walletAddress)
+	return user, nil
 }
 
 // CREATE TABLE CUSTOMERS (

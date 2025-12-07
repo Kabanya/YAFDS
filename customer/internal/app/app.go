@@ -7,34 +7,73 @@ package app
 import (
 	"customer/internal/repository"
 	"customer/internal/service"
-	logger "customer/pkg"
+	"customer/internal/usecase"
+	"customer/pkg"
 	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
 
-	"github.com/google/uuid"
+	_ "github.com/lib/pq"
 )
 
 func Run() {
-	logger.Init("debug_customer")
+	pkg.InitFileLogger("customer_log_info.txt")
+	logger, err := pkg.Logger()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
+	}
+	logger.Println("Customer service started")
 
-	var db *sql.DB
+	// Load environment variables from .env
+	err = pkg.LoadEnv(pkg.PathToEnv)
+	if err != nil {
+		logger.Printf("Failed to load .env file: %v", err)
+		panic(err)
+	}
 
-	userRepo := repository.NewUser(db)
+	// Подключение к базе данных
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("CUSTOMER_DB"))
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		logger.Printf("Failed to open database: %v", err)
+		panic(err)
+	}
+	defer db.Close()
 
-	userService1 := service.NewUser1(userRepo)
-	userService2 := service.NewUser2(userRepo)
+	err = db.Ping()
+	if err != nil {
+		logger.Printf("Failed to ping database: %v", err)
+		panic(err)
+	}
+	logger.Println("Successfully connected to database")
 
-	userService1.Save(uuid.Max, "", "", "")
-	userService2.Load("")
+	userRepository := repository.NewUser(db)
+	logger.Println("Initialized user repository")
 
-	// handler := NewHandler(service)
+	userService := service.NewUserService(userRepository)
+	logger.Println("Initialized user service")
 
-	// http.HandleFunc("/register", handler.Register)
-	// http.HandleFunc("/login", handler.Login)
+	userUseCase := usecase.NewUserUseCase(userService)
+	logger.Println("Initialized user usecase")
 
-	// logger.PrintLog("Link: http://localhost:8081/register")
-	// logger.PrintLog("Link: http://localhost:8081/login")
-	// logger.PrintLog("HandleFunc of customer is started")
+	handler := NewHandler(userUseCase)
+	logger.Println("Initialized handler")
 
-	http.ListenAndServe(":8081", nil)
+	// registry endpoints
+	http.HandleFunc("/save", handler.SaveUser)
+	http.HandleFunc("/load", handler.LoadUser)
+
+	logger.Println("Endpoints registered:")
+	logger.Println("  POST http://localhost:8081/save - Save user")
+	logger.Println("  POST http://localhost:8081/load - Load user")
+	logger.Println("Starting HTTP server on :8081")
+
+	err = http.ListenAndServe(":8081", nil)
+	if err != nil {
+		logger.Printf("Server error: %v", err)
+	}
+
+	logger.Println("Customer service stopped")
 }

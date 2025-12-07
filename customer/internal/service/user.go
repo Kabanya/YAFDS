@@ -1,29 +1,31 @@
 package service
 
 import (
+	"customer/internal/repository"
+	"customer/models"
+
 	"github.com/google/uuid"
 )
 
 // абстракция чуть выше чем репо
 
-type UserSaver interface {
+type UserService interface {
 	Save(uuid.UUID, string, string, string) error
+	Load(walletAddress string) (models.User, error)
 }
 
-type User interface {
-	Save(uuid.UUID, string, string, string) error
-	// Load(walletAddress string) (modules.User, error)
+type userService struct {
+	repo repository.UserRepo
 }
 
-type user struct {
-	repo UserSaver
+func NewUserService(repo repository.UserRepo) UserService {
+	return &userService{repo: repo}
 }
 
-func NewUser1(repo UserSaver) *user {
-	return &user{repo: repo}
-}
-
-func (s /*service*/ *user) Save(id uuid.UUID, name string, walletAddress string, address string) error {
-
+func (s *userService) Save(id uuid.UUID, name string, walletAddress string, address string) error {
 	return s.repo.Save(id, name, walletAddress, address)
+}
+
+func (s *userService) Load(walletAddress string) (models.User, error) {
+	return s.repo.Load(walletAddress)
 }

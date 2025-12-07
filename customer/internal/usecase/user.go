@@ -1,26 +1,29 @@
 package usecase
 
-// import (
-// 	"customer/internal/service"
-// 	modules "customer/modules/user"
+import (
+	"customer/internal/service"
+	"customer/models"
 
-// 	"github.com/google/uuid"
-// )
+	"github.com/google/uuid"
+)
 
-// type User interface {
-// 	Save(uuid.UUID, string, string, string) error
-// 	Load(walletAddress string) (modules.User, error)
-// }
+type UserUseCase interface {
+	Save(uuid.UUID, string, string, string) error
+	Load(walletAddress string) (models.User, error)
+}
 
-// type user struct {
-// 	repo service.User
-// }
+type userUseCase struct {
+	service service.UserService
+}
 
-// func NewService(repo service.User) *user {
-// 	return &user{repo: repo}
-// }
+func NewUserUseCase(service service.UserService) UserUseCase {
+	return &userUseCase{service: service}
+}
 
-// func (u /*usecase*/ *user) Save(id uuid.UUID, name string, walletAddress string, address string) error {
+func (u *userUseCase) Save(id uuid.UUID, name string, walletAddress string, address string) error {
+	return u.service.Save(id, name, walletAddress, address)
+}
 
-// 	return u.repo.Save(id, name, walletAddress, address)
-// }
+func (u *userUseCase) Load(walletAddress string) (models.User, error) {
+	return u.service.Load(walletAddress)
+}

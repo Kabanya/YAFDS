@@ -2,10 +2,12 @@ package main
 
 import (
 	"customer/internal/app"
-	logger "customer/pkg"
+	"customer/pkg"
 )
 
 func main() {
 	app.Run()
-	logger.PrintLog("Process of customer is finished")
+	logger, _ := pkg.Logger()
+	logger.Println("Process of customer is finished")
+	pkg.CloseLogger()
 }

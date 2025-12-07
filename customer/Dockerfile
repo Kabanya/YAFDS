@@ -9,8 +9,8 @@ COPY go.mod ./
 RUN go mod download
 
 COPY cmd ./cmd
-COPY modules ./modules
 COPY internal ./internal
+COPY models ./models
 COPY pkg ./pkg
 
 RUN go mod tidy
