@@ -11,4 +11,11 @@
 *.test
 *.out
 
-courier/test.go
+**/sometest*.go
+debug-logs
+
+/front/node_modules/
+
+check_users.ps1
+start_all.ps1
+start_all.sh

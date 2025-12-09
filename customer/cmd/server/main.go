@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"customer/internal/app"
+	"customer/pkg"
 )
 
 func main() {
-	fmt.Println("Hi from customer process!")
-	var n int = 360
-
-	for i := 0; i < n; i++ {
-		fmt.Println(i, "- Customer", time.Now())
-		time.Sleep(time.Second)
-	}
-	fmt.Println("Courier process is finished!")
+	app.Run()
+	logger, _ := pkg.Logger()
+	logger.Println("Process of customer is finished")
+	pkg.CloseLogger()
 }
