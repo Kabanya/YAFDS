@@ -4,7 +4,9 @@ import (
 	"customer/internal/usecase"
 	"customer/models"
 	"customer/pkg"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -47,18 +49,42 @@ func (h *Handler) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Id == "" || req.Name == "" || req.WalletAddress == "" || req.Address == "" {
-		h.writeError(w, "all fields are required", http.StatusBadRequest)
+	if req.WalletAddress == "" {
+		h.writeError(w, "wallet_address is required", http.StatusBadRequest)
 		return
 	}
 
-	id, err := uuid.Parse(req.Id)
-	if err != nil {
-		h.writeError(w, "invalid id format", http.StatusBadRequest)
+	name := req.Name
+	if name == "" {
+		name = req.WalletAddress
+	}
+
+	address := req.Address
+	if address == "" {
+		address = req.WalletAddress
+	}
+
+	id := uuid.New()
+	if req.Id != "" {
+		parsedID, err := uuid.Parse(req.Id)
+		if err != nil {
+			h.writeError(w, "invalid id format", http.StatusBadRequest)
+			return
+		}
+		id = parsedID
+	}
+
+	// If user already exists by wallet, reuse existing record instead of creating a duplicate.
+	if existingUser, err := h.userUseCase.Load(req.WalletAddress); err == nil {
+		h.writeJSON(w, models.RegisterResponce{Id: existingUser.Id}, http.StatusOK)
+		logger.Printf("User %s already exists, returning existing id", req.WalletAddress)
+		return
+	} else if !errors.Is(err, sql.ErrNoRows) {
+		h.writeError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.userUseCase.Save(id, req.Name, req.WalletAddress, req.Address)
+	err := h.userUseCase.Save(id, name, req.WalletAddress, address)
 	if err != nil {
 		h.writeError(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -72,6 +98,15 @@ func (h *Handler) SaveUser(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) LoadUser(w http.ResponseWriter, r *http.Request) {
 	logger, _ := pkg.Logger()
 	logger.Println("LoadUser called")
+	// CORS headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	if r.Method != http.MethodPost {
 		h.writeError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return

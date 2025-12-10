@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// не очень умно копируем
+
 type UserUseCase interface {
 	Save(uuid.UUID, string, string, string) error
 	Load(walletAddress string) (models.User, error)

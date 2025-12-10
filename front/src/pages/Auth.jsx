@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 
 export default function Auth() {
   const location = useLocation()
@@ -8,8 +7,6 @@ export default function Auth() {
   const role = location.state?.role || 'customer'
 
   const [isSignUp, setIsSignUp] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
   const [address, setAddress] = useState('')
@@ -23,70 +20,59 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
+        const response = await fetch('http://localhost:8081/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            wallet_address: walletAddress,
+            address,
+          }),
         })
 
-        if (signUpError) throw signUpError
-
-        if (data.user) {
-          const { error: profileError } = await supabase
-            .from('user_profiles')
-            .insert([
-              {
-                id: data.user.id,
-                email: data.user.email,
-                role: role
-              }
-            ])
-
-          if (profileError) throw profileError
-
-          // Send to customer service
-          const customerResponse = await fetch('http://localhost:8081/save', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id: data.user.id,
-              name: name,
-              wallet_address: walletAddress,
-              address: address,
-            }),
-          })
-
-          if (!customerResponse.ok) {
-            throw new Error('Failed to register with customer service')
-          }
-
-          navigate(`/${role}/dashboard`)
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data?.error_message || 'Failed to register')
         }
+
+        const profile = {
+          id: data.id,
+          name: name || walletAddress,
+          wallet_address: walletAddress,
+          address: address || walletAddress,
+          role,
+        }
+
+        localStorage.setItem('currentUser', JSON.stringify(profile))
+        navigate(`/${role}/dashboard`, { state: { user: profile } })
       } else {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const response = await fetch('http://localhost:8081/load', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            wallet_address: walletAddress,
+          }),
         })
 
-        if (signInError) throw signInError
-
-        if (data.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('user_profiles')
-            .select('role')
-            .eq('id', data.user.id)
-            .maybeSingle()
-
-          if (profileError) throw profileError
-
-          if (profile && profile.role === role) {
-            navigate(`/${role}/dashboard`)
-          } else {
-            setError('Invalid portal for this account')
-            await supabase.auth.signOut()
-          }
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data?.error_message || 'Invalid wallet address')
         }
+
+        const profile = {
+          id: data.id,
+          name: data.name,
+          wallet_address: data.wallet_address,
+          address: data.address,
+          role,
+        }
+
+        localStorage.setItem('currentUser', JSON.stringify(profile))
+        navigate(`/${role}/dashboard`, { state: { user: profile } })
       }
     } catch (err) {
       setError(err.message)
@@ -102,46 +88,27 @@ export default function Auth() {
 
         <form onSubmit={handleAuth} className="auth-form">
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Wallet Address"
+            value={walletAddress}
+            onChange={(e) => setWalletAddress(e.target.value)}
             required
             className="auth-input"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="auth-input"
-            minLength={6}
           />
           {isSignUp && (
             <>
               <input
                 type="text"
-                placeholder="Name"
+                placeholder="Name (optional)"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
                 className="auth-input"
               />
               <input
                 type="text"
-                placeholder="Wallet Address"
-                value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
-                required
-                className="auth-input"
-              />
-              <input
-                type="text"
-                placeholder="Address"
+                placeholder="Address (optional)"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                required
                 className="auth-input"
               />
             </>

@@ -1,42 +1,38 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 
 export default function Dashboard() {
   const { role } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkUser()
+    hydrateUser()
   }, [])
 
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
+  const hydrateUser = () => {
+    const stateUser = location.state?.user
+    const stored = localStorage.getItem('currentUser')
+    const savedUser = stateUser || (stored ? JSON.parse(stored) : null)
 
-    if (!user) {
+    if (!savedUser) {
       navigate(`/${role}/auth`, { state: { role } })
       return
     }
 
-    const { data: profile } = await supabase
-      .from('user_profiles')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (!profile || profile.role !== role) {
+    if (savedUser.role !== role) {
       navigate('/')
       return
     }
 
-    setUser(user)
+    setUser(savedUser)
     setLoading(false)
   }
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
+  const handleSignOut = () => {
+    localStorage.removeItem('currentUser')
     navigate('/')
   }
 
@@ -52,7 +48,7 @@ export default function Dashboard() {
     <div className="dashboard-container">
       <div className="dashboard-content">
         <h1 className="dashboard-title">{role.toUpperCase()} DASHBOARD</h1>
-        <p className="dashboard-email">{user?.email}</p>
+        <p className="dashboard-wallet">{user?.wallet_address}</p>
         <button onClick={handleSignOut} className="dashboard-button">
           SIGN OUT
         </button>
