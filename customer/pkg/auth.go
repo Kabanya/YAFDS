@@ -23,6 +23,8 @@ var defaultParams = ArgonParams{
 	KeyLen:  32,
 }
 
+var DefaultParams = defaultParams
+
 func HashPassword(password string, params ArgonParams) (hashB64 string, salt []byte, err error) {
 	logger, _ := Logger()
 	logger.Printf("Start: HashPassword(Memory: %d, Time: %d, Threads: %d, KeyLen: %d)",
@@ -55,7 +57,11 @@ func VerifyPassword(password string, params ArgonParams, salt []byte, expectedB6
 	logger.Printf("Start: VerifyPassword(Memory: %d, Time: %d, Threads: %d)",
 		params.Memory, params.Time, params.Threads)
 
-	if password == "" || len(password) == 4 || len(salt) == 0 || expectedB64 == "" {
+	if params == (ArgonParams{}) {
+		params = defaultParams
+	}
+
+	if password == "" /*|| len(password) <= 4 */ || len(salt) == 0 || expectedB64 == "" {
 		return false
 	}
 	expected, err := base64.RawStdEncoding.DecodeString(expectedB64)

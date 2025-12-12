@@ -51,7 +51,7 @@ func (s *userService) Login(walletAddress string, password string) (models.User,
 	}
 
 	// Verify password
-	if !pkg.VerifyPassword(password, pkg.ArgonParams{}, user.PasswordSalt, user.PasswordHash) {
+	if !pkg.VerifyPassword(password, pkg.DefaultParams, user.PasswordSalt, user.PasswordHash) {
 		logger.Printf("Invalid password for user: %s", walletAddress)
 		return models.User{}, models.NewError("invalid password")
 	}
