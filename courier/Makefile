@@ -2,6 +2,8 @@ include ../.env
 
 # Variables
 
+MIGRATIONS_DIR := ../migrations/courier
+
 DB_CONNECTION_STRING = $(DB_CONNECTION_BASE) dbname=$(1)
 
 # other
@@ -48,7 +50,7 @@ migrate-down:
 # courier
 build-courier:
 	docker rmi courier-app || true
-	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t courier-app -f Dockerfile .
+	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t courier-app -f Dockerfile ..
 
 launch-courier:
 	@if docker ps -a --format '{{.Names}}' | grep -q '^$(COURIER_CONTAINER_NAME)$$'; then \

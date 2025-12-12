@@ -4,7 +4,7 @@ include ../.env
 
 DB_CONNECTION_STRING = $(DB_CONNECTION_BASE) dbname=$(1)
 
-MIGRATIONS_DIR := ./cmd/database/migrations
+MIGRATIONS_DIR := ../migrations/restaurant
 
 RESTAURANT_DB := restaurant_db
 
@@ -52,7 +52,7 @@ migrate-down:
 # restaurant
 build-restaurant:
 	docker rmi restaurant-app || true
-	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t restaurant-app -f Dockerfile .
+	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t restaurant-app -f Dockerfile ..
 
 launch-restaurant:
 	@if docker ps -a --format '{{.Names}}' | grep -q '^$(RESTAURANT_CONTAINER_NAME)$$'; then \

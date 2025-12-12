@@ -40,7 +40,7 @@ seed-status:
 # customer
 build-customer:
 	-docker rmi customer-app 2>nul
-	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile .
+	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile ..
 
 launch-customer:
 	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
@@ -64,10 +64,9 @@ logs-customer:
 	docker logs -f $(CUSTOMER_CONTAINER_NAME)
 
 debug-info-customer:
-	mkdir -p debug-logs
-	docker cp $(CUSTOMER_CONTAINER_NAME):/app/debug_customer.txt ./debug-logs/debug_customer.txt
+	docker exec $(CUSTOMER_CONTAINER_NAME) cat /app/customer_log_info.txt
 
-check-db-customers:
+db-check-customers:
 	docker exec -it yafds-db psql -U postgres -d customer_db -c "SELECT * FROM CUSTOMERS;"
 
 # API test commands

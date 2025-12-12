@@ -15,7 +15,7 @@ clean: clear-front
 	if exist dist rmdir /s /q dist
 
 # Docker commands
-build-docker:
+build-docker: clean
 	docker build -t front-app .
 
 clear-front:

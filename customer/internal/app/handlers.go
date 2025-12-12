@@ -4,9 +4,7 @@ import (
 	"customer/internal/usecase"
 	"customer/models"
 	"customer/pkg"
-	"database/sql"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -24,10 +22,23 @@ func NewHandler(userUC usecase.UserUseCase) *Handler {
 	}
 }
 
-// via usecase
-func (h *Handler) SaveUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) writeJSON(w http.ResponseWriter, data interface{}, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
+}
+
+func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(models.ErrorResponce{ErrorMessage: message})
+}
+
+// Register user with password
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	logger, _ := pkg.Logger()
-	logger.Println("SaveUser called")
+	logger.Println("Register called")
+
 	// CORS headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -49,8 +60,14 @@ func (h *Handler) SaveUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate required fields
 	if req.WalletAddress == "" {
 		h.writeError(w, "wallet_address is required", http.StatusBadRequest)
+		return
+	}
+
+	if req.Password == "" {
+		h.writeError(w, "password is required", http.StatusBadRequest)
 		return
 	}
 
@@ -74,30 +91,22 @@ func (h *Handler) SaveUser(w http.ResponseWriter, r *http.Request) {
 		id = parsedID
 	}
 
-	// If user already exists by wallet, reuse existing record instead of creating a duplicate.
-	if existingUser, err := h.userUseCase.Load(req.WalletAddress); err == nil {
-		h.writeJSON(w, models.RegisterResponce{Id: existingUser.Id}, http.StatusOK)
-		logger.Printf("User %s already exists, returning existing id", req.WalletAddress)
-		return
-	} else if !errors.Is(err, sql.ErrNoRows) {
-		h.writeError(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err := h.userUseCase.Save(id, name, req.WalletAddress, address)
+	// Register user with password
+	err := h.userUseCase.Register(id, name, req.WalletAddress, address, req.Password)
 	if err != nil {
 		h.writeError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	h.writeJSON(w, models.RegisterResponce{Id: id}, http.StatusCreated)
-	logger.Printf("User %s saved successfully", req.WalletAddress)
+	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 
-// via usecase
-func (h *Handler) LoadUser(w http.ResponseWriter, r *http.Request) {
+// Login user with password
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	logger, _ := pkg.Logger()
-	logger.Println("LoadUser called")
+	logger.Println("Login called")
+
 	// CORS headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -107,6 +116,7 @@ func (h *Handler) LoadUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
+
 	if r.Method != http.MethodPost {
 		h.writeError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -123,24 +133,23 @@ func (h *Handler) LoadUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.userUseCase.Load(req.WalletAddress)
-	if err != nil {
-		h.writeError(w, "user not found", http.StatusNotFound)
+	if req.Password == "" {
+		h.writeError(w, "password is required", http.StatusBadRequest)
 		return
 	}
 
+	// Authenticate user
+	user, err := h.userUseCase.Login(req.WalletAddress, req.Password)
+	if err != nil {
+		h.writeError(w, "invalid wallet address or password", http.StatusUnauthorized)
+		logger.Printf("Login failed for user: %s, error: %v", req.WalletAddress, err)
+		return
+	}
+
+	// Never return password hash/salt to the client.
+	user.PasswordHash = ""
+	user.PasswordSalt = nil
+
 	h.writeJSON(w, user, http.StatusOK)
-	logger.Printf("User %s loaded successfully", req.WalletAddress)
-}
-
-func (h *Handler) writeJSON(w http.ResponseWriter, data interface{}, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(data)
-}
-
-func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(models.ErrorResponce{ErrorMessage: message})
+	logger.Printf("User %s logged in successfully", req.WalletAddress)
 }

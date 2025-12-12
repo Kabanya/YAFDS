@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 )
 
@@ -9,6 +11,7 @@ type RegisterRequest struct {
 	Name          string `json:"name"`
 	WalletAddress string `json:"wallet_address"`
 	Address       string `json:"address"`
+	Password      string `json:"password"`
 }
 
 type User struct { //моделька
@@ -16,6 +19,8 @@ type User struct { //моделька
 	Name          string    `json:"name"`
 	WalletAddress string    `json:"wallet_address"`
 	Address       string    `json:"address"`
+	PasswordHash  string    `json:"password_hash,omitempty"`
+	PasswordSalt  []byte    `json:"password_salt,omitempty"`
 }
 
 type ErrorResponce struct {
@@ -28,9 +33,14 @@ type RegisterResponce struct {
 
 type LoginRequest struct {
 	WalletAddress string `json:"wallet_address"`
+	Password      string `json:"password"`
 }
 
 type LoginResponse struct {
 	Token      string `json:"token"`
 	Expiration int64  `json:"expiration"`
+}
+
+func NewError(message string) error {
+	return errors.New(message)
 }

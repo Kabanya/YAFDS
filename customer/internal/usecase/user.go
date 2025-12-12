@@ -10,8 +10,8 @@ import (
 // не очень умно копируем
 
 type UserUseCase interface {
-	Save(uuid.UUID, string, string, string) error
-	Load(walletAddress string) (models.User, error)
+	Register(uuid.UUID, string, string, string, string) error
+	Login(walletAddress string, password string) (models.User, error)
 }
 
 type userUseCase struct {
@@ -22,10 +22,10 @@ func NewUserUseCase(service service.UserService) UserUseCase {
 	return &userUseCase{service: service}
 }
 
-func (u *userUseCase) Save(id uuid.UUID, name string, walletAddress string, address string) error {
-	return u.service.Save(id, name, walletAddress, address)
+func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, address string, password string) error {
+	return u.service.Register(id, name, walletAddress, address, password)
 }
 
-func (u *userUseCase) Load(walletAddress string) (models.User, error) {
-	return u.service.Load(walletAddress)
+func (u *userUseCase) Login(walletAddress string, password string) (models.User, error) {
+	return u.service.Login(walletAddress, password)
 }

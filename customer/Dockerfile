@@ -4,15 +4,16 @@ FROM golang:1.25
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY customer/go.mod ./
 
 RUN go mod download
 
-COPY cmd ./cmd
-COPY internal ./internal
-COPY models ./models
-COPY pkg ./pkg
-COPY config ./config
+COPY migrations ./migrations
+COPY customer/cmd ./cmd
+COPY customer/internal ./internal
+COPY customer/models ./models
+COPY customer/pkg ./pkg
+COPY customer/config ./config
 
 RUN go mod tidy
 

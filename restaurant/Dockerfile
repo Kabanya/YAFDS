@@ -7,11 +7,12 @@ RUN echo "Build time: $BUILD_TIME"
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY restaurant/go.mod ./
 
 RUN go mod download
 
-COPY cmd ./cmd
+COPY migrations ./migrations
+COPY restaurant/cmd ./cmd
 
 RUN date > /build-time.txt
 

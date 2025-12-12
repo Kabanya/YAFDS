@@ -6,10 +6,13 @@ export default function Auth() {
   const navigate = useNavigate()
   const role = location.state?.role || 'customer'
 
+  const customerApiUrl = import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8081'
+
   const [isSignUp, setIsSignUp] = useState(false)
   const [name, setName] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
   const [address, setAddress] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -20,7 +23,7 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const response = await fetch('http://localhost:8081/save', {
+        const response = await fetch(`${customerApiUrl}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -29,6 +32,7 @@ export default function Auth() {
             name,
             wallet_address: walletAddress,
             address,
+            password,
           }),
         })
 
@@ -48,20 +52,19 @@ export default function Auth() {
         localStorage.setItem('currentUser', JSON.stringify(profile))
         navigate(`/${role}/dashboard`, { state: { user: profile } })
       } else {
-        const response = await fetch('http://localhost:8081/load', {
+        const response = await fetch(`${customerApiUrl}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             wallet_address: walletAddress,
+            password,
           }),
         })
 
         const data = await response.json()
-        if (!response.ok) {
-          throw new Error(data?.error_message || 'Invalid wallet address')
-        }
+        if (!response.ok) throw new Error(data?.error_message || 'Invalid wallet address or password')
 
         const profile = {
           id: data.id,
@@ -95,6 +98,16 @@ export default function Auth() {
             required
             className="auth-input"
           />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="auth-input"
+          />
+
           {isSignUp && (
             <>
               <input

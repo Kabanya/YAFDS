@@ -62,12 +62,12 @@ func Run() {
 	logger.Println("Initialized handler")
 
 	// registry endpoints
-	http.HandleFunc("/save", handler.SaveUser)
-	http.HandleFunc("/load", handler.LoadUser)
+	http.HandleFunc("/register", handler.Register)
+	http.HandleFunc("/login", handler.Login)
 
 	logger.Println("Endpoints registered:")
-	logger.Println("  POST http://localhost:8081/save - Save user")
-	logger.Println("  POST http://localhost:8081/load - Load user")
+	logger.Println("  POST http://localhost:8081/register - Register user with password")
+	logger.Println("  POST http://localhost:8081/login - Login user with password")
 	logger.Println("Starting HTTP server on :8081")
 
 	err = http.ListenAndServe(":8081", nil)
@@ -75,5 +75,6 @@ func Run() {
 		logger.Printf("Server error: %v", err)
 	}
 
-	logger.Println("Customer service stopped")
+	logger.Println("Process of customer is finished")
+	pkg.CloseLogger()
 }

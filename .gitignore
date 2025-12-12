@@ -11,11 +11,6 @@
 *.test
 *.out
 
-**/sometest*.go
-debug-logs
-
 /front/node_modules/
 
-check_users.**
-start_all.**
-stop_all.**
+**.ps1
