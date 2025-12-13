@@ -1,6 +1,9 @@
 package pkg
 
-import "runtime"
+import (
+	"runtime"
+	"time"
+)
 
 const Memory64KB uint32 = 64 * 1024
 const Memory128KB uint32 = 128 * 1024
@@ -9,6 +12,8 @@ const Memory512KB uint32 = 512 * 1024
 const Memory1MB uint32 = 1 * 1024 * 1024
 const Memory2MB uint32 = 2 * 1024 * 1024
 const Memory64MB uint32 = 64 * 1024 * 1024
+
+const TimeTtl30Minutes time.Duration = 30 * time.Minute
 
 func numThreads(requested_n_threads int) uint8 {
 	if requested_n_threads <= 0 {

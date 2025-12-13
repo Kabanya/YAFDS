@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function Auth() {
@@ -15,6 +15,43 @@ export default function Auth() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (location.state?.expired) {
+      setError('Session expired, please sign in again.')
+    }
+  }, [location.state])
+
+  const persistSession = (profile) => {
+    localStorage.setItem('currentUser', JSON.stringify(profile))
+    navigate(`/${role}/dashboard`, { state: { user: profile } })
+  }
+
+  const authenticate = async (wallet, pass) => {
+    const response = await fetch(`${customerApiUrl}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        wallet_address: wallet,
+        password: pass,
+      }),
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data?.error_message || 'Invalid wallet address or password')
+
+    return {
+      id: data.id,
+      name: data.name || wallet,
+      wallet_address: data.wallet_address || wallet,
+      address: data.address || wallet,
+      token: data.token,
+      expiration: Number(data.expiration) || 0,
+      role,
+    }
+  }
 
   const handleAuth = async (e) => {
     e.preventDefault()
@@ -41,41 +78,11 @@ export default function Auth() {
           throw new Error(data?.error_message || 'Failed to register')
         }
 
-        const profile = {
-          id: data.id,
-          name: name || walletAddress,
-          wallet_address: walletAddress,
-          address: address || walletAddress,
-          role,
-        }
-
-        localStorage.setItem('currentUser', JSON.stringify(profile))
-        navigate(`/${role}/dashboard`, { state: { user: profile } })
+        const profile = await authenticate(walletAddress, password)
+        persistSession(profile)
       } else {
-        const response = await fetch(`${customerApiUrl}/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            wallet_address: walletAddress,
-            password,
-          }),
-        })
-
-        const data = await response.json()
-        if (!response.ok) throw new Error(data?.error_message || 'Invalid wallet address or password')
-
-        const profile = {
-          id: data.id,
-          name: data.name,
-          wallet_address: data.wallet_address,
-          address: data.address,
-          role,
-        }
-
-        localStorage.setItem('currentUser', JSON.stringify(profile))
-        navigate(`/${role}/dashboard`, { state: { user: profile } })
+        const profile = await authenticate(walletAddress, password)
+        persistSession(profile)
       }
     } catch (err) {
       setError(err.message)

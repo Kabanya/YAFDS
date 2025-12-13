@@ -11,7 +11,7 @@ import (
 
 type UserUseCase interface {
 	Register(uuid.UUID, string, string, string, string) error
-	Login(walletAddress string, password string) (models.User, error)
+	Login(walletAddress string, password string) (models.LoginResponse, error)
 }
 
 type userUseCase struct {
@@ -26,6 +26,6 @@ func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, 
 	return u.service.Register(id, name, walletAddress, address, password)
 }
 
-func (u *userUseCase) Login(walletAddress string, password string) (models.User, error) {
+func (u *userUseCase) Login(walletAddress string, password string) (models.LoginResponse, error) {
 	return u.service.Login(walletAddress, password)
 }

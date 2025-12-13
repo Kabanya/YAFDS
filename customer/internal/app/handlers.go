@@ -4,7 +4,9 @@ import (
 	"customer/internal/usecase"
 	"customer/models"
 	"customer/pkg"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -138,18 +140,20 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Authenticate user
-	user, err := h.userUseCase.Login(req.WalletAddress, req.Password)
+	// Authenticate user and issue session token
+	loginResp, err := h.userUseCase.Login(req.WalletAddress, req.Password)
 	if err != nil {
-		h.writeError(w, "invalid wallet address or password", http.StatusUnauthorized)
+		statusCode := http.StatusInternalServerError
+		message := "internal server error"
+		if errors.Is(err, models.ErrInvalidCredentials) || errors.Is(err, sql.ErrNoRows) {
+			statusCode = http.StatusUnauthorized
+			message = "invalid wallet address or password"
+		}
+		h.writeError(w, message, statusCode)
 		logger.Printf("Login failed for user: %s, error: %v", req.WalletAddress, err)
 		return
 	}
 
-	// Never return password hash/salt to the client.
-	user.PasswordHash = ""
-	user.PasswordSalt = nil
-
-	h.writeJSON(w, user, http.StatusOK)
+	h.writeJSON(w, loginResp, http.StatusOK)
 	logger.Printf("User %s logged in successfully", req.WalletAddress)
 }

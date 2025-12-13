@@ -1,11 +1,27 @@
 include config/.env
 
+# Defaults (overridable via environment)
+REDIS_CONTAINER_NAME ?= yafds-redis
+REDIS_IMAGE ?= redis:7-alpine
+REDIS_PORT ?= 6379
+
 # Set PATH to include Go binaries
 export PATH := $(USERPROFILE)/go/bin:$(PATH)
 
 # other
 launch-docker:
 	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+
+# redis
+launch-redis:
+	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
+		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
+		-d $(REDIS_IMAGE) --requirepass $(REDIS_PASSWORD)
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+
+clear-redis:
+	-docker stop $(REDIS_CONTAINER_NAME)
+	-docker rm $(REDIS_CONTAINER_NAME)
 
 # db
 launch-db:
@@ -46,6 +62,10 @@ launch-customer:
 	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
 		docker run --name $(CUSTOMER_CONTAINER_NAME) --network bridge \
 			-e DB_HOST=host.docker.internal \
+			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
+			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
+			-e REDIS_DB=$(REDIS_DB) \
+			-e SESSION_TTL=$(SESSION_TTL) \
 			-p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app
 
 clear-customer:
@@ -66,7 +86,7 @@ logs-customer:
 debug-info-customer:
 	docker exec $(CUSTOMER_CONTAINER_NAME) cat /app/customer_log_info.txt
 
-db-check-customers:
+db-check:
 	docker exec -it yafds-db psql -U postgres -d customer_db -c "SELECT * FROM CUSTOMERS;"
 
 # API test commands
@@ -90,13 +110,13 @@ test-all-api: test-register test-login
 # all
 build-all: launch-db build-customer
 
-launch-all: launch-docker launch-db launch-customer
+launch-all: launch-docker launch-redis launch-db launch-customer
 
-clear-all: clear-db clear-customer
+clear-all: clear-redis clear-db clear-customer
 	@echo "All containers removed!"
 
 stop-all:
-	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
 
 logs-all: debug-info-customer logs-customer
 

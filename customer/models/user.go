@@ -37,9 +37,15 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token      string `json:"token"`
-	Expiration int64  `json:"expiration"`
+	Id            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	WalletAddress string    `json:"wallet_address"`
+	Address       string    `json:"address"`
+	Token         string    `json:"token"`
+	Expiration    int64     `json:"expiration"`
 }
+
+var ErrInvalidCredentials = errors.New("invalid credentials")
 
 func NewError(message string) error {
 	return errors.New(message)
