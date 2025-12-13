@@ -1,10 +1,5 @@
 include config/.env
 
-# Defaults (overridable via environment)
-REDIS_CONTAINER_NAME ?= yafds-redis
-REDIS_IMAGE ?= redis:7-alpine
-REDIS_PORT ?= 6379
-
 # Set PATH to include Go binaries
 export PATH := $(USERPROFILE)/go/bin:$(PATH)
 
@@ -25,7 +20,7 @@ clear-redis:
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:17.6
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
 	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
 	$(MAKE) create-customer-db
 

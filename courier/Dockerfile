@@ -2,22 +2,23 @@
 
 FROM golang:1.25
 
-ARG BUILD_TIME
-RUN echo "Build time: $BUILD_TIME"
-
 WORKDIR /app
 
-COPY courier/go.mod ./
+COPY customer/go.mod ./
 
 RUN go mod download
 
 COPY migrations ./migrations
-COPY courier/ .
+COPY customer/cmd ./cmd
+COPY customer/internal ./internal
+COPY customer/models ./models
+COPY customer/pkg ./pkg
+COPY customer/config ./config
 
-RUN date > /build-time.txt
+RUN go mod tidy
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /courier-app ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -o /customer-app ./cmd/server
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["/courier-app"]
+CMD ["/customer-app"]

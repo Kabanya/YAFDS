@@ -36,7 +36,7 @@ func Run() {
 		panic(err)
 	}
 
-	// Подключение к базе данных
+	// Connection to db
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("CUSTOMER_DB"))
 	db, err := sql.Open("postgres", connStr)

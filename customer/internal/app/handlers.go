@@ -93,6 +93,8 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		id = parsedID
 	}
 
+	// After stress testing, need to add limit to registrations with same data
+
 	// Register user with password
 	err := h.userUseCase.Register(id, name, req.WalletAddress, address, req.Password)
 	if err != nil {
