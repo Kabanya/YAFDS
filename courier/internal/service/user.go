@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
+	"courier/internal/repository"
+	"courier/models"
 	"crypto/rand"
-	"customer/internal/repository"
-	"customer/models"
 	"customer/pkg"
 	"encoding/base64"
 	"fmt"

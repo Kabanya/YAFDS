@@ -1,8 +1,8 @@
 package app
 
 import (
-	"customer/internal/usecase"
-	"customer/models"
+	"courier/internal/usecase"
+	"courier/models"
 	"customer/pkg"
 	"database/sql"
 	"encoding/json"

@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"customer/models"
-	"customer/pkg"
+	"courier/models"
 	"database/sql"
 	"errors"
+
+	"customer/pkg"
 
 	"github.com/google/uuid"
 )
@@ -32,7 +33,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 	}
 
 	sqlStatement := `
-		INSERT INTO CUSTOMERS (empId, name, walletAddress, address, password_hash, password_salt)
+		INSERT INTO courierS (empId, name, walletAddress, address, password_hash, password_salt)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		`
 	stmt, err := r.db.Prepare(sqlStatement)
@@ -48,7 +49,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 		return err
 	}
 
-	logger.Printf("Successfully saved customer with password - ID: %s", id)
+	logger.Printf("Successfully saved courier with password - ID: %s", id)
 	return nil
 }
 
@@ -60,7 +61,7 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 
 	sqlStatement := `
 		SELECT empId, name, walletAddress, address, password_hash, password_salt
-		FROM CUSTOMERS
+		FROM courierS
 		WHERE walletAddress = $1
 		LIMIT 1
 	`
@@ -79,18 +80,18 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 	)
 
 	if err == sql.ErrNoRows {
-		logger.Printf("No customer found with wallet address: %s", walletAddress)
+		logger.Printf("No courier found with wallet address: %s", walletAddress)
 		return models.User{}, err
 	}
 
 	if err != nil {
-		logger.Printf("Failed to load customer: %v", err)
+		logger.Printf("Failed to load courier: %v", err)
 		return models.User{}, err
 	}
 
 	if passwordHash.Valid {
 		user.PasswordHash = passwordHash.String
-		logger.Printf("Successfully loaded customer with wallet address: %s", walletAddress)
+		logger.Printf("Successfully loaded courier with wallet address: %s", walletAddress)
 	} else {
 		logger.Printf("Password hash is NULL for wallet address: %s", walletAddress)
 		return models.User{}, errors.New("password hash is null")
@@ -100,7 +101,7 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 	return user, nil
 }
 
-// CREATE TABLE CUSTOMERS (
+// CREATE TABLE courierS (
 //   empId UUID PRIMARY KEY,
 //   name TEXT NOT NULL,
 //   walletAddress TEXT NOT NULL,

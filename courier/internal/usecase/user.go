@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"customer/internal/service"
-	"customer/models"
+	"courier/internal/service"
+	"courier/models"
 
 	"github.com/google/uuid"
 )

@@ -6,10 +6,9 @@ package app
 
 import (
 	"context"
-	"customer/internal/repository"
-	"customer/internal/service"
-	"customer/internal/usecase"
-	"customer/pkg"
+	"courier/internal/repository"
+	"courier/internal/service"
+	"courier/internal/usecase"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -17,17 +16,19 @@ import (
 	"strconv"
 	"time"
 
+	"customer/pkg"
+
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
 func Run() {
-	pkg.InitFileLogger("customer_log_info.txt")
+	pkg.InitFileLogger("courier_log_info.txt")
 	logger, err := pkg.Logger()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
 	}
-	logger.Println("Customer service started")
+	logger.Println("courier service started")
 
 	// Load environment variables from .env
 	err = pkg.LoadEnv(pkg.PathToEnv)
@@ -38,7 +39,7 @@ func Run() {
 
 	// Connection to db
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("CUSTOMER_DB"))
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("courier_DB"))
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		logger.Printf("Failed to open database: %v", err)
@@ -120,6 +121,6 @@ func Run() {
 		logger.Printf("Server error: %v", err)
 	}
 
-	logger.Println("Process of customer is finished")
+	logger.Println("Process of courier is finished")
 	pkg.CloseLogger()
 }
