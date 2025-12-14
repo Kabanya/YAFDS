@@ -4,6 +4,7 @@ FROM golang:1.25
 
 WORKDIR /app
 
+COPY customer /customer
 COPY courier/go.mod ./
 
 RUN go mod download
