@@ -2,9 +2,6 @@
 
 FROM golang:1.25
 
-ARG BUILD_TIME
-RUN echo "Build time: $BUILD_TIME"
-
 WORKDIR /app
 
 COPY restaurant/go.mod ./
@@ -13,8 +10,12 @@ RUN go mod download
 
 COPY migrations ./migrations
 COPY restaurant/cmd ./cmd
+COPY restaurant/internal ./internal
+COPY restaurant/models ./models
+COPY restaurant/pkg ./pkg
+COPY restaurant/config ./config
 
-RUN date > /build-time.txt
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /restaurant-app ./cmd/server
 
