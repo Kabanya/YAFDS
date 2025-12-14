@@ -5,6 +5,7 @@ go 1.25.3
 require (
 	customer v0.0.0
 	github.com/google/uuid v1.6.0
+	shared v0.0.0
 )
 
 require (
@@ -20,3 +21,5 @@ require (
 )
 
 replace customer => ../customer
+
+replace shared => ./shared

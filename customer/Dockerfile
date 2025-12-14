@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY customer/go.mod ./
 
+COPY shared ./shared
+
 RUN go mod download
 
 COPY migrations ./migrations

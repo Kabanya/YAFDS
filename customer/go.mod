@@ -8,7 +8,10 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/redis/go-redis/v9 v9.5.1
 	golang.org/x/crypto v0.31.0
+	shared v0.0.0
 )
+
+replace shared => ./shared
 
 require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
