@@ -5,8 +5,8 @@ import (
 	"customer/internal/repository"
 	"customer/models"
 	"customer/pkg"
+	"customer/pkg/auth"
 	"errors"
-	"shared/auth"
 	"time"
 
 	"github.com/google/uuid"

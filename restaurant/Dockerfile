@@ -7,8 +7,6 @@ WORKDIR /app
 COPY customer /customer
 COPY restaurant/go.mod ./
 
-COPY shared ./shared
-
 RUN go mod download
 
 COPY migrations ./migrations
