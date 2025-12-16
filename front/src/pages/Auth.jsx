@@ -1,12 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function Auth() {
   const location = useLocation()
   const navigate = useNavigate()
-  const role = location.state?.role || 'customer'
+  const role = useMemo(() => {
+    const [, pathRole] = location.pathname.split('/')
+    const normalized = (pathRole || '').toLowerCase()
+    return ['customer', 'courier', 'restaurant'].includes(normalized) ? normalized : 'customer'
+  }, [location.pathname])
 
-  const customerApiUrl = import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8081'
+  const apiBaseByRole = useMemo(
+    () => ({
+      customer: import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8081',
+      courier: import.meta.env.VITE_COURIER_API_URL || 'http://localhost:8080',
+      restaurant: import.meta.env.VITE_RESTAURANT_API_URL || 'http://localhost:8082',
+    }),
+    [],
+  )
+
+  const apiBase = apiBaseByRole[role] || apiBaseByRole.customer
 
   const [isSignUp, setIsSignUp] = useState(false)
   const [name, setName] = useState('')
@@ -28,7 +41,7 @@ export default function Auth() {
   }
 
   const authenticate = async (wallet, pass) => {
-    const response = await fetch(`${customerApiUrl}/login`, {
+    const response = await fetch(`${apiBase}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,7 +73,7 @@ export default function Auth() {
 
     try {
       if (isSignUp) {
-        const response = await fetch(`${customerApiUrl}/register`, {
+        const response = await fetch(`${apiBase}/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
