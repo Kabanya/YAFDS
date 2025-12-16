@@ -4,7 +4,6 @@ import (
 	"context"
 	"customer/internal/repository"
 	"customer/models"
-	"customer/pkg"
 	"customer/pkg/auth"
 	"errors"
 	"time"
@@ -25,13 +24,11 @@ type userService struct {
 }
 
 func NewUserService(repo repository.UserRepo, redisClient *redis.Client, sessionTTL time.Duration) UserService {
-	logger, _ := pkg.Logger()
 	service, err := auth.NewService(auth.ServiceConfig{
 		Store:      storeAdapter{repo: repo},
-		Hasher:     auth.NewArgon2Hasher(auth.DefaultArgonParams).WithLogger(logger),
+		Hasher:     auth.NewArgon2Hasher(auth.DefaultArgonParams).WithLogger(),
 		Sessions:   auth.NewRedisSessionManager(redisClient),
 		Validator:  auth.NoopValidator,
-		Logger:     logger,
 		SessionTTL: sessionTTL,
 	})
 	if err != nil {

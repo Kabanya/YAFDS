@@ -10,15 +10,6 @@ import (
 
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
-// Logger is kept tiny to allow plugging any logger implementation.
-type Logger interface {
-	Printf(format string, v ...interface{})
-}
-
-type noopLogger struct{}
-
-func (noopLogger) Printf(string, ...interface{}) {}
-
 type Hasher interface {
 	Hash(password string) (hash string, salt []byte, err error)
 	Verify(password string, salt []byte, expected string) bool
@@ -63,7 +54,6 @@ type ServiceConfig struct {
 	Hasher     Hasher
 	Sessions   SessionManager
 	Validator  Validator
-	Logger     Logger
 	SessionTTL time.Duration
 }
 

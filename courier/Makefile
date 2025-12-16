@@ -21,8 +21,9 @@ clear-redis:
 # db
 launch-db:
 	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
-	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
-	$(MAKE) create-customer-db
+	@timeout /t 15 /nobreak >nul 2>&1 || sleep 15
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
+	$(MAKE) create-courier-db
 
 clear-db:
 	-docker stop $(DB_CONTAINER_NAME)
@@ -48,74 +49,74 @@ seed-down:
 seed-status:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(COURIER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
 
-# customer
-build-customer:
-	-docker rmi customer-app 2>nul
-	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile ..
+# courier
+build-courier:
+	-docker rmi courier-app 2>nul
+	docker build --build-arg BUILD_TIME=1 -t courier-app -f Dockerfile ..
 
-launch-customer:
+launch-courier:
 	-docker start $(COURIER_CONTAINER_NAME) 2>nul || \
-		docker run --name $(COURIER_CONTAINER_NAME) --network bridge \
+		docker run --name $(COURIER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
 			-e REDIS_DB=$(REDIS_DB) \
 			-e SESSION_TTL=$(SESSION_TTL) \
-			-p $(COURIER_PORT):$(COURIER_PORT) -d customer-app
+			-p $(COURIER_PORT):$(COURIER_PORT) -d courier-app
 
-clear-customer:
+clear-courier:
 	-docker stop $(COURIER_CONTAINER_NAME)
 	-docker rm $(COURIER_CONTAINER_NAME)
-	-docker rmi customer-app
+	-docker rmi courier-app
 
 # db's
-create-customer-db:
+create-courier-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(COURIER_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
 
 # logs
-logs-customer:
+logs-courier:
 	docker logs -f $(COURIER_CONTAINER_NAME)
 
-debug-info-customer:
-	docker exec $(COURIER_CONTAINER_NAME) cat /app/customer_log_info.txt
+debug-info-courier:
+	docker exec $(COURIER_CONTAINER_NAME) cat /app/courier_log_info.txt
 
 db-check:
 	docker exec -it yafds-db psql -U postgres -d COURIER_DB -c "SELECT * FROM CUSTOMERS;"
 
 # API test commands
 test-register:
-	curl -X POST http://localhost:8081/register \
+	curl -X POST http://localhost:8080/register \
 		-H "Content-Type: application/json" \
 		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
 
 test-login:
-	curl -X POST http://localhost:8081/login \
+	curl -X POST http://localhost:8080/login \
 		-H "Content-Type: application/json" \
 		-d '{"wallet_address":"0x123456789abc"}'
 
 test-api-info:
-	curl -X GET http://localhost:8081/register
-	curl -X GET http://localhost:8081/login
+	curl -X GET http://localhost:8080/register
+	curl -X GET http://localhost:8080/login
 
 test-all-api: test-register test-login
 	@echo "\nAll API tests completed!"
 
 # all
-build-all: launch-db build-customer
+build-all: launch-db build-courier
 
-launch-all: launch-docker launch-redis launch-db launch-customer
+launch-all: launch-docker launch-redis launch-db launch-courier
 
-clear-all: clear-redis clear-db clear-customer
+clear-all: clear-redis clear-db clear-courier
 	@echo "All containers removed!"
 
 stop-all:
 	-docker stop $(DB_CONTAINER_NAME) $(COURIER_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
 
-logs-all: debug-info-customer logs-customer
+logs-all: debug-info-courier logs-courier
 
-check-all: check-db-customers
+check-all: db-check
 
 # minimalistic
 stop:  stop-all
@@ -126,8 +127,8 @@ build: clear-all build-all
 launch: launch-all
 
 # main commands
-run: clear-customer build-all migrate-up launch-all
+run: clear-courier build-all launch-all
 	@echo "Application launched successfully!"
 
-dev: clear-customer build-all migrate-up seed-up launch-all
+dev: clear-courier build-all launch-all seed-up
 	@echo "Application launched with test data!"

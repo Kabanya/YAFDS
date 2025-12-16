@@ -13,9 +13,10 @@ const Memory1MB uint32 = 1 * 1024 * 1024
 const Memory2MB uint32 = 2 * 1024 * 1024
 const Memory64MB uint32 = 64 * 1024 * 1024
 
+const DefaultSessionTTL = TimeTtl30Minutes
 const TimeTtl30Minutes time.Duration = 30 * time.Minute
 
-func numThreads(requested_n_threads int) uint8 {
+func NumThreads(requested_n_threads int) uint8 {
 	if requested_n_threads <= 0 {
 		requested_n_threads = runtime.GOMAXPROCS(0)
 	} //                                                  /*NumCPU()*/

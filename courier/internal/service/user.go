@@ -4,8 +4,8 @@ import (
 	"context"
 	"courier/internal/repository"
 	"courier/models"
+	"customer/pkg/auth"
 	"errors"
-	"shared/auth"
 	"time"
 
 	"github.com/google/uuid"

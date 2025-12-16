@@ -21,8 +21,10 @@ clear-redis:
 # db
 launch-db:
 	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
-	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
+	@timeout /t 15 /nobreak >nul 2>&1 || sleep 15
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
 	$(MAKE) create-restaurant-db
+	$(MAKE) create-order-db
 
 clear-db:
 	-docker stop $(DB_CONTAINER_NAME)
@@ -48,6 +50,27 @@ seed-down:
 seed-status:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
 
+# migrations
+migrate-up-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) up
+
+migrate-down-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) down
+
+migrate-status-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) status
+
+# test data
+seed-up-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) up
+
+seed-down-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) down
+
+seed-status-orders-db:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) status
+
+
 # restaurant
 build-restaurant:
 	-docker rmi restaurant-app 2>nul
@@ -55,7 +78,7 @@ build-restaurant:
 
 launch-restaurant:
 	-docker start $(RETAURANT_CONTAINER_NAME) 2>nul || \
-		docker run --name $(RETAURANT_CONTAINER_NAME) --network bridge \
+		docker run --name $(RETAURANT_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
@@ -73,6 +96,11 @@ create-restaurant-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(RETAURANT_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
+
+create-order-db:
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(ORDER_DB);"
+	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	$(MAKE) migrate-up-orders-db
 
 # logs
 logs-restaurant:

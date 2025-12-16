@@ -38,8 +38,12 @@ func Run() {
 	}
 
 	// Connection to db
+	dbName := os.Getenv("COURIER_DB")
+	if dbName == "" {
+		dbName = "courier_db"
+	}
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("courier_DB"))
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), dbName)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		logger.Printf("Failed to open database: %v", err)
@@ -111,12 +115,17 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 
+	port := os.Getenv("COURIER_PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
 	logger.Println("Endpoints registered:")
-	logger.Println("  POST http://localhost:8081/register - Register user with password")
-	logger.Println("  POST http://localhost:8081/login - Login user with password")
-	logger.Println("Starting HTTP server on :8081")
+	logger.Printf("  POST http://localhost:%s/register - Register user with password", port)
+	logger.Printf("  POST http://localhost:%s/login - Login user with password", port)
+	logger.Printf("Starting HTTP server on %s", addr)
 
-	err = http.ListenAndServe(":8081", nil)
+	err = http.ListenAndServe(addr, nil)
 	if err != nil {
 		logger.Printf("Server error: %v", err)
 	}

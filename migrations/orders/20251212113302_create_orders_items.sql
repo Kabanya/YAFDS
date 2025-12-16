@@ -1,9 +1,15 @@
 -- +goose Up
 -- +goose StatementBegin
-SELECT 'up SQL query';
+CREATE TABLE ORDERS_ITEMS (
+  empId UUID PRIMARY KEY,
+  order_id UUID NOT NULL,
+  restaurant_item_id UUID NOT NULL,
+  price NUMERIC NOT NULL,
+  quantity INT NOT NULL
+);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-SELECT 'down SQL query';
+DROP TABLE ORDERS_ITEMS;
 -- +goose StatementEnd

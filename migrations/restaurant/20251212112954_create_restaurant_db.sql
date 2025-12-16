@@ -1,9 +1,15 @@
 -- +goose Up
 -- +goose StatementBegin
-SELECT 'up SQL query';
+CREATE TABLE RESTAURANTS(
+  empId UUID PRIMARY KEY,
+  name TEXT NOT NULL,
+  address_wallet TEXT NOT NULL,
+  address TEXT NOT NULL,
+  status TEXT NOT NULL
+);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-SELECT 'down SQL query';
+DROP TABLE RESTAURANTS;
 -- +goose StatementEnd

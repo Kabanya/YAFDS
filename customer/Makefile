@@ -21,7 +21,8 @@ clear-redis:
 # db
 launch-db:
 	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
-	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
+	@timeout /t 10 /nobreak >nul 2>&1 || sleep 15
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
 	$(MAKE) create-customer-db
 
 clear-db:
@@ -55,7 +56,7 @@ build-customer:
 
 launch-customer:
 	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
-		docker run --name $(CUSTOMER_CONTAINER_NAME) --network bridge \
+		docker run --name $(CUSTOMER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \

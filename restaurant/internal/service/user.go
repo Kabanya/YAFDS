@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
+	"customer/pkg/auth"
 	"errors"
 	"restaurant/internal/repository"
 	"restaurant/models"
-	"shared/auth"
 	"time"
 
 	"github.com/google/uuid"

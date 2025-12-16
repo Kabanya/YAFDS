@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"crypto/subtle"
+	"customer/pkg"
 	"encoding/base64"
 	"errors"
 
@@ -17,29 +18,25 @@ type ArgonParams struct {
 }
 
 var DefaultArgonParams = ArgonParams{
-	Memory:  memory256KB,
+	Memory:  pkg.Memory64KB,
 	Time:    1,
-	Threads: 4,
+	Threads: pkg.NumThreads(6),
 	KeyLen:  32,
 }
 
 type Argon2Hasher struct {
 	params ArgonParams
-	log    Logger
 }
 
 func NewArgon2Hasher(params ArgonParams) *Argon2Hasher {
 	if params == (ArgonParams{}) {
 		params = DefaultArgonParams
 	}
-	return &Argon2Hasher{params: params, log: noopLogger{}}
+	return &Argon2Hasher{params: params}
 }
 
-func (h *Argon2Hasher) WithLogger(logger Logger) *Argon2Hasher {
-	if logger == nil {
-		logger = noopLogger{}
-	}
-	return &Argon2Hasher{params: h.params, log: logger}
+func (h *Argon2Hasher) WithLogger() *Argon2Hasher {
+	return &Argon2Hasher{params: h.params}
 }
 
 func (h *Argon2Hasher) Hash(password string) (string, []byte, error) {
