@@ -32,23 +32,23 @@ clear-db:
 
 # migrations
 migrate-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) up
 
 migrate-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) down
 
 migrate-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) status
 
 # test data
 seed-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
 
 seed-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
 
 seed-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RETAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
 
 # migrations
 migrate-up-orders-db:
@@ -77,23 +77,23 @@ build-restaurant:
 	docker build --build-arg BUILD_TIME=1 -t restaurant-app -f Dockerfile ..
 
 launch-restaurant:
-	-docker start $(RETAURANT_CONTAINER_NAME) 2>nul || \
-		docker run --name $(RETAURANT_CONTAINER_NAME) \
+	-docker start $(RESTAURANT_CONTAINER_NAME) 2>nul || \
+		docker run --name $(RESTAURANT_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
 			-e REDIS_DB=$(REDIS_DB) \
 			-e SESSION_TTL=$(SESSION_TTL) \
-			-p $(RETAURANT_PORT):$(RETAURANT_PORT) -d restaurant-app
+			-p $(RESTAURANT_PORT):$(RESTAURANT_PORT) -d restaurant-app
 
 clear-restaurant:
-	-docker stop $(RETAURANT_CONTAINER_NAME)
-	-docker rm $(RETAURANT_CONTAINER_NAME)
+	-docker stop $(RESTAURANT_CONTAINER_NAME)
+	-docker rm $(RESTAURANT_CONTAINER_NAME)
 	-docker rmi restaurant-app
 
 # db's
 create-restaurant-db:
-	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(RETAURANT_DB);"
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(RESTAURANT_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
 
@@ -104,28 +104,28 @@ create-order-db:
 
 # logs
 logs-restaurant:
-	docker logs -f $(RETAURANT_CONTAINER_NAME)
+	docker logs -f $(RESTAURANT_CONTAINER_NAME)
 
 debug-info-restaurant:
-	docker exec $(RETAURANT_CONTAINER_NAME) cat /app/restaurant_log_info.txt
+	docker exec $(RESTAURANT_CONTAINER_NAME) cat /app/restaurant_log_info.txt
 
 db-check:
-	docker exec -it yafds-db psql -U postgres -d COURIER_DB -c "SELECT * FROM CUSTOMERS;"
+	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d COURIER_DB -c "SELECT * FROM CUSTOMERS;"
 
 # API test commands
 test-register:
-	curl -X POST http://localhost:$(RETAURANT_PORT)/register \
+	curl -X POST http://localhost:$(RESTAURANT_PORT)/register \
 		-H "Content-Type: application/json" \
 		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
 
 test-login:
-	curl -X POST http://localhost:$(RETAURANT_PORT)/login \
+	curl -X POST http://localhost:$(RESTAURANT_PORT)/login \
 		-H "Content-Type: application/json" \
 		-d '{"wallet_address":"0x123456789abc"}'
 
 test-api-info:
-	curl -X GET http://localhost:$(RETAURANT_PORT)/register
-	curl -X GET http://localhost:$(RETAURANT_PORT)/login
+	curl -X GET http://localhost:$(RESTAURANT_PORT)/register
+	curl -X GET http://localhost:$(RESTAURANT_PORT)/login
 
 test-all-api: test-register test-login
 	@echo "\nAll API tests completed!"
@@ -139,7 +139,7 @@ clear-all: clear-redis clear-db clear-restaurant
 	@echo "All containers removed!"
 
 stop-all:
-	-docker stop $(DB_CONTAINER_NAME) $(RETAURANT_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) $(RESTAURANT_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
 
 logs-all: debug-info-restaurant logs-restaurant
 

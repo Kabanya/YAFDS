@@ -19,12 +19,12 @@ build-docker: clean
 	docker build -t front-app .
 
 clear-front:
-	-docker stop front-container
-	-docker rm front-container
+	-docker stop front-yafds-service
+	-docker rm front-yafds-service
 	-docker rmi front-app
 
 launch-front:
-	-docker start front-container 2>nul || docker run --name front-container -p 5173:5173 -d front-app
+	-docker start front-yafds-service 2>nul || docker run --name front-yafds-service -p 5173:5173 -d front-app
 
 .PHONY: install build preview dev clean build-docker clear-front launch-front run
 

@@ -83,7 +83,7 @@ debug-info-customer:
 	docker exec $(CUSTOMER_CONTAINER_NAME) cat /app/customer_log_info.txt
 
 db-check:
-	docker exec -it yafds-db psql -U postgres -d $(CUSTOMER_DB) -c "SELECT * FROM CUSTOMERS;"
+	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d $(CUSTOMER_DB) -c "SELECT * FROM CUSTOMERS;"
 
 # API test commands
 test-register:

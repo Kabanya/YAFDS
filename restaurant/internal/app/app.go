@@ -38,7 +38,7 @@ func Run() {
 	}
 
 	// Connection to db
-	dbName := os.Getenv("RETAURANT_DB")
+	dbName := os.Getenv("RESTAURANT_DB")
 	if dbName == "" {
 		dbName = "restaurant_db"
 	}
@@ -115,7 +115,7 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 
-	port := os.Getenv("RETAURANT_PORT")
+	port := os.Getenv("RESTAURANT_PORT")
 	if port == "" {
 		port = "8082"
 	}
