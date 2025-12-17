@@ -20,6 +20,6 @@ RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /restaurant-app ./cmd/server
 
-EXPOSE 8082
+EXPOSE 8092
 
 CMD ["/restaurant-app"]

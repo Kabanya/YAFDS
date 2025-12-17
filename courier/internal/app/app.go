@@ -117,7 +117,7 @@ func Run() {
 
 	port := os.Getenv("COURIER_PORT")
 	if port == "" {
-		port = "8080"
+		port = "8090"
 	}
 	addr := ":" + port
 	logger.Println("Endpoints registered:")

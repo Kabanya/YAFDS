@@ -117,7 +117,7 @@ func Run() {
 
 	port := os.Getenv("RESTAURANT_PORT")
 	if port == "" {
-		port = "8082"
+		port = "8092"
 	}
 	addr := ":" + port
 	logger.Println("Endpoints registered:")

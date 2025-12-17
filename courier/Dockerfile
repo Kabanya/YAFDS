@@ -20,6 +20,6 @@ RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /courier-app ./cmd/server
 
-EXPOSE 8080
+EXPOSE 8090
 
 CMD ["/courier-app"]

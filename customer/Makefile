@@ -85,23 +85,6 @@ debug-info-customer:
 db-check:
 	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d $(CUSTOMER_DB) -c "SELECT * FROM CUSTOMERS;"
 
-# API test commands
-test-register:
-	curl -X POST http://localhost:8081/register \
-		-H "Content-Type: application/json" \
-		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
-
-test-login:
-	curl -X POST http://localhost:8081/login \
-		-H "Content-Type: application/json" \
-		-d '{"wallet_address":"0x123456789abc"}'
-
-test-api-info:
-	curl -X GET http://localhost:8081/register
-	curl -X GET http://localhost:8081/login
-
-test-all-api: test-register test-login
-	@echo "\nAll API tests completed!"
 
 # all
 build-all: launch-db build-customer

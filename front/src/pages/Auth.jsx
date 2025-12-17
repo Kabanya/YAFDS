@@ -12,9 +12,9 @@ export default function Auth() {
 
   const apiBaseByRole = useMemo(
     () => ({
-      customer: import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8081',
-      courier: import.meta.env.VITE_COURIER_API_URL || 'http://localhost:8080',
-      restaurant: import.meta.env.VITE_RESTAURANT_API_URL || 'http://localhost:8082',
+      customer: import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8091',
+      courier: import.meta.env.VITE_COURIER_API_URL || 'http://localhost:8090',
+      restaurant: import.meta.env.VITE_RESTAURANT_API_URL || 'http://localhost:8092',
     }),
     [],
   )

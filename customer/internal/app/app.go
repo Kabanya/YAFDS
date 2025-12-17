@@ -111,11 +111,11 @@ func Run() {
 	http.HandleFunc("/login", handler.Login)
 
 	logger.Println("Endpoints registered:")
-	logger.Println("  POST http://localhost:8081/register - Register user with password")
-	logger.Println("  POST http://localhost:8081/login - Login user with password")
-	logger.Println("Starting HTTP server on :8081")
+	logger.Println("  POST http://localhost:8091/register - Register user with password")
+	logger.Println("  POST http://localhost:8091/login - Login user with password")
+	logger.Println("Starting HTTP server on :8091")
 
-	err = http.ListenAndServe(":8081", nil)
+	err = http.ListenAndServe(":8091", nil)
 	if err != nil {
 		logger.Printf("Server error: %v", err)
 	}

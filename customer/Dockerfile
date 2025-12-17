@@ -19,6 +19,6 @@ RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /customer-app ./cmd/server
 
-EXPOSE 8081
+EXPOSE 8091
 
 CMD ["/customer-app"]
