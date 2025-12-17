@@ -15,4 +15,4 @@
 /front/node_modules/
 
 **.ps1
-migrations/testdata/customer/generate_users.py
+**/generate_**.py

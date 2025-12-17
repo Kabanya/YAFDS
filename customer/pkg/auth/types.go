@@ -32,6 +32,8 @@ type RegisterInput struct {
 	WalletAddress string
 	Address       string
 	Password      string
+	TransportType string
+	IsActive      bool
 }
 
 type StoredUser struct {
@@ -41,6 +43,8 @@ type StoredUser struct {
 	Address       string
 	PasswordHash  string
 	PasswordSalt  []byte
+	TransportType string
+	IsActive      bool
 }
 
 type LoginResult struct {

@@ -73,14 +73,14 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := req.Name
-	if name == "" {
-		name = req.WalletAddress
+	if req.Name == "" {
+		h.writeError(w, "name is required", http.StatusBadRequest)
+		return
 	}
 
-	address := req.Address
-	if address == "" {
-		address = req.WalletAddress
+	if req.Address == "" {
+		h.writeError(w, "address is required", http.StatusBadRequest)
+		return
 	}
 
 	id := uuid.New()
@@ -96,7 +96,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	// After stress testing, need to add limit to registrations with same data
 
 	// Register user with password
-	err := h.userUseCase.Register(id, name, req.WalletAddress, address, req.Password)
+	err := h.userUseCase.Register(id, req.Name, req.WalletAddress, req.Address, req.Password)
 	if err != nil {
 		h.writeError(w, err.Error(), http.StatusInternalServerError)
 		return

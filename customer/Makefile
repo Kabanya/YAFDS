@@ -21,8 +21,8 @@ clear-redis:
 # db
 launch-db:
 	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
-	@timeout /t 10 /nobreak >nul 2>&1 || sleep 15
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 5
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
 	$(MAKE) create-customer-db
 
 clear-db:
@@ -91,7 +91,7 @@ build-all: launch-db build-customer
 
 launch-all: launch-docker launch-redis launch-db launch-customer
 
-clear-all: clear-redis clear-db clear-customer
+clear-all: clear-redis  clear-customer
 	@echo "All containers removed!"
 
 stop-all:
@@ -104,14 +104,14 @@ check-all: check-db-customers
 # minimalistic
 stop:  stop-all
 logs:  logs-all
-clean: clear-all
+clean: clear-all clear-db
 check: check-all
 build: clear-all build-all
 launch: launch-all
 
 # main commands
-run: clear-customer build-all migrate-up launch-all
+run: clear-all build-all migrate-up launch-all
 	@echo "Application launched successfully!"
 
-dev: clear-customer build-all migrate-up seed-up launch-all
+dev: clear-all build-all migrate-up seed-up launch-all
 	@echo "Application launched with test data!"

@@ -37,12 +37,12 @@ func NewUserService(repo repository.UserRepo, redisClient *redis.Client, session
 	return &userService{authService: service}
 }
 
-func (s *userService) Register(id uuid.UUID, name string, walletAddress string, address string, password string) error {
+func (s *userService) Register(id uuid.UUID, name string, walletAddress string, transportType string, password string) error {
 	return s.authService.Register(context.Background(), auth.RegisterInput{
 		ID:            id,
 		Name:          name,
 		WalletAddress: walletAddress,
-		Address:       address,
+		TransportType: transportType,
 		Password:      password,
 	})
 }
@@ -59,7 +59,7 @@ func (s *userService) Login(walletAddress string, password string) (models.Login
 		Id:            res.User.ID,
 		Name:          res.User.Name,
 		WalletAddress: res.User.WalletAddress,
-		Address:       res.User.Address,
+		TransportType: res.User.TransportType,
 		Token:         res.Token,
 		Expiration:    res.Expiration.Unix(),
 	}, nil
@@ -70,7 +70,7 @@ type storeAdapter struct {
 }
 
 func (a storeAdapter) SaveWithPassword(ctx context.Context, data auth.RegisterInput, passwordHash string, passwordSalt []byte) error {
-	return a.repo.SaveWithPassword(data.ID, data.Name, data.WalletAddress, data.Address, passwordHash, passwordSalt)
+	return a.repo.SaveWithPassword(data.ID, data.Name, data.WalletAddress, data.TransportType, passwordHash, passwordSalt)
 }
 
 func (a storeAdapter) LoadByWalletAddress(ctx context.Context, walletAddress string) (auth.StoredUser, error) {
@@ -82,7 +82,8 @@ func (a storeAdapter) LoadByWalletAddress(ctx context.Context, walletAddress str
 		ID:            user.Id,
 		Name:          user.Name,
 		WalletAddress: user.WalletAddress,
-		Address:       user.Address,
+		TransportType: user.TransportType,
+		IsActive:      user.IsActive,
 		PasswordHash:  user.PasswordHash,
 		PasswordSalt:  user.PasswordSalt,
 	}, nil

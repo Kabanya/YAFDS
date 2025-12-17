@@ -10,6 +10,7 @@ import (
 	"customer/internal/service"
 	"customer/internal/usecase"
 	"customer/pkg"
+	"customer/pkg/orders"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -53,8 +54,30 @@ func Run() {
 	}
 	logger.Println("Successfully connected to database")
 
+	ordersDBName := os.Getenv("ORDER_DB")
+	if ordersDBName == "" {
+		ordersDBName = "order_db"
+	}
+	ordersConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), ordersDBName)
+	ordersDB, err := sql.Open("postgres", ordersConnStr)
+	if err != nil {
+		logger.Printf("Failed to open orders database: %v", err)
+		panic(err)
+	}
+	defer ordersDB.Close()
+
+	if err := ordersDB.Ping(); err != nil {
+		logger.Printf("Failed to ping orders database: %v", err)
+		panic(err)
+	}
+	logger.Println("Successfully connected to orders database")
+
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
+
+	ordersRepository := orders.NewPostgresRepository(ordersDB)
+	logger.Println("Initialized orders repository")
 
 	redisDB := 0
 	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
@@ -109,10 +132,12 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
+	http.HandleFunc("/orders", orders.NewCreateHandler(ordersRepository))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
+	logger.Println("  POST http://localhost:8091/orders - Create order")
 	logger.Println("Starting HTTP server on :8091")
 
 	err = http.ListenAndServe(":8091", nil)

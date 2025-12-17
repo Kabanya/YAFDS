@@ -5,7 +5,7 @@ CREATE TABLE RESTAURANTS(
   name TEXT NOT NULL,
   address_wallet TEXT NOT NULL,
   address TEXT NOT NULL,
-  status TEXT NOT NULL
+  status BOOLEAN NOT NULL
 );
 -- +goose StatementEnd
 

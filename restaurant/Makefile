@@ -21,7 +21,7 @@ clear-redis:
 # db
 launch-db:
 	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
-	@timeout /t 15 /nobreak >nul 2>&1 || sleep 15
+	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
 	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
 	$(MAKE) create-restaurant-db
 	$(MAKE) create-order-db
@@ -112,24 +112,6 @@ debug-info-restaurant:
 db-check:
 	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d COURIER_DB -c "SELECT * FROM CUSTOMERS;"
 
-# API test commands
-test-register:
-	curl -X POST http://localhost:$(RESTAURANT_PORT)/register \
-		-H "Content-Type: application/json" \
-		-d '{"name":"John Doe","wallet_address":"0x123456789abc","address":"123 Zhopa, Mira"}'
-
-test-login:
-	curl -X POST http://localhost:$(RESTAURANT_PORT)/login \
-		-H "Content-Type: application/json" \
-		-d '{"wallet_address":"0x123456789abc"}'
-
-test-api-info:
-	curl -X GET http://localhost:$(RESTAURANT_PORT)/register
-	curl -X GET http://localhost:$(RESTAURANT_PORT)/login
-
-test-all-api: test-register test-login
-	@echo "\nAll API tests completed!"
-
 # all
 build-all: launch-db build-restaurant
 
@@ -148,14 +130,14 @@ check-all: check-db-customers
 # minimalistic
 stop:  stop-all
 logs:  logs-all
-clean: clear-all
+clean: clear-all clear-db
 check: check-all
 build: clear-all build-all
 launch: launch-all
 
 # main commands
-run: clean build-all migrate-up launch-all
+run: clear-all build-all migrate-up launch-all
 	@echo "Application launched successfully!"
 
-dev: clean build-all migrate-up seed-up launch-all
+dev: clear-all build-all migrate-up seed-up launch-all
 	@echo "Application launched with test data!"

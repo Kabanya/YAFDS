@@ -14,7 +14,7 @@ import (
 // dto - data transfer object. Объект в который парсится результат запрос SQL и из которого он формируется
 
 type UserRepo interface {
-	SaveWithPassword(uuid.UUID, string, string, string, string, []byte) error
+	SaveWithPassword(id uuid.UUID, name string, walletAddress string, address string, isActive bool, passwordHash string, passwordSalt []byte) error
 	LoadByWalletAddress(walletAddress string) (models.User, error)
 }
 
@@ -26,15 +26,15 @@ func NewUser(db *sql.DB) *userRepo {
 	return &userRepo{db: db}
 }
 
-func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress string, address string, passwordHash string, passwordSalt []byte) error {
+func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress string, address string, isActive bool, passwordHash string, passwordSalt []byte) error {
 	logger, err := pkg.Logger()
 	if err != nil {
 		return err
 	}
 
 	sqlStatement := `
-		INSERT INTO restaurantS (empId, name, walletAddress, address, password_hash, password_salt)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO RESTAURANTS (empId, name, address_wallet, address, status, password_hash, password_salt)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		`
 	stmt, err := r.db.Prepare(sqlStatement)
 	if err != nil {
@@ -43,7 +43,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, name, walletAddress, address, passwordHash, passwordSalt)
+	_, err = stmt.Exec(id, name, walletAddress, address, isActive, passwordHash, passwordSalt)
 	if err != nil {
 		logger.Printf("Failed to execute insert: %v", err)
 		return err
@@ -60,9 +60,9 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 	}
 
 	sqlStatement := `
-		SELECT empId, name, walletAddress, address, password_hash, password_salt
-		FROM restaurantS
-		WHERE walletAddress = $1
+		SELECT empId, name, address_wallet, address, status, password_hash, password_salt
+		FROM RESTAURANTS
+		WHERE address_wallet = $1
 		LIMIT 1
 	`
 
@@ -75,6 +75,7 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 		&user.Name,
 		&user.WalletAddress,
 		&user.Address,
+		&user.IsActive,
 		&passwordHash,
 		&passwordSalt,
 	)

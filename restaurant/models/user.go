@@ -11,6 +11,7 @@ type RegisterRequest struct {
 	Name          string `json:"name"`
 	WalletAddress string `json:"wallet_address"`
 	Address       string `json:"address"`
+	IsActive      bool   `json:"is_active"`
 	Password      string `json:"password"`
 }
 
@@ -19,6 +20,7 @@ type User struct { //моделька
 	Name          string    `json:"name"`
 	WalletAddress string    `json:"wallet_address"`
 	Address       string    `json:"address"`
+	IsActive      bool      `json:"is_active"`
 	PasswordHash  string    `json:"password_hash,omitempty"`
 	PasswordSalt  []byte    `json:"password_salt,omitempty"`
 }
@@ -41,6 +43,7 @@ type LoginResponse struct {
 	Name          string    `json:"name"`
 	WalletAddress string    `json:"wallet_address"`
 	Address       string    `json:"address"`
+	IsActive      bool      `json:"is_active"`
 	Token         string    `json:"token"`
 	Expiration    int64     `json:"expiration"`
 }

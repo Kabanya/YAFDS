@@ -10,7 +10,7 @@ import (
 // не очень умно копируем
 
 type UserUseCase interface {
-	Register(uuid.UUID, string, string, string, string) error
+	Register(id uuid.UUID, name string, walletAddress string, address string, isActive bool, password string) error
 	Login(walletAddress string, password string) (models.LoginResponse, error)
 }
 
@@ -22,8 +22,8 @@ func NewUserUseCase(service service.UserService) UserUseCase {
 	return &userUseCase{service: service}
 }
 
-func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, address string, password string) error {
-	return u.service.Register(id, name, walletAddress, address, password)
+func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, address string, isActive bool, password string) error {
+	return u.service.Register(id, name, walletAddress, address, isActive, password)
 }
 
 func (u *userUseCase) Login(walletAddress string, password string) (models.LoginResponse, error) {
