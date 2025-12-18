@@ -19,6 +19,29 @@ type errorResponse struct {
 	Error string `json:"error"`
 }
 
+func NewHandler(repo Repository) http.HandlerFunc {
+	create := NewCreateHandler(repo)
+	list := NewListHandler(repo)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			create(w, r)
+		case http.MethodGet:
+			list(w, r)
+		case http.MethodOptions:
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+			w.WriteHeader(http.StatusOK)
+		default:
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			_ = json.NewEncoder(w).Encode(errorResponse{Error: "method not allowed"})
+		}
+	}
+}
+
 func NewCreateHandler(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger, _ := pkg.Logger()

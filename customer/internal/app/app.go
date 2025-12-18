@@ -132,12 +132,12 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orders.NewCreateHandler(ordersRepository))
+	http.HandleFunc("/orders", orders.NewHandler(ordersRepository))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
-	logger.Println("  POST http://localhost:8091/orders - Create order")
+	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
 	logger.Println("Starting HTTP server on :8091")
 
 	err = http.ListenAndServe(":8091", nil)
