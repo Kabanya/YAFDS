@@ -9,6 +9,20 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [sessionMessage, setSessionMessage] = useState('')
   const [timeLeft, setTimeLeft] = useState(null)
+  const [orders, setOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(false)
+  const [ordersError, setOrdersError] = useState('')
+
+  const apiBaseByRole = useMemo(
+    () => ({
+      customer: import.meta.env.VITE_CUSTOMER_API_URL || 'http://localhost:8091',
+      courier: import.meta.env.VITE_COURIER_API_URL || 'http://localhost:8090',
+      restaurant: import.meta.env.VITE_RESTAURANT_API_URL || 'http://localhost:8092',
+    }),
+    [],
+  )
+
+  const apiBase = apiBaseByRole[role] || apiBaseByRole.customer
 
   useEffect(() => {
     hydrateUser()
@@ -38,6 +52,44 @@ export default function Dashboard() {
     setUser(savedUser)
     setLoading(false)
   }
+
+  useEffect(() => {
+    const userId = user?.id || user?.Id
+    if (!userId) return
+
+    const controller = new AbortController()
+    const fetchOrders = async () => {
+      setOrdersLoading(true)
+      setOrdersError('')
+
+      const params = new URLSearchParams()
+      if (role === 'customer') params.set('customer_id', userId)
+      if (role === 'courier') params.set('courier_id', userId)
+
+      const query = params.toString()
+      const endpoint = query ? `${apiBase}/orders?${query}` : `${apiBase}/orders`
+
+      try {
+        const response = await fetch(endpoint, { signal: controller.signal })
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Не удалось получить заказы')
+        }
+
+        setOrders(Array.isArray(data) ? data : [])
+      } catch (error) {
+        if (error.name === 'AbortError') return
+        setOrdersError(error.message)
+      } finally {
+        setOrdersLoading(false)
+      }
+    }
+
+    fetchOrders()
+
+    return () => controller.abort()
+  }, [apiBase, role, user])
 
   const handleExpiredSession = () => {
     setLoading(false)
@@ -73,6 +125,24 @@ export default function Dashboard() {
     const seconds = totalSeconds % 60
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
   }, [timeLeft])
+
+  const orderScopeLabel = useMemo(() => {
+    if (role === 'customer') return 'Your orders'
+    if (role === 'courier') return 'Your deliveries'
+    return 'All orders'
+  }, [role])
+
+  const formatDate = (value) => {
+    if (!value) return '—'
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? '—' : parsed.toLocaleString()
+  }
+
+  const formatStatus = (value) => {
+    if (!value) return '—'
+    const normalized = value.toString().trim()
+    return normalized ? normalized.replace(/^./, (c) => c.toUpperCase()) : '—'
+  }
 
   if (loading) {
     return (
@@ -143,6 +213,46 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="session-note">You will be signed out automatically when the token expires.</div>
+        </section>
+
+        <section className="dashboard-card orders-card">
+          <header className="card-header">
+            <div>
+              <p className="eyebrow">Orders</p>
+              <h2 className="card-title">{orderScopeLabel}</h2>
+            </div>
+            <span className="pill pill-soft">{orders.length} total</span>
+          </header>
+
+          {ordersLoading && <div className="orders-state">Загружаем заказы...</div>}
+          {!ordersLoading && ordersError && <div className="dashboard-alert">{ordersError}</div>}
+          {!ordersLoading && !ordersError && orders.length === 0 && (
+            <div className="orders-state">Пока нет заказов</div>
+          )}
+
+          {!ordersLoading && !ordersError && orders.length > 0 && (
+            <div className="orders-list">
+              {orders.map((order) => (
+                <div key={order.id} className="order-row">
+                  <div>
+                    <p className="label">Order</p>
+                    <p className="order-id">#{String(order.id).slice(0, 8)}</p>
+                    <p className="order-hint">Customer: {order.customer_id || '—'}</p>
+                    <p className="order-hint">Courier: {order.courier_id || '—'}</p>
+                  </div>
+                  <div className="order-status">
+                    <p className="label">Status</p>
+                    <span className="pill pill-ghost">{formatStatus(order.status)}</span>
+                  </div>
+                  <div className="order-dates">
+                    <p className="label">Created</p>
+                    <p className="value">{formatDate(order.created_at)}</p>
+                    <p className="order-hint">Updated: {formatDate(order.updated_at)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

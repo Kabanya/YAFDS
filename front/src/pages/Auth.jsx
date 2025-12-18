@@ -56,8 +56,10 @@ export default function Auth() {
     const data = await response.json()
     if (!response.ok) throw new Error(data?.error_message || 'Invalid wallet address or password')
 
+    const userId = data.id || data.Id
+
     return {
-      id: data.id,
+      id: userId,
       name: data.name || wallet,
       wallet_address: data.wallet_address || wallet,
       address: data.address || wallet,

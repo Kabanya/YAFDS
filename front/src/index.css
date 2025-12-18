@@ -310,8 +310,12 @@ body {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: 2fr 1fr;
   gap: 20px;
+}
+
+.orders-card {
+  grid-column: 1 / -1;
 }
 
 .dashboard-card {
@@ -380,6 +384,17 @@ body {
   font-size: 12px;
 }
 
+.pill-soft {
+  background: rgba(15, 23, 42, 0.05);
+  color: var(--ink);
+}
+
+.pill-ghost {
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
 .session-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -429,6 +444,49 @@ body {
   font-weight: 600;
 }
 
+.orders-state {
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.order-id {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.order-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.order-status,
+.order-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .dashboard-loading {
   background: var(--glass);
   padding: 18px 22px;
@@ -469,5 +527,17 @@ body {
 
   .dashboard-title {
     font-size: 32px;
+  }
+
+  .order-row {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-card {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
   }
 }
