@@ -2,10 +2,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
+import ThemeToggle from './components/ThemeToggle'
 
 export default function App() {
   return (
     <Router>
+      <ThemeToggle />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/customer/auth" element={<Auth />} />

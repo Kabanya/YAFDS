@@ -15,11 +15,37 @@
   --ink-soft: #1f2937;
   --paper: #f8fafc;
   --glass: rgba(255, 255, 255, 0.9);
+  --card-bg: rgba(255, 255, 255, 0.75);
   --border: #e2e8f0;
   --accent: #f97316;
   --accent-strong: #ea580c;
+  --accent-soft: rgba(249, 115, 22, 0.12);
+  --secondary-soft: rgba(14, 165, 233, 0.12);
   --muted: #64748b;
+  --muted-soft: rgba(15, 23, 42, 0.05);
   --error: #d32f2f;
+  --error-soft: rgba(211, 47, 47, 0.1);
+}
+
+[data-theme='dark'] {
+  --black: #ffffff;
+  --white: #0b1021;
+  --gray: #1f2937;
+  --dark-gray: #eef2f7;
+  --ink: #f8fafc;
+  --ink-soft: #e2e8f0;
+  --paper: #0f172a;
+  --glass: rgba(15, 23, 42, 0.8);
+  --card-bg: rgba(30, 41, 59, 0.75);
+  --border: #1e293b;
+  --accent: #fb923c;
+  --accent-strong: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.2);
+  --secondary-soft: rgba(14, 165, 233, 0.2);
+  --muted: #94a3b8;
+  --muted-soft: rgba(248, 250, 252, 0.1);
+  --error: #ef4444;
+  --error-soft: rgba(239, 68, 68, 0.15);
 }
 
 @keyframes floatUp {
@@ -78,12 +104,12 @@ body {
   border: 2px solid var(--ink);
   overflow: hidden;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), rgba(14, 165, 233, 0.12));
+  background: linear-gradient(135deg, var(--accent-soft), var(--secondary-soft));
 }
 
 .portal-button {
-  background: radial-gradient(circle at 30% 30%, rgba(249, 115, 22, 0.12), transparent 45%),
-    radial-gradient(circle at 70% 40%, rgba(14, 165, 233, 0.12), transparent 40%),
+  background: radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 45%),
+    radial-gradient(circle at 70% 40%, var(--secondary-soft), transparent 40%),
     var(--white);
   border: none;
   padding: 120px 40px;
@@ -252,7 +278,7 @@ body {
 .auth-error {
   padding: 12px;
   border: 2px solid var(--error);
-  background-color: rgba(211, 47, 47, 0.1);
+  background-color: var(--error-soft);
   color: var(--error);
   font-size: 12px;
   font-weight: 500;
@@ -376,7 +402,7 @@ body {
   gap: 8px;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(249, 115, 22, 0.12);
+  background: var(--accent-soft);
   color: var(--accent-strong);
   font-weight: 700;
   letter-spacing: 1px;
@@ -385,7 +411,7 @@ body {
 }
 
 .pill-soft {
-  background: rgba(15, 23, 42, 0.05);
+  background: var(--muted-soft);
   color: var(--ink);
 }
 
@@ -450,7 +476,7 @@ body {
   border-radius: 12px;
   color: var(--muted);
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--card-bg);
 }
 
 .orders-list {
@@ -466,7 +492,7 @@ body {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--card-bg);
 }
 
 .order-id {
@@ -496,6 +522,29 @@ body {
   font-weight: 600;
   text-align: center;
   animation: floatUp 0.5s ease;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  z-index: 1000;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
 }
 
 @media (max-width: 768px) {
