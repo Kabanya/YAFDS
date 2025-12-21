@@ -125,6 +125,9 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 			}
 			filter.CourierID = &id
 		}
+		if v := r.URL.Query().Get("status"); v != "" {
+			filter.Status = v
+		}
 
 		orders, err := repo.List(r.Context(), filter)
 		if err != nil {

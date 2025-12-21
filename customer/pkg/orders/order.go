@@ -22,6 +22,7 @@ type Order struct {
 type Filter struct {
 	CustomerID *uuid.UUID
 	CourierID  *uuid.UUID
+	Status     string
 }
 
 type Repository interface {
@@ -72,6 +73,10 @@ func (r *postgresRepository) List(ctx context.Context, filter Filter) ([]Order, 
 	if filter.CourierID != nil {
 		where = append(where, "courrier_id = $"+strconv.Itoa(len(args)+1))
 		args = append(args, *filter.CourierID)
+	}
+	if filter.Status != "" {
+		where = append(where, "status = $"+strconv.Itoa(len(args)+1))
+		args = append(args, filter.Status)
 	}
 
 	if len(where) > 0 {

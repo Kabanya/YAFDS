@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(false)
   const [ordersError, setOrdersError] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
 
   const apiBaseByRole = useMemo(
     () => ({
@@ -65,6 +66,7 @@ export default function Dashboard() {
       const params = new URLSearchParams()
       if (role === 'customer') params.set('customer_id', userId)
       if (role === 'courier') params.set('courier_id', userId)
+      if (statusFilter) params.set('status', statusFilter)
 
       const query = params.toString()
       const endpoint = query ? `${apiBase}/orders?${query}` : `${apiBase}/orders`
@@ -89,7 +91,7 @@ export default function Dashboard() {
     fetchOrders()
 
     return () => controller.abort()
-  }, [apiBase, role, user])
+  }, [apiBase, role, user, statusFilter])
 
   const handleExpiredSession = () => {
     setLoading(false)
@@ -221,7 +223,30 @@ export default function Dashboard() {
               <p className="eyebrow">Orders</p>
               <h2 className="card-title">{orderScopeLabel}</h2>
             </div>
-            <span className="pill pill-soft">{orders.length} total</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="filter-select"
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--card-bg)',
+                  color: 'var(--text-main)',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="">All Statuses</option>
+                <option value="created">Created</option>
+                <option value="pending">Pending</option>
+                <option value="delivering">Delivering</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <span className="pill pill-soft">{orders.length} total</span>
+            </div>
           </header>
 
           {ordersLoading && <div className="orders-state">Загружаем заказы...</div>}
