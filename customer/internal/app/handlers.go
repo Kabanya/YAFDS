@@ -4,12 +4,11 @@ import (
 	"customer/internal/usecase"
 	"customer/models"
 	"customer/pkg"
+	"customer/pkg/id"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 const TransportType = "HTTP"
@@ -83,26 +82,19 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := uuid.New()
-	if req.Id != "" {
-		parsedID, err := uuid.Parse(req.Id)
-		if err != nil {
-			h.writeError(w, "invalid id format", http.StatusBadRequest)
-			return
-		}
-		id = parsedID
-	}
+	// Derive deterministic ID from wallet to keep seeded data stable across runs
+	userID := id.FromWallet(req.WalletAddress)
 
 	// After stress testing, need to add limit to registrations with same data
 
 	// Register user with password
-	err := h.userUseCase.Register(id, req.Name, req.WalletAddress, req.Address, req.Password)
+	err := h.userUseCase.Register(userID, req.Name, req.WalletAddress, req.Address, req.Password)
 	if err != nil {
 		h.writeError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	h.writeJSON(w, models.RegisterResponce{Id: id}, http.StatusCreated)
+	h.writeJSON(w, models.RegisterResponce{Id: userID}, http.StatusCreated)
 	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 

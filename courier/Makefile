@@ -11,7 +11,7 @@ launch-docker:
 launch-redis:
 	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
 		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
-		-d $(REDIS_IMAGE) --requirepass $(REDIS_PASSWORD)
+		-d $(REDIS_IMAGE) --requirepass $(REDIS_PASSWORD) --port $(REDIS_PORT)
 	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
 
 clear-redis:
@@ -20,7 +20,7 @@ clear-redis:
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
 	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
 	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
 	$(MAKE) create-courier-db
@@ -83,7 +83,7 @@ debug-info-courier:
 	docker exec $(COURIER_CONTAINER_NAME) cat /app/courier_log_info.txt
 
 db-check:
-	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d COURIER_DB -c "SELECT * FROM CUSTOMERS;"
+	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(COURIER_DB) -c "SELECT * FROM COURIERS;"
 
 
 # all

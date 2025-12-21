@@ -41,3 +41,15 @@ end-to-end
 Дима на вб был в банкинге Надо было раработать систему стимуляции юзеров 
 
 тегнуть Диму голосовое 
+
+
+
+
+# Запуск с данными покупателей (100 итераций)
+npx newman run YAFDS.postman_collection.json -e YAFDS.postman_environment.json --iteration-data migrations/testdata/customer/postman_customers_true_100.csv
+
+# Запуск с данными курьеров
+npx newman run YAFDS.postman_collection.json -e YAFDS.postman_environment.json --iteration-data migrations/testdata/courier/postman_couriers_true_100.csv
+
+# Запуск с заказами
+npx newman run YAFDS.postman_collection.json -e YAFDS.postman_environment.json --iteration-data migrations/testdata/orders/postman_orders_true_100.csv

@@ -37,6 +37,22 @@ func LoadEnv(filename string) error {
 			key := strings.TrimSpace(parts[0])
 			value := strings.TrimSpace(parts[1])
 
+			// Expand variables like $(VAR)
+			for {
+				start := strings.Index(value, "$(")
+				if start == -1 {
+					break
+				}
+				end := strings.Index(value[start:], ")")
+				if end == -1 {
+					break
+				}
+				end += start
+				varName := value[start+2 : end]
+				varValue := os.Getenv(varName)
+				value = value[:start] + varValue + value[end+1:]
+			}
+
 			if existing, ok := os.LookupEnv(key); ok && existing != "" {
 				continue
 			}

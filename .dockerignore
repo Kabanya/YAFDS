@@ -1,0 +1,27 @@
+# VCS / editor
+.git
+.gitignore
+.vscode
+.idea
+
+# OS junk
+**/.DS_Store
+**/Thumbs.db
+
+# Frontend dependencies/build output
+front/node_modules
+front/dist
+
+# Go build output (if any)
+**/bin
+**/dist
+
+# Logs and temp
+**/*.log
+**/*.tmp
+
+# Local-only scripts (not needed in images)
+*.ps1
+
+# Docker/Compose artifacts
+**/*~
