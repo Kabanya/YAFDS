@@ -1,22 +1,34 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.25
-
-ARG BUILD_TIME
-RUN echo "Build time: $BUILD_TIME"
+# Build stage
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY customer /customer
+COPY courier/go.mod ./
 
 RUN go mod download
 
-COPY . .
+COPY courier/cmd ./cmd
+COPY courier/internal ./internal
+COPY courier/models ./models
+COPY courier/pkg ./pkg
+COPY courier/config ./config
 
-RUN date > /build-time.txt
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /courier-app ./cmd/server
 
-EXPOSE 8080
+# Final stage
+FROM alpine:latest
 
-CMD ["/courier-app"]
+WORKDIR /app
+
+COPY --from=builder /courier-app .
+COPY courier/config ./config
+COPY migrations ./migrations
+
+EXPOSE 8090
+
+CMD ["./courier-app"]

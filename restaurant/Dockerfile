@@ -1,22 +1,34 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.25
-
-ARG BUILD_TIME
-RUN echo "Build time: $BUILD_TIME"
+# Build stage
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY customer /customer
+COPY restaurant/go.mod ./
 
 RUN go mod download
 
-COPY cmd ./cmd
+COPY restaurant/cmd ./cmd
+COPY restaurant/internal ./internal
+COPY restaurant/models ./models
+COPY restaurant/pkg ./pkg
+COPY restaurant/config ./config
 
-RUN date > /build-time.txt
+RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /restaurant-app ./cmd/server
 
-EXPOSE 8082
+# Final stage
+FROM alpine:latest
 
-CMD ["/restaurant-app"]
+WORKDIR /app
+
+COPY --from=builder /restaurant-app .
+COPY restaurant/config ./config
+COPY migrations ./migrations
+
+EXPOSE 8092
+
+CMD ["./restaurant-app"]

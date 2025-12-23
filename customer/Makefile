@@ -1,100 +1,117 @@
-include ../.env
+include config/.env
 
-# Variables
-
-DB_CONNECTION_STRING = $(DB_CONNECTION_BASE) dbname=$(1)
-
-MIGRATIONS_DIR := ./cmd/database/migrations
-
-CUSTOMER_DB := customer_db
+# Set PATH to include Go binaries
+export PATH := $(USERPROFILE)/go/bin:$(PATH)
 
 # other
 launch-docker:
-	@if ! docker info > /dev/null 2>&1; then \
-		echo "Docker is not running. Starting Docker Desktop..."; \
-		open -a Docker; \
-		sleep 5; \
-		until docker info > /dev/null 2>&1; do \
-			echo "Waiting for Docker to start..."; \
-			sleep 2; \
-		done; \
-		echo "Docker started successfully!"; \
-	else \
-		echo "Docker is already running"; \
-	fi
+	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+
+# redis
+launch-redis:
+	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
+		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):6379 \
+		-d $(REDIS_IMAGE) --requirepass $(REDIS_PASSWORD)
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+
+clear-redis:
+	-docker stop $(REDIS_CONTAINER_NAME)
+	-docker rm $(REDIS_CONTAINER_NAME)
 
 # db
 launch-db:
-	@if docker ps -a --format '{{.Names}}' | grep -q '^$(DB_CONTAINER_NAME)$$'; then \
-		echo "Container $(DB_CONTAINER_NAME) exists. Starting..."; \
-		docker start $(DB_CONTAINER_NAME); \
-	else \
-		echo "Container $(DB_CONTAINER_NAME) does not exist. Creating new one..."; \
-		docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:13.3; \
-	fi
-	@sleep 1
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 5
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
 	$(MAKE) create-customer-db
 
 clear-db:
-	docker stop $(DB_CONTAINER_NAME) || true
-	docker rm $(DB_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME)
+	-docker rm $(DB_CONTAINER_NAME)
 
 # migrations
-migrate-customer-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) up
-
 migrate-up:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) up
 
 migrate-down:
 	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) down
 
+migrate-status:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) status
+
+# test data
+seed-up:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
+
+seed-down:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
+
+seed-status:
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
+
 # customer
 build-customer:
-	docker rmi customer-app || true
-	docker build --no-cache --build-arg BUILD_TIME=$(shell date +%s) -t customer-app -f Dockerfile .
+	-docker rmi customer-app 2>nul
+	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile ..
 
 launch-customer:
-	@if docker ps -a --format '{{.Names}}' | grep -q '^$(CUSTOMER_CONTAINER_NAME)$$'; then \
-		echo "Customer container exists. Starting..."; \
-		docker start $(CUSTOMER_CONTAINER_NAME); \
-	else \
-		echo "Customer container does not exist. Creating new one..."; \
-		docker run --name $(CUSTOMER_CONTAINER_NAME) -p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app; \
-	fi
+	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
+		docker run --name $(CUSTOMER_CONTAINER_NAME) \
+			-e DB_HOST=host.docker.internal \
+			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
+			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
+			-e REDIS_DB=$(REDIS_DB) \
+			-e SESSION_TTL=$(SESSION_TTL) \
+			-p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app
 
 clear-customer:
-	docker stop $(CUSTOMER_CONTAINER_NAME) || true
-	docker rm $(CUSTOMER_CONTAINER_NAME) || true
+	-docker stop $(CUSTOMER_CONTAINER_NAME)
+	-docker rm $(CUSTOMER_CONTAINER_NAME)
+	-docker rmi customer-app
 
-
-#db's
+# db's
 create-customer-db:
-	docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(CUSTOMER_DB);" 2>/dev/null || true
-	$(MAKE) migrate-customer-up
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(CUSTOMER_DB);"
+	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	$(MAKE) migrate-up
 
 # logs
 logs-customer:
 	docker logs -f $(CUSTOMER_CONTAINER_NAME)
 
+debug-info-customer:
+	docker exec $(CUSTOMER_CONTAINER_NAME) cat /app/customer_log_info.txt
+
+db-check:
+	docker exec -it $(DB_CONTAINER_NAME) psql -U postgres -d $(CUSTOMER_DB) -c "SELECT * FROM CUSTOMERS;"
+
 
 # all
 build-all: launch-db build-customer
 
-launch-all: launch-docker launch-db launch-customer
+launch-all: launch-docker launch-redis launch-db launch-customer
 
-clear-all: clear-db clear-customer
-	@echo "rm all container!"
+clear-all: clear-redis  clear-customer
+	@echo "All containers removed!"
 
 stop-all:
-	docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) || true
+	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
+
+logs-all: debug-info-customer logs-customer
+
+check-all: check-db-customers
 
 # minimalistic
 stop:  stop-all
-logs:  logs-customer
-clean: clear-all
-build: clear-all build-all # delete db and app, rebuild them
-launch:launch-all          # launch app
+logs:  logs-all
+clean: clear-all clear-db
+check: check-all
+build: clear-all build-all
+launch: launch-all
 
-# main command
-run:   clear-customer build-all migrate-up launch-all # fully new app (exept db)
+# main commands
+run: clear-all build-all migrate-up launch-all
+	@echo "Application launched successfully!"
+
+dev: clear-all build-all migrate-up seed-up launch-all
+	@echo "Application launched with test data!"

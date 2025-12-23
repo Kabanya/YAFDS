@@ -2,6 +2,7 @@
 **.DS_Store
 .bashrc
 .glide/
+.env.*
 
 *.exe
 *.exe~
@@ -11,4 +12,8 @@
 *.test
 *.out
 
-courier/test.go
+/front/node_modules/
+
+**.ps1
+**/generate_**.py
+YAFDS.postman**.json
