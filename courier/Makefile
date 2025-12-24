@@ -20,9 +20,9 @@ clear-redis:
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
 	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
 	$(MAKE) create-courier-db
 
 clear-db:
@@ -71,7 +71,7 @@ clear-courier:
 
 # db's
 create-courier-db:
-	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(COURIER_DB);"
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(COURIER_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
 
@@ -83,7 +83,7 @@ debug-info-courier:
 	docker exec $(COURIER_CONTAINER_NAME) cat /app/courier_log_info.txt
 
 db-check:
-	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(COURIER_DB) -c "SELECT * FROM COURIERS;"
+	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(COURIER_DB) -p $(DB_PORT) -c "SELECT * FROM COURIERS;"
 
 
 # all

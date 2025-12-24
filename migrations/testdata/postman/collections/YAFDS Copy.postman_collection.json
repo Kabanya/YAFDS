@@ -1,0 +1,582 @@
+{
+  "info": {
+    "_postman_id": "47ab0f3c-ea70-4cb3-a63f-d7aa17d36fca",
+    "name": "YAFDS Copy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "customer",
+      "item": [
+        {
+          "name": "customer-register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Store user ID on successful registration\", function () {",
+                  "    if (pm.response.code === 201) {",
+                  "        const jsonData = pm.response.json();",
+                  "        pm.environment.set(\"lastUserId\", jsonData.id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "5e90ed76-79ba-4e91-9bf4-ee49328e9dc5"
+              }
+            }
+          ],
+          "id": "69b95ff2-6b9a-48dd-a870-34a58bf8e3d1",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"address\": \"{{address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{customerURL}}/register",
+              "host": [
+                "{{customerURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "customer-login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Если в ответе есть токен\r",
+                  "try {\r",
+                  "    const json = pm.response.json();\r",
+                  "    if (json.token) {\r",
+                  "        pm.environment.set(\"lastToken\", json.token);\r",
+                  "    }\r",
+                  "} catch (e) {\r",
+                  "    // если не JSON - просто пропускаем\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "b4abf8f9-a194-44ec-af5e-eee382c4f3d5"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "8f1b6ee3-eed2-444c-a572-a64129efcf8c"
+              }
+            }
+          ],
+          "id": "c6004232-b67c-4681-a1ce-c8f76b42ebb5",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{customerURL}}/login",
+              "host": [
+                "{{customerURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "customer-single-register",
+          "id": "c818d14b-436a-428d-bf87-76c87e915c16",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Du Hust Mich\",\r\n    \"wallet_address\": \"0x1234567890abcdef\",\r\n    \"address\": \"123 Main St\",\r\n    \"password\": \"securePassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{customerURL}}/register",
+              "host": [
+                "{{customerURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "customer-single-login",
+          "id": "9e523442-e1a7-4bee-8eba-258d2923770f",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"0x1234567890abcdef\",\r\n    \"password\": \"securePassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{customerURL}}/login",
+              "host": [
+                "{{customerURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "d650f06a-6150-43c8-89dc-70f26de1d84a"
+    },
+    {
+      "name": "restaurant",
+      "item": [
+        {
+          "name": "restaurant-register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Store user ID on successful registration\", function () {\r",
+                  "    if (pm.response.code === 201) {\r",
+                  "        const jsonData = pm.response.json();\r",
+                  "        pm.environment.set(\"lastUserId\", jsonData.id);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "e6587bc2-9524-4110-a1d0-f75a9a5690df"
+              }
+            }
+          ],
+          "id": "67d87b4e-209b-4b02-b2bf-819f61a0033f",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"address\": \"{{address}}\",\r\n    \"status\": \"{{status}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{restaurantURL}}/register",
+              "host": [
+                "{{restaurantURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restaurant-login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Если в ответе есть токен\r",
+                  "try {\r",
+                  "    const json = pm.response.json();\r",
+                  "    if (json.token) {\r",
+                  "        pm.environment.set(\"lastToken\", json.token);\r",
+                  "    }\r",
+                  "} catch (e) {\r",
+                  "    // если не JSON - просто пропускаем\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "efc15b2e-767c-4179-aef6-d8100fd00f65"
+              }
+            }
+          ],
+          "id": "e2fd568c-3ed8-4f96-9ac2-034c8271c3ff",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{restaurantURL}}/login",
+              "host": [
+                "{{restaurantURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restaurant-single-register",
+          "id": "a4ab4730-ec5f-413a-8d81-6d7893845923",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Pizza Palace\",\r\n    \"wallet_address\": \"0x1234567890abcdef1234567890abcdef12345678\",\r\n    \"address\": \"123 Main St, Food City\",\r\n    \"status\": \"true\",\r\n    \"password\": \"restaurantPass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{restaurantURL}}/register",
+              "host": [
+                "{{restaurantURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restaurant-single-login",
+          "id": "eb8ab0df-598a-4071-90e6-fe27fb1fbe03",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"0x1234567890abcdef1234567890abcdef12345678\",\r\n    \"password\": \"restaurantPass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{restaurantURL}}/login",
+              "host": [
+                "{{restaurantURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "c6934250-fdb8-4ac2-afdc-d0cc62041c90"
+    },
+    {
+      "name": "courier",
+      "item": [
+        {
+          "name": "courier-register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Store user ID on successful registration\", function () {\r",
+                  "    if (pm.response.code === 201) {\r",
+                  "        const jsonData = pm.response.json();\r",
+                  "        pm.environment.set(\"lastUserId\", jsonData.id);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "a961d4dd-68fb-4f18-8548-5681615566d2"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "a9c6280d-19fc-4dfc-b50e-e9ce51fbe1f3"
+              }
+            }
+          ],
+          "id": "0ebff7fa-4e89-48a7-98de-7a87480cca58",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"transport_type\": \"{{transport_type}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{courierURL}}/register",
+              "host": [
+                "{{courierURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Если в ответе есть токен\r",
+                  "try {\r",
+                  "    const json = pm.response.json();\r",
+                  "    if (json.token) {\r",
+                  "        pm.environment.set(\"lastToken\", json.token);\r",
+                  "    }\r",
+                  "} catch (e) {\r",
+                  "    // если не JSON - просто пропускаем\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "d37b0856-77b4-4a7a-bbc6-501c9d7b3523"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "id": "5efd4c46-4b8c-431e-b4ee-1c19731093a0"
+              }
+            }
+          ],
+          "id": "f09088c7-e40f-406a-ab5a-c0eb35c567ff",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{courierURL}}/login",
+              "host": [
+                "{{courierURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-single-register",
+          "id": "281f69c0-5e8b-4028-9668-1e9dc0f2221a",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Ivan Courier\",\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"transport_type\": \"bicycle\",\r\n    \"password\": \"securepassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{courierURL}}/register",
+              "host": [
+                "{{courierURL}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-single-login",
+          "id": "b67a8d56-bd19-4ebd-b788-da2c02e3d8d0",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"password\": \"securepassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{courierURL}}/login",
+              "host": [
+                "{{courierURL}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "5bdf03a8-7d2b-4999-8c2b-82b65bc02036"
+    },
+    {
+      "name": "orders",
+      "item": [],
+      "id": "ee859b30-1460-44cb-a3b6-ac9fb1283ddd"
+    }
+  ],
+  "variable": [
+    {
+      "id": "4c8d74dc-24a7-4f72-9c8f-d2e624b68d5d",
+      "key": "customerURL",
+      "value": ""
+    },
+    {
+      "id": "5d3029d8-87b8-4434-a802-4f0bb73c79bb",
+      "key": "courierURL",
+      "value": ""
+    },
+    {
+      "id": "43a85909-bac1-4a85-9520-5950ca0a3afc",
+      "key": "restaurantURL",
+      "value": ""
+    }
+  ]
+}

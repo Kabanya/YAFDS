@@ -20,9 +20,9 @@ clear-redis:
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):5432 -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE)
+	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
 	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
 	$(MAKE) create-restaurant-db
 	$(MAKE) create-order-db
 
@@ -93,12 +93,12 @@ clear-restaurant:
 
 # db's
 create-restaurant-db:
-	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(RESTAURANT_DB);"
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(RESTAURANT_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up
 
 create-order-db:
-	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -c "CREATE DATABASE $(ORDER_DB);"
+	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(ORDER_DB);"
 	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
 	$(MAKE) migrate-up-orders-db
 
@@ -110,7 +110,7 @@ debug-info-restaurant:
 	docker exec $(RESTAURANT_CONTAINER_NAME) cat /app/restaurant_log_info.txt
 
 db-check:
-	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(RESTAURANT_DB) -c "SELECT * FROM RESTAURANTS;"
+	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(RESTAURANT_DB) -p $(DB_PORT) -c "SELECT * FROM RESTAURANTS;"
 
 # all
 build-all: launch-db build-restaurant
