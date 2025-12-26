@@ -81,7 +81,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orders.NewPostgresRepository(ordersDB)
+	ordersRepository := orders.NewPostgresRepository(ordersDB, nil, db)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0

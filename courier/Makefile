@@ -10,8 +10,8 @@ launch-docker:
 # redis
 launch-redis:
 	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
-		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):6379 \
-		-d $(REDIS_IMAGE) --requirepass $(REDIS_PASSWORD)
+		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
+		-d $(REDIS_IMAGE) --port $(REDIS_PORT) --requirepass $(REDIS_PASSWORD)
 	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
 
 clear-redis:

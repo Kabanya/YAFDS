@@ -33,7 +33,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 	}
 
 	sqlStatement := `
-		INSERT INTO COURIERS (empId, name, walletAddress, transport_type, is_active, geolocation, password_hash, password_salt)
+		INSERT INTO COURIERS (emp_id, name, wallet_address, transport_type, is_active, geolocation, password_hash, password_salt)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		`
 	stmt, err := r.db.Prepare(sqlStatement)
@@ -60,9 +60,9 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 	}
 
 	sqlStatement := `
-		SELECT empId, name, walletAddress, transport_type, is_active, geolocation, password_hash, password_salt
+		SELECT emp_id, name, wallet_address, transport_type, is_active, geolocation, password_hash, password_salt
 		FROM COURIERS
-		WHERE walletAddress = $1
+		WHERE wallet_address = $1
 		LIMIT 1
 	`
 
@@ -102,10 +102,3 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 
 	return user, nil
 }
-
-// CREATE TABLE courierS (
-//   empId UUID PRIMARY KEY,
-//   name TEXT NOT NULL,
-//   walletAddress TEXT NOT NULL,
-//   address TEXT NOT NULL
-// );

@@ -6,6 +6,159 @@
   },
   "item": [
     {
+      "name": "Courier",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a961d4dd-68fb-4f18-8548-5681615566d2",
+                "exec": [
+                  "pm.test(\"Store user ID on successful registration\", function () {\r",
+                  "    if (pm.response.code === 201) {\r",
+                  "        const jsonData = pm.response.json();\r",
+                  "        pm.environment.set(\"lastUserId\", jsonData.id);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "a9c6280d-19fc-4dfc-b50e-e9ce51fbe1f3",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "4295990e-7d02-4d55-bbdd-915075ff90b4",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"transport_type\": \"{{transport_type}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d37b0856-77b4-4a7a-bbc6-501c9d7b3523",
+                "exec": [
+                  "pm.test(\"Login status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Если в ответе есть токен\r",
+                  "try {\r",
+                  "    const json = pm.response.json();\r",
+                  "    if (json.token) {\r",
+                  "        pm.environment.set(\"lastToken\", json.token);\r",
+                  "    }\r",
+                  "} catch (e) {\r",
+                  "    // если не JSON - просто пропускаем\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "5efd4c46-4b8c-431e-b4ee-1c19731093a0",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "4522bfe0-1bcf-40e5-a267-6e159999b4f1",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Orders",
+          "id": "7f49d300-8eda-49af-9827-304a542aadb9",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8091/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8091",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "601c8909-5b98-4292-86d2-895a1f7ec9b0"
+    },
+    {
       "name": "Customer",
       "item": [
         {
@@ -14,6 +167,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "5285353e-9b3e-4ccb-8f58-6afc2cbd6d3e",
                 "exec": [
                   "if (pm.response.code === 201) {",
                   "    var jsonData = pm.response.json();",
@@ -21,7 +175,20 @@
                   "}"
                 ],
                 "type": "text/javascript",
-                "id": "5285353e-9b3e-4ccb-8f58-6afc2cbd6d3e"
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "d98aacd0-6ad1-4da5-a717-1dd7611b6cbe",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -36,7 +203,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Customer {{name}}\",\n    \"wallet_address\": \"{{wallet_address}}\",\n    \"address\": \"{{address}}\",\n    \"password\": \"{{password}}\"\n}"
+              "raw": "{\n    \"name\": \"{{name}}\",\n    \"wallet_address\": \"{{wallet_address}}\",\n    \"address\": \"{{address}}\",\n    \"password\": \"{{password}}\"\n}"
             },
             "url": {
               "raw": "http://localhost:8091/register",
@@ -110,7 +277,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"customer_id\": \"{{customer_id}}\",\n    \"courier_id\": \"{{courier_id}}\",\n    \"status\": \"{{password123}}\"\n}"
+              "raw": "{\n    \"customer_id\": \"{{customer_id}}\",\n    \"courier_id\": \"{{courier_id}}\",\n    \"status\": \"{{status}}\"\n}"
             },
             "url": {
               "raw": "http://localhost:8091/orders",
@@ -148,158 +315,6 @@
         }
       ],
       "id": "498d1496-37f7-4080-92b0-73c0b5a696ea"
-    },
-    {
-      "name": "Courier",
-      "item": [
-        {
-          "name": "Register",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "id": "bb7965d5-cc9f-4858-8572-885b6a41ea9e",
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"courier_id\", jsonData.id);",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "id": "3685b233-b240-49fd-a2a3-136dcbcaae7d",
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "id": "108b577a-fa97-4712-9e53-59a435db1e9a",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"{{name}}\",\n    \"wallet_address\": \"{{wallet_address}}\",\n    \"password\": \"{{password}}\",\n    \"transport_type\": \"{{transport_type}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:8090/register",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8090",
-              "path": [
-                "register"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "id": "b3300323-4df8-49ff-a080-93e3ffaeae91",
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"courier_token\", jsonData.token);",
-                  "    pm.collectionVariables.set(\"courier_id\", jsonData.id);",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "id": "9d0112b4-3af9-43a3-b38e-0472995e068f",
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "id": "88fb5f67-3027-4744-9c24-c3233a8438e5",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"wallet_address\": \"{{wallet_address}}\",\n    \"password\": \"{{password}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:8090/login",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8090",
-              "path": [
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "List Orders",
-          "id": "4c84fab0-939b-47dc-b4e5-a18000c365cf",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8090/orders",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8090",
-              "path": [
-                "orders"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "748c920f-f567-4863-b7f1-1ae1446ccb80"
     },
     {
       "name": "Restaurant",

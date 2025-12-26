@@ -37,9 +37,14 @@ func Run() {
 		panic(err)
 	}
 
-	// Connection to db
+	customerDBName := os.Getenv("CUSTOMER_DB")
+	if customerDBName == "" {
+		customerDBName = "customer_db"
+	}
+
+	// Connection to db (customers)
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("CUSTOMER_DB"))
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), customerDBName)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		logger.Printf("Failed to open database: %v", err)
@@ -73,10 +78,29 @@ func Run() {
 	}
 	logger.Println("Successfully connected to orders database")
 
+	courierDBName := os.Getenv("COURIER_DB")
+	if courierDBName == "" {
+		courierDBName = "courier_db"
+	}
+	courierConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), courierDBName)
+	courierDB, err := sql.Open("postgres", courierConnStr)
+	if err != nil {
+		logger.Printf("Failed to open courier database: %v", err)
+		panic(err)
+	}
+	defer courierDB.Close()
+
+	if err := courierDB.Ping(); err != nil {
+		logger.Printf("Failed to ping courier database: %v", err)
+		panic(err)
+	}
+	logger.Println("Successfully connected to courier database")
+
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orders.NewPostgresRepository(ordersDB)
+	ordersRepository := orders.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -133,11 +157,13 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", orders.NewHandler(ordersRepository))
+	http.HandleFunc("/couriers", orders.NewCouriersHandler(courierDB))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
 	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
+	logger.Println("  GET http://localhost:8091/couriers - List active couriers")
 	logger.Println("Starting HTTP server on :8091")
 
 	err = http.ListenAndServe(":8091", nil)

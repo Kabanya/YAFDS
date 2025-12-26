@@ -13,6 +13,13 @@ export default function Dashboard() {
   const [ordersLoading, setOrdersLoading] = useState(false)
   const [ordersError, setOrdersError] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [createOrderModal, setCreateOrderModal] = useState(false)
+  const [selectedCourier, setSelectedCourier] = useState('')
+  const [couriers, setCouriers] = useState([])
+  const [couriersLoading, setCouriersLoading] = useState(false)
+  const [couriersError, setCouriersError] = useState('')
+  const [creatingOrder, setCreatingOrder] = useState(false)
+  const [createOrderError, setCreateOrderError] = useState('')
 
   const apiBaseByRole = useMemo(
     () => ({
@@ -93,6 +100,35 @@ export default function Dashboard() {
     return () => controller.abort()
   }, [apiBase, role, user, statusFilter])
 
+  useEffect(() => {
+    if (role !== 'customer') return
+
+    const controller = new AbortController()
+    const fetchCouriers = async () => {
+      setCouriersLoading(true)
+      setCouriersError('')
+      try {
+        const response = await fetch(`${apiBase}/couriers`, { signal: controller.signal })
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Не удалось получить курьеров')
+        }
+
+        setCouriers(Array.isArray(data) ? data : [])
+      } catch (error) {
+        if (error.name === 'AbortError') return
+        setCouriersError(error.message)
+        setCouriers([])
+      } finally {
+        setCouriersLoading(false)
+      }
+    }
+
+    fetchCouriers()
+    return () => controller.abort()
+  }, [apiBase, role])
+
   const handleExpiredSession = () => {
     setLoading(false)
     setSessionMessage('Session expired, please sign in again.')
@@ -102,6 +138,39 @@ export default function Dashboard() {
   const handleSignOut = ({ expired = false } = {}) => {
     localStorage.removeItem('currentUser')
     navigate(`/${role}/auth`, { state: { role, expired } })
+  }
+
+  const handleCreateOrder = async () => {
+    if (!selectedCourier) {
+      setCreateOrderError('Please select a courier')
+      return
+    }
+    setCreatingOrder(true)
+    setCreateOrderError('')
+    try {
+      const response = await fetch(`${apiBase}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_id: user.id || user.Id,
+          courier_id: selectedCourier,
+          status: 'created'
+        })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create order')
+      }
+      setCreateOrderModal(false)
+      setSelectedCourier('')
+      // Refresh orders
+      setStatusFilter('')
+      // Orders will refresh automatically due to useEffect
+    } catch (error) {
+      setCreateOrderError(error.message)
+    } finally {
+      setCreatingOrder(false)
+    }
   }
 
   useEffect(() => {
@@ -224,6 +293,15 @@ export default function Dashboard() {
               <h2 className="card-title">{orderScopeLabel}</h2>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              {role === 'customer' && (
+                <button
+                  onClick={() => setCreateOrderModal(true)}
+                  className="dashboard-ghost"
+                  style={{ background: 'var(--accent)', color: 'white', border: 'none' }}
+                >
+                  Create Order
+                </button>
+              )}
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -279,6 +357,90 @@ export default function Dashboard() {
             </div>
           )}
         </section>
+
+        {createOrderModal && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000
+            }}
+            onClick={() => setCreateOrderModal(false)}
+          >
+            <div
+              style={{
+                background: 'var(--card-bg)',
+                padding: '2rem',
+                borderRadius: '8px',
+                maxWidth: '400px',
+                width: '90%',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 style={{ marginTop: 0 }}>Create New Order</h3>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Select Courier:</label>
+                <select
+                  value={selectedCourier}
+                  onChange={(e) => setSelectedCourier(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg)',
+                    color: 'var(--text-main)'
+                  }}
+                  disabled={couriersLoading || couriers.length === 0}
+                >
+                  <option value="">Choose a courier...</option>
+                  {couriersLoading && <option disabled>Loading...</option>}
+                  {!couriersLoading && couriersError && <option disabled>{couriersError}</option>}
+                  {!couriersLoading && !couriersError && couriers.length === 0 && <option disabled>No couriers found</option>}
+                  {!couriersLoading && !couriersError && couriers.map((courier) => (
+                    <option key={courier.id} value={courier.id}>
+                      {courier.name || courier.wallet_address || courier.id}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {createOrderError && (
+                <div style={{ color: 'red', marginBottom: '1rem' }}>{createOrderError}</div>
+              )}
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setCreateOrderModal(false)}
+                  className="dashboard-ghost"
+                  disabled={creatingOrder}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateOrder}
+                  disabled={creatingOrder || !selectedCourier}
+                  style={{
+                    background: 'var(--accent)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    cursor: creatingOrder ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {creatingOrder ? 'Creating...' : 'Create Order'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

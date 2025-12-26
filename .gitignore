@@ -17,3 +17,7 @@
 **.ps1
 **/generate_**.py
 YAFDS.postman**.json
+user.md+
+queries
+.idea
+user.md

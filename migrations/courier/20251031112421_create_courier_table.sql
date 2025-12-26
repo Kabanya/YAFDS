@@ -1,9 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE COURIERS (
-  empId UUID PRIMARY KEY,
+  emp_id UUID PRIMARY KEY,
   name TEXT NOT NULL,
-  walletAddress TEXT NOT NULL,
+  wallet_address TEXT NOT NULL,
   transport_type TEXT NOT NULL,
   is_active BOOLEAN NOT NULL,
   geolocation TEXT NOT NULL

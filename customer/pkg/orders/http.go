@@ -1,7 +1,9 @@
 package orders
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"customer/pkg"
@@ -17,6 +19,11 @@ type createRequest struct {
 
 type errorResponse struct {
 	Error string `json:"error"`
+}
+
+type courierResponse struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 func NewHandler(repo Repository) http.HandlerFunc {
@@ -83,7 +90,14 @@ func NewCreateHandler(repo Repository) http.HandlerFunc {
 		})
 		if err != nil {
 			logger.Printf("orders: create failed: %v", err)
-			writeError(w, "failed to create order", http.StatusInternalServerError)
+			switch {
+			case errors.Is(err, ErrCustomerNotFound):
+				writeError(w, "customer_id not found", http.StatusBadRequest)
+			case errors.Is(err, ErrCourierNotFound):
+				writeError(w, "courier_id not found", http.StatusBadRequest)
+			default:
+				writeError(w, "failed to create order", http.StatusInternalServerError)
+			}
 			return
 		}
 
@@ -112,7 +126,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		if v := r.URL.Query().Get("customer_id"); v != "" {
 			id, err := uuid.Parse(v)
 			if err != nil {
-				writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+				writeError(w, "problem with customer_id (UUID)", http.StatusBadRequest)
 				return
 			}
 			filter.CustomerID = &id
@@ -120,7 +134,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		if v := r.URL.Query().Get("courier_id"); v != "" {
 			id, err := uuid.Parse(v)
 			if err != nil {
-				writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+				writeError(w, "problem with courier_id (UUID)", http.StatusBadRequest)
 				return
 			}
 			filter.CourierID = &id
@@ -137,6 +151,53 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		}
 
 		writeJSON(w, orders, http.StatusOK)
+	}
+}
+
+func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger, _ := pkg.Logger()
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method != http.MethodGet {
+			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		rows, err := db.QueryContext(r.Context(), "SELECT emp_id, name FROM COURIERS WHERE is_active = TRUE")
+		if err != nil {
+			logger.Printf("orders: list couriers failed: %v", err)
+			writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var couriers []courierResponse
+		for rows.Next() {
+			var c courierResponse
+			if err := rows.Scan(&c.ID, &c.Name); err != nil {
+				logger.Printf("orders: scan couriers failed: %v", err)
+				writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+				return
+			}
+			couriers = append(couriers, c)
+		}
+
+		if err := rows.Err(); err != nil {
+			logger.Printf("orders: iterate couriers failed: %v", err)
+			writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+			return
+		}
+
+		writeJSON(w, couriers, http.StatusOK)
 	}
 }
 

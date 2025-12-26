@@ -6,6 +6,197 @@
   },
   "item": [
     {
+      "name": "courier",
+      "item": [
+        {
+          "name": "courier-register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "a961d4dd-68fb-4f18-8548-5681615566d2",
+                "exec": [
+                  "pm.test(\"Store user ID on successful registration\", function () {\r",
+                  "    if (pm.response.code === 201) {\r",
+                  "        const jsonData = pm.response.json();\r",
+                  "        pm.environment.set(\"lastUserId\", jsonData.id);\r",
+                  "    }\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "a9c6280d-19fc-4dfc-b50e-e9ce51fbe1f3",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "0ebff7fa-4e89-48a7-98de-7a87480cca58",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"transport_type\": \"{{transport_type}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d37b0856-77b4-4a7a-bbc6-501c9d7b3523",
+                "exec": [
+                  "pm.test(\"Login status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "// Если в ответе есть токен\r",
+                  "try {\r",
+                  "    const json = pm.response.json();\r",
+                  "    if (json.token) {\r",
+                  "        pm.environment.set(\"lastToken\", json.token);\r",
+                  "    }\r",
+                  "} catch (e) {\r",
+                  "    // если не JSON - просто пропускаем\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "5efd4c46-4b8c-431e-b4ee-1c19731093a0",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "id": "f09088c7-e40f-406a-ab5a-c0eb35c567ff",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-single-register",
+          "id": "281f69c0-5e8b-4028-9668-1e9dc0f2221a",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Ivan Courier\",\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"transport_type\": \"bicycle\",\r\n    \"password\": \"securepassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "courier-single-login",
+          "id": "b67a8d56-bd19-4ebd-b788-da2c02e3d8d0",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"password\": \"securepassword123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8090/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8090",
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "5bdf03a8-7d2b-4999-8c2b-82b65bc02036"
+    },
+    {
       "name": "customer",
       "item": [
         {
@@ -14,6 +205,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "5e90ed76-79ba-4e91-9bf4-ee49328e9dc5",
                 "exec": [
                   "pm.test(\"Store user ID on successful registration\", function () {",
                   "    if (pm.response.code === 201) {",
@@ -24,8 +216,19 @@
                 ],
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {},
-                "id": "5e90ed76-79ba-4e91-9bf4-ee49328e9dc5"
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "d573413e-95ba-4b86-a66c-f4a619204698",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -53,10 +256,12 @@
               }
             },
             "url": {
-              "raw": "{{customerURL}}/register",
+              "raw": "http://localhost:8091/register",
+              "protocol": "http",
               "host": [
-                "{{customerURL}}"
+                "localhost"
               ],
+              "port": "8091",
               "path": [
                 "register"
               ]
@@ -70,6 +275,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "b4abf8f9-a194-44ec-af5e-eee382c4f3d5",
                 "exec": [
                   "pm.test(\"Login status is 200\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
@@ -87,20 +293,19 @@
                 ],
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {},
-                "id": "b4abf8f9-a194-44ec-af5e-eee382c4f3d5"
+                "requests": {}
               }
             },
             {
               "listen": "prerequest",
               "script": {
+                "id": "8f1b6ee3-eed2-444c-a572-a64129efcf8c",
                 "exec": [
                   ""
                 ],
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {},
-                "id": "8f1b6ee3-eed2-444c-a572-a64129efcf8c"
+                "requests": {}
               }
             }
           ],
@@ -121,10 +326,12 @@
               }
             },
             "url": {
-              "raw": "{{customerURL}}/login",
+              "raw": "http://localhost:8091/login",
+              "protocol": "http",
               "host": [
-                "{{customerURL}}"
+                "localhost"
               ],
+              "port": "8091",
               "path": [
                 "login"
               ]
@@ -158,10 +365,12 @@
               }
             },
             "url": {
-              "raw": "{{customerURL}}/register",
+              "raw": "http://localhost:8091/register",
+              "protocol": "http",
               "host": [
-                "{{customerURL}}"
+                "localhost"
               ],
+              "port": "8091",
               "path": [
                 "register"
               ]
@@ -188,12 +397,43 @@
               }
             },
             "url": {
-              "raw": "{{customerURL}}/login",
+              "raw": "http://localhost:8091/login",
+              "protocol": "http",
               "host": [
-                "{{customerURL}}"
+                "localhost"
               ],
+              "port": "8091",
               "path": [
                 "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-single-order",
+          "id": "0ce2e9fb-efe1-4796-a097-262f010e12f1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"customer_id\": \"bb7b6ed4-87b2-594b-bcd6-44514f15f8e4\",\n    \"courier_id\": \"b8091317-1deb-537a-ab3b-a45fdb385897\",\n    \"status\": \"is active\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8091/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8091",
+              "path": [
+                "orders"
               ]
             }
           },
@@ -211,6 +451,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "e6587bc2-9524-4110-a1d0-f75a9a5690df",
                 "exec": [
                   "pm.test(\"Store user ID on successful registration\", function () {\r",
                   "    if (pm.response.code === 201) {\r",
@@ -221,8 +462,19 @@
                 ],
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {},
-                "id": "e6587bc2-9524-4110-a1d0-f75a9a5690df"
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "ac90643b-c2d1-42c8-b8f3-b523878d75a7",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -243,10 +495,12 @@
               }
             },
             "url": {
-              "raw": "{{restaurantURL}}/register",
+              "raw": "http://localhost:8092/register",
+              "protocol": "http",
               "host": [
-                "{{restaurantURL}}"
+                "localhost"
               ],
+              "port": "8092",
               "path": [
                 "register"
               ]
@@ -260,6 +514,7 @@
             {
               "listen": "test",
               "script": {
+                "id": "efc15b2e-767c-4179-aef6-d8100fd00f65",
                 "exec": [
                   "pm.test(\"Login status is 200\", function () {\r",
                   "    pm.response.to.have.status(200);\r",
@@ -277,8 +532,19 @@
                 ],
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {},
-                "id": "efc15b2e-767c-4179-aef6-d8100fd00f65"
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "4ec760ec-0d40-45fa-a511-adb66b524235",
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
@@ -299,10 +565,12 @@
               }
             },
             "url": {
-              "raw": "{{restaurantURL}}/login",
+              "raw": "http://localhost:8092/login",
+              "protocol": "http",
               "host": [
-                "{{restaurantURL}}"
+                "localhost"
               ],
+              "port": "8092",
               "path": [
                 "login"
               ]
@@ -329,10 +597,12 @@
               }
             },
             "url": {
-              "raw": "{{restaurantURL}}/register",
+              "raw": "http://localhost:8092/register",
+              "protocol": "http",
               "host": [
-                "{{restaurantURL}}"
+                "localhost"
               ],
+              "port": "8092",
               "path": [
                 "register"
               ]
@@ -359,10 +629,12 @@
               }
             },
             "url": {
-              "raw": "{{restaurantURL}}/login",
+              "raw": "http://localhost:8092/login",
+              "protocol": "http",
               "host": [
-                "{{restaurantURL}}"
+                "localhost"
               ],
+              "port": "8092",
               "path": [
                 "login"
               ]
@@ -372,194 +644,6 @@
         }
       ],
       "id": "c6934250-fdb8-4ac2-afdc-d0cc62041c90"
-    },
-    {
-      "name": "courier",
-      "item": [
-        {
-          "name": "courier-register",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Store user ID on successful registration\", function () {\r",
-                  "    if (pm.response.code === 201) {\r",
-                  "        const jsonData = pm.response.json();\r",
-                  "        pm.environment.set(\"lastUserId\", jsonData.id);\r",
-                  "    }\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "id": "a961d4dd-68fb-4f18-8548-5681615566d2"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "id": "a9c6280d-19fc-4dfc-b50e-e9ce51fbe1f3"
-              }
-            }
-          ],
-          "id": "0ebff7fa-4e89-48a7-98de-7a87480cca58",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"transport_type\": \"{{transport_type}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{courierURL}}/register",
-              "host": [
-                "{{courierURL}}"
-              ],
-              "path": [
-                "register"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "courier-login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Login status is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "// Если в ответе есть токен\r",
-                  "try {\r",
-                  "    const json = pm.response.json();\r",
-                  "    if (json.token) {\r",
-                  "        pm.environment.set(\"lastToken\", json.token);\r",
-                  "    }\r",
-                  "} catch (e) {\r",
-                  "    // если не JSON - просто пропускаем\r",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "id": "d37b0856-77b4-4a7a-bbc6-501c9d7b3523"
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {},
-                "id": "5efd4c46-4b8c-431e-b4ee-1c19731093a0"
-              }
-            }
-          ],
-          "id": "f09088c7-e40f-406a-ab5a-c0eb35c567ff",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"wallet_address\": \"{{wallet_address}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{courierURL}}/login",
-              "host": [
-                "{{courierURL}}"
-              ],
-              "path": [
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "courier-single-register",
-          "id": "281f69c0-5e8b-4028-9668-1e9dc0f2221a",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"name\": \"Ivan Courier\",\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"transport_type\": \"bicycle\",\r\n    \"password\": \"securepassword123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{courierURL}}/register",
-              "host": [
-                "{{courierURL}}"
-              ],
-              "path": [
-                "register"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "courier-single-login",
-          "id": "b67a8d56-bd19-4ebd-b788-da2c02e3d8d0",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"wallet_address\": \"0x71C7656EC7ab88b098defB751B7401B5f6d8976F\",\r\n    \"password\": \"securepassword123\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{courierURL}}/login",
-              "host": [
-                "{{courierURL}}"
-              ],
-              "path": [
-                "login"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "id": "5bdf03a8-7d2b-4999-8c2b-82b65bc02036"
-    },
-    {
-      "name": "orders",
-      "item": [],
-      "id": "ee859b30-1460-44cb-a3b6-ac9fb1283ddd"
     }
   ],
   "variable": [

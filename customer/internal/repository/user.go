@@ -32,7 +32,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 	}
 
 	sqlStatement := `
-		INSERT INTO CUSTOMERS (empId, name, walletAddress, address, password_hash, password_salt)
+		INSERT INTO CUSTOMERS (emp_id, name, wallet_address, address, password_hash, password_salt)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		`
 	stmt, err := r.db.Prepare(sqlStatement)
@@ -59,9 +59,9 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 	}
 
 	sqlStatement := `
-		SELECT empId, name, walletAddress, address, password_hash, password_salt
+		SELECT emp_id, name, wallet_address, address, password_hash, password_salt
 		FROM CUSTOMERS
-		WHERE walletAddress = $1
+		WHERE wallet_address = $1
 		LIMIT 1
 	`
 
@@ -99,10 +99,3 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 
 	return user, nil
 }
-
-// CREATE TABLE CUSTOMERS (
-//   empId UUID PRIMARY KEY,
-//   name TEXT NOT NULL,
-//   walletAddress TEXT NOT NULL,
-//   address TEXT NOT NULL
-// );

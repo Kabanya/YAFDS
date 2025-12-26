@@ -1,9 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE RESTAURANTS(
-  empId UUID PRIMARY KEY,
+  emp_id UUID PRIMARY KEY,
   name TEXT NOT NULL,
-  address_wallet TEXT NOT NULL,
+  wallet_address TEXT NOT NULL,
   address TEXT NOT NULL,
   status BOOLEAN NOT NULL
 );
