@@ -1,3 +1,12 @@
-SELECT table_schema, table_name
-FROM information_schema.tables
-WHERE table_name = 'orders';
+
+SELECT * FROM customers
+LIMIT 5;
+
+SELECT * FROM couriers
+LIMIT 5;
+
+SELECT * FROM orders
+LIMIT 5;
+
+SELECT * FROM restaurants
+LIMIT 5;
