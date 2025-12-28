@@ -32,43 +32,43 @@ clear-db:
 
 # migrations
 migrate-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(MIGRATIONS_DIR) up
 
 migrate-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(MIGRATIONS_DIR) down
 
 migrate-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(MIGRATIONS_DIR) status
 
 # test data
 seed-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(TESTDATA_MIGRATIONS_DIR) up
 
 seed-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(TESTDATA_MIGRATIONS_DIR) down
 
 seed-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(RESTAURANT_DB)" -table goose_restaurant_version -dir $(TESTDATA_MIGRATIONS_DIR) status
 
 # migrations
 migrate-up-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(ORDERS_MIGRATIONS_DIR) up
 
 migrate-down-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(ORDERS_MIGRATIONS_DIR) down
 
 migrate-status-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(ORDERS_MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(ORDERS_MIGRATIONS_DIR) status
 
 # test data
 seed-up-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) up
 
 seed-down-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) down
 
 seed-status-orders-db:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(ORDER_DB)" -table goose_orders_version -dir $(TESTDATA_ORDERS_MIGRATIONS_DIR) status
 
 
 # restaurant

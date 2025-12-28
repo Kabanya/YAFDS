@@ -31,23 +31,23 @@ clear-db:
 
 # migrations
 migrate-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(MIGRATIONS_DIR) up
 
 migrate-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(MIGRATIONS_DIR) down
 
 migrate-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(MIGRATIONS_DIR) status
 
 # test data
 seed-up:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) up
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(TESTDATA_MIGRATIONS_DIR) up
 
 seed-down:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) down
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(TESTDATA_MIGRATIONS_DIR) down
 
 seed-status:
-	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -dir $(TESTDATA_MIGRATIONS_DIR) status
+	goose $(DB_DRIVER) "$(DB_CONNECTION_BASE) dbname=$(CUSTOMER_DB)" -table goose_customer_version -dir $(TESTDATA_MIGRATIONS_DIR) status
 
 # customer
 build-customer:
