@@ -11,10 +11,13 @@
 *.dylib
 *.test
 *.out
+**.ps1
+**.sh
+**.webp
 
 /front/node_modules/
+front/dist
 
-**.ps1
 **/generate_**.py
 YAFDS.postman**.json
 user.md+

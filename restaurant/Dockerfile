@@ -13,7 +13,7 @@ RUN go mod download
 COPY restaurant/cmd ./cmd
 COPY restaurant/internal ./internal
 COPY restaurant/models ./models
-COPY restaurant/pkg ./pkg
+COPY customer/pkg ./pkg
 COPY restaurant/config ./config
 
 RUN go mod tidy

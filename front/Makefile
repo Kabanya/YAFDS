@@ -1,18 +1,17 @@
 install:
-	npm install
+	npm ci || npm install
 
-build:
+build: install
 	npm run build
 
 preview:
 	npm run preview
 
 dev:
-	npm run dev --prefix c:\Development\YAFDS\front
+	npm run dev
 
 clean: clear-front
-	if exist node_modules rmdir /s /q node_modules
-	if exist dist rmdir /s /q dist
+	rm -rf node_modules dist
 
 # Docker commands
 build-docker: clean

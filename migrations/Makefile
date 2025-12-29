@@ -1,24 +1,24 @@
 # Makefile for managing database migrations across all services
 # Assumes each service has its own Makefile with migrate-up, migrate-down, etc.
 
-.PHONY: migrate-up migrate-down migrate-status create-migration clean-db help
+.PHONY: up down migrate-status create-migration clean help
 
 # Default target
 help:
 	@echo "Available targets:"
-	@echo "  migrate-up         - Apply all migrations for all services"
-	@echo "  migrate-down       - Rollback all migrations for all services"
+	@echo "  up                 - Apply all migrations for all services"
+	@echo "  down               - Rollback all migrations for all services"
 	@echo "  migrate-status     - Show migration status for all services"
 	@echo "  clean-db           - Truncate all tables in the database (clear data)"
 	@echo "  create-migration   - Create a new migration file (requires NAME and SERVICE)"
 	@echo "  help               - Show this help"
 
 # Apply migrations for all services
-migrate-up: migrate-up-customer migrate-up-courier migrate-up-restaurant
+up: migrate-up-customer migrate-up-courier migrate-up-restaurant
 	@echo "All migrations applied successfully."
 
 # Rollback migrations for all services
-migrate-down: migrate-down-customer migrate-down-courier migrate-down-restaurant
+down: migrate-down-customer migrate-down-courier migrate-down-restaurant
 	@echo "All migrations rolled back."
 
 # Show status for all services
@@ -26,7 +26,7 @@ migrate-status: migrate-status-customer migrate-status-courier migrate-status-re
 	@echo "Migration status checked for all services."
 
 # Clean database (truncate all tables)
-clean-db:
+clean:
 	@echo "Copying migrations/clear_db.sql into container and executing against yafds_db..."
 	@docker cp clear_db.sql yafds-postgres:/tmp/clear_db.sql || docker cp ./clear_db.sql yafds-postgres:/tmp/clear_db.sql
 	@docker exec yafds-postgres psql -U postgres -h localhost -p 5644 -d yafds_db -f /tmp/clear_db.sql
