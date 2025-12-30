@@ -26,10 +26,12 @@ type Filter struct {
 	Status     string
 }
 
-type Repository interface {
-	Create(ctx context.Context, order Order) (Order, error)
-	List(ctx context.Context, filter Filter) ([]Order, error)
-}
+// update status (id, new status)
+
+// type Repository interface {
+// 	Create(ctx context.Context, order Order) (Order, error)
+// 	List(ctx context.Context, filter Filter) ([]Order, error)
+// }
 
 var (
 	ErrCustomerNotFound = errors.New("customer not found")
