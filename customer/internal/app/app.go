@@ -9,8 +9,8 @@ import (
 	"customer/internal/repository"
 	"customer/internal/service"
 	"customer/internal/usecase"
-	"customer/pkg"
-	"customer/pkg/orders"
+	pkg_rep_orders "customer/pkg/repository"
+	"customer/pkg/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -23,15 +23,15 @@ import (
 )
 
 func Run() {
-	pkg.InitFileLogger("customer_log_info.txt")
-	logger, err := pkg.Logger()
+	utils.InitFileLogger("customer_log_info.txt")
+	logger, err := utils.Logger()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
 	}
 	logger.Println("Customer service started")
 
 	// Load environment variables from .env
-	err = pkg.LoadEnv(pkg.PathToEnv)
+	err = utils.LoadEnv(utils.PathToEnv)
 	if err != nil {
 		logger.Printf("Failed to load .env file: %v", err)
 		panic(err)
@@ -100,7 +100,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orders.NewPostgresRepository(ordersDB, db, courierDB)
+	ordersRepository := pkg_rep_orders.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -124,7 +124,7 @@ func Run() {
 	defer redisClient.Close()
 	logger.Println("Successfully connected to Redis")
 
-	sessionTTL := pkg.TimeTtl30Minutes
+	sessionTTL := utils.TimeTtl30Minutes
 	if ttlStr := os.Getenv("SESSION_TTL"); ttlStr != "" {
 		var parsed time.Duration
 		if d, err := time.ParseDuration(ttlStr); err == nil {
@@ -140,8 +140,8 @@ func Run() {
 		}
 	}
 	if sessionTTL <= 0 {
-		logger.Printf("SESSION_TTL must be positive, using default %v", pkg.TimeTtl30Minutes)
-		sessionTTL = pkg.TimeTtl30Minutes
+		logger.Printf("SESSION_TTL must be positive, using default %v", utils.TimeTtl30Minutes)
+		sessionTTL = utils.TimeTtl30Minutes
 	}
 
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
@@ -156,8 +156,8 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orders.NewHandler(ordersRepository))
-	http.HandleFunc("/couriers", orders.NewCouriersHandler(courierDB))
+	http.HandleFunc("/orders", pkg_rep_orders.NewHandler(ordersRepository))
+	http.HandleFunc("/couriers", pkg_rep_orders.NewCouriersHandler(courierDB))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
@@ -172,5 +172,5 @@ func Run() {
 	}
 
 	logger.Println("Process of customer is finished")
-	pkg.CloseLogger()
+	utils.CloseLogger()
 }

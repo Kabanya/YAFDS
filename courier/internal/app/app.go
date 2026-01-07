@@ -9,6 +9,7 @@ import (
 	"courier/internal/repository"
 	"courier/internal/service"
 	"courier/internal/usecase"
+	"customer/pkg/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -16,23 +17,20 @@ import (
 	"strconv"
 	"time"
 
-	"customer/pkg"
-	"customer/pkg/orders"
-
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
 func Run() {
-	pkg.InitFileLogger("courier_log_info.txt")
-	logger, err := pkg.Logger()
+	utils.InitFileLogger("courier_log_info.txt")
+	logger, err := utils.Logger()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
 	}
 	logger.Println("courier service started")
 
 	// Load environment variables from .env
-	err = pkg.LoadEnv(pkg.PathToEnv)
+	err = utils.LoadEnv(utils.PathToEnv)
 	if err != nil {
 		logger.Printf("Failed to load .env file: %v", err)
 		panic(err)
@@ -105,7 +103,7 @@ func Run() {
 	defer redisClient.Close()
 	logger.Println("Successfully connected to Redis")
 
-	sessionTTL := pkg.TimeTtl30Minutes
+	sessionTTL := utils.TimeTtl30Minutes
 	if ttlStr := os.Getenv("SESSION_TTL"); ttlStr != "" {
 		var parsed time.Duration
 		if d, err := time.ParseDuration(ttlStr); err == nil {
@@ -121,8 +119,8 @@ func Run() {
 		}
 	}
 	if sessionTTL <= 0 {
-		logger.Printf("SESSION_TTL must be positive, using default %v", pkg.TimeTtl30Minutes)
-		sessionTTL = pkg.TimeTtl30Minutes
+		logger.Printf("SESSION_TTL must be positive, using default %v", utils.TimeTtl30Minutes)
+		sessionTTL = utils.TimeTtl30Minutes
 	}
 
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
@@ -156,5 +154,5 @@ func Run() {
 	}
 
 	logger.Println("Process of courier is finished")
-	pkg.CloseLogger()
+	utils.CloseLogger()
 }

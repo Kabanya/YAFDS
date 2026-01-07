@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"customer/pkg"
+	"customer/pkg/utils"
 	"errors"
 	"fmt"
 	"strings"
@@ -19,7 +19,7 @@ type Service struct {
 }
 
 func NewService(cfg ServiceConfig) (*Service, error) {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Printf("auth: initializing service with session TTL %s", cfg.SessionTTL)
 	if cfg.Store == nil {
 		return nil, fmt.Errorf("auth: store is required")
@@ -37,7 +37,7 @@ func NewService(cfg ServiceConfig) (*Service, error) {
 	}
 	sessTTL := cfg.SessionTTL
 	if sessTTL <= 0 {
-		sessTTL = pkg.DefaultSessionTTL
+		sessTTL = utils.DefaultSessionTTL
 	}
 	logger.Printf("auth: using session TTL %s", sessTTL)
 	return &Service{
@@ -50,7 +50,7 @@ func NewService(cfg ServiceConfig) (*Service, error) {
 }
 
 func (s *Service) Register(ctx context.Context, input RegisterInput) error {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Printf("auth: registering user with wallet address %s", input.WalletAddress)
 	if s == nil {
 		return errors.New("auth: service is nil")
@@ -71,7 +71,7 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) error {
 }
 
 func (s *Service) Login(ctx context.Context, walletAddress string, password string) (LoginResult, error) {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Printf("auth: login attempt for wallet address %s", walletAddress)
 	if s == nil {
 		return LoginResult{}, errors.New("auth: service is nil")
@@ -96,7 +96,7 @@ func (s *Service) Login(ctx context.Context, walletAddress string, password stri
 }
 
 func (s *Service) ensureInput(input RegisterInput) error {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Printf("auth: validating registration input for wallet address %s", input.WalletAddress)
 	if strings.TrimSpace(input.WalletAddress) == "" {
 		return errors.New("auth: wallet address is required")

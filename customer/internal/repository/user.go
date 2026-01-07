@@ -2,7 +2,7 @@ package repository
 
 import (
 	"customer/models"
-	"customer/pkg"
+	"customer/pkg/utils"
 	"database/sql"
 	"errors"
 
@@ -26,7 +26,7 @@ func NewUser(db *sql.DB) *userRepo {
 }
 
 func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress string, address string, passwordHash string, passwordSalt []byte) error {
-	logger, err := pkg.Logger()
+	logger, err := utils.Logger()
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 }
 
 func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error) {
-	logger, err := pkg.Logger()
+	logger, err := utils.Logger()
 	if err != nil {
 		return models.User{}, err
 	}

@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"crypto/subtle"
-	"customer/pkg"
+	"customer/pkg/utils"
 	"encoding/base64"
 	"errors"
 
@@ -18,9 +18,9 @@ type ArgonParams struct {
 }
 
 var DefaultArgonParams = ArgonParams{
-	Memory:  pkg.Memory64KB,
+	Memory:  utils.Memory64KB,
 	Time:    1,
-	Threads: pkg.NumThreads(6),
+	Threads: utils.NumThreads(6),
 	KeyLen:  32,
 }
 

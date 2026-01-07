@@ -1,4 +1,4 @@
-package orders
+package app
 
 import (
 	"database/sql"
@@ -6,10 +6,17 @@ import (
 	"errors"
 	"net/http"
 
-	"customer/pkg"
+	"customer/pkg/utils"
 
 	"github.com/google/uuid"
 )
+
+type Order struct {
+	ID         uuid.UUID `json:"id"`
+	CustomerID uuid.UUID `json:"customer_id"`
+	CourierID  uuid.UUID `json:"courier_id"`
+	Status     string    `json:"status"`
+}
 
 type createRequest struct {
 	CustomerID string `json:"customer_id"`
@@ -51,7 +58,7 @@ func NewHandler(repo Repository) http.HandlerFunc {
 
 func NewCreateHandler(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger, _ := pkg.Logger()
+		logger, _ := utils.Logger()
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -107,7 +114,7 @@ func NewCreateHandler(repo Repository) http.HandlerFunc {
 
 func NewListHandler(repo Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger, _ := pkg.Logger()
+		logger, _ := utils.Logger()
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -156,7 +163,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 
 func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		logger, _ := pkg.Logger()
+		logger, _ := utils.Logger()
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")

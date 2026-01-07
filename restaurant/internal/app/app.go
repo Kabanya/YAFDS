@@ -16,23 +16,24 @@ import (
 	"strconv"
 	"time"
 
-	"customer/pkg"
-	"customer/pkg/orders"
+	"customer/pkg/app"
+	"customer/pkg/repository"
+	"customer/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
 func Run() {
-	pkg.InitFileLogger("restaurant_log_info.txt")
-	logger, err := pkg.Logger()
+	utils.InitFileLogger("restaurant_log_info.txt")
+	logger, err := utils.Logger()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
 	}
 	logger.Println("restaurant service started")
 
 	// Load environment variables from .env
-	err = pkg.LoadEnv(pkg.PathToEnv)
+	err = utils.LoadEnv(utils.PathToEnv)
 	if err != nil {
 		logger.Printf("Failed to load .env file: %v", err)
 		panic(err)
@@ -81,7 +82,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orders.NewPostgresRepository(ordersDB, nil, nil)
+	ordersRepository := repository.NewPostgresRepository(ordersDB, nil, nil)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -105,7 +106,7 @@ func Run() {
 	defer redisClient.Close()
 	logger.Println("Successfully connected to Redis")
 
-	sessionTTL := pkg.TimeTtl30Minutes
+	sessionTTL := utils.TimeTtl30Minutes
 	if ttlStr := os.Getenv("SESSION_TTL"); ttlStr != "" {
 		var parsed time.Duration
 		if d, err := time.ParseDuration(ttlStr); err == nil {
@@ -121,8 +122,8 @@ func Run() {
 		}
 	}
 	if sessionTTL <= 0 {
-		logger.Printf("SESSION_TTL must be positive, using default %v", pkg.TimeTtl30Minutes)
-		sessionTTL = pkg.TimeTtl30Minutes
+		logger.Printf("SESSION_TTL must be positive, using default %v", utils.TimeTtl30Minutes)
+		sessionTTL = utils.TimeTtl30Minutes
 	}
 
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
@@ -137,7 +138,7 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orders.NewListHandler(ordersRepository))
+	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))
 
 	port := os.Getenv("RESTAURANT_PORT")
 	if port == "" {
@@ -156,5 +157,5 @@ func Run() {
 	}
 
 	logger.Println("Process of restaurant is finished")
-	pkg.CloseLogger()
+	utils.CloseLogger()
 }

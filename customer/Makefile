@@ -1,5 +1,31 @@
 include config/.env
 
+help:
+	@echo "Makefile commands:"
+	@echo
+	@echo "  launch-docker        Start Docker (checks docker info)"
+	@echo "  launch-redis         Start or run Redis container"
+	@echo "  clear-redis          Stop and remove Redis container"
+	@echo "  launch-db            Start or run Postgres container and run migrations"
+	@echo "  clear-db             Stop and remove Postgres container"
+	@echo "  migrate-up           Run migrations up for customer DB"
+	@echo "  migrate-down         Run migrations down for customer DB"
+	@echo "  migrate-status       Show migrations status for customer DB"
+	@echo "  seed-up              Seed test data"
+	@echo "  seed-down            Remove seeded test data"
+	@echo "  build-customer       Build customer Docker image"
+	@echo "  launch-customer      Start or run customer container"
+	@echo "  clear-customer       Stop and remove customer container and image"
+	@echo "  create-customer-db   Create customer database and run migrations"
+	@echo "  logs-customer        Follow logs for customer container"
+	@echo "  run                  Full run (build, migrate, launch)"
+	@echo "  dev                  Full run with test data"
+	@echo "  build-all            Build required components"
+	@echo "  launch-all           Start all services (docker, redis, db, customer)"
+	@echo "  clear-all            Stop and remove containers"
+	@echo
+	@echo "Use 'make <target>' to run a specific command."
+
 # Set PATH to include Go binaries
 export PATH := $(USERPROFILE)/go/bin:$(PATH)
 
