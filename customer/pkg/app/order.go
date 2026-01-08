@@ -6,17 +6,22 @@ import (
 	"errors"
 	"net/http"
 
+	"customer/pkg/repository"
 	"customer/pkg/utils"
 
 	"github.com/google/uuid"
 )
 
-type Order struct {
-	ID         uuid.UUID `json:"id"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	CourierID  uuid.UUID `json:"courier_id"`
-	Status     string    `json:"status"`
-}
+// Type aliases from repository
+type Repository = repository.Repository
+type Filter = repository.Filter
+type Order = repository.Order
+
+// Error aliases from repository
+var (
+	ErrCustomerNotFound = repository.ErrCustomerNotFound
+	ErrCourierNotFound  = repository.ErrCourierNotFound
+)
 
 type createRequest struct {
 	CustomerID string `json:"customer_id"`

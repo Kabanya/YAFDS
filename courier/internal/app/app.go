@@ -6,16 +6,19 @@ package app
 
 import (
 	"context"
-	"courier/internal/repository"
-	"courier/internal/service"
-	"courier/internal/usecase"
-	"customer/pkg/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"courier/internal/repository"
+	"courier/internal/service"
+	"courier/internal/usecase"
+	"customer/pkg/app"
+	pkg_repository "customer/pkg/repository"
+	"customer/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -79,7 +82,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orders.NewPostgresRepository(ordersDB, nil, db)
+	ordersRepository := pkg_repository.NewPostgresRepository(ordersDB, db, db)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -135,7 +138,7 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orders.NewListHandler(ordersRepository))
+	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))
 
 	port := os.Getenv("COURIER_PORT")
 	if port == "" {

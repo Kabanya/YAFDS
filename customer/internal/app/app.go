@@ -6,17 +6,19 @@ package app
 
 import (
 	"context"
-	"customer/internal/repository"
-	"customer/internal/service"
-	"customer/internal/usecase"
-	pkg_rep_orders "customer/pkg/repository"
-	"customer/pkg/utils"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"customer/internal/repository"
+	"customer/internal/service"
+	"customer/internal/usecase"
+	pkg_app_orders "customer/pkg/app"
+	pkg_rep_orders "customer/pkg/repository"
+	"customer/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -156,8 +158,8 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", pkg_rep_orders.NewHandler(ordersRepository))
-	http.HandleFunc("/couriers", pkg_rep_orders.NewCouriersHandler(courierDB))
+	http.HandleFunc("/orders", pkg_app_orders.NewHandler(ordersRepository))
+	http.HandleFunc("/couriers", pkg_app_orders.NewCouriersHandler(courierDB))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")

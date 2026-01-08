@@ -10,15 +10,15 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"restaurant/internal/repository"
-	"restaurant/internal/service"
-	"restaurant/internal/usecase"
 	"strconv"
 	"time"
 
 	"customer/pkg/app"
-	"customer/pkg/repository"
+	pkg_repository "customer/pkg/repository"
 	"customer/pkg/utils"
+	"restaurant/internal/repository"
+	"restaurant/internal/service"
+	"restaurant/internal/usecase"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -82,7 +82,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := repository.NewPostgresRepository(ordersDB, nil, nil)
+	ordersRepository := pkg_repository.NewPostgresRepository(ordersDB, nil, nil)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0

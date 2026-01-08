@@ -1,8 +1,8 @@
 package app
 
 import (
-	"customer/pkg"
 	"customer/pkg/id"
+	"customer/pkg/utils"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -37,7 +37,7 @@ func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode i
 
 // Register user with password
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Println("Register called")
 
 	// CORS headers
@@ -98,7 +98,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 
 // Login user with password
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	logger, _ := pkg.Logger()
+	logger, _ := utils.Logger()
 	logger.Println("Login called")
 
 	// CORS headers

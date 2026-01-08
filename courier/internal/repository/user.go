@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"customer/pkg"
+	"customer/pkg/utils"
 
 	"github.com/google/uuid"
 )
@@ -27,7 +27,7 @@ func NewUser(db *sql.DB) *userRepo {
 }
 
 func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress string, transportType string, passwordHash string, passwordSalt []byte) error {
-	logger, err := pkg.Logger()
+	logger, err := utils.Logger()
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 }
 
 func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error) {
-	logger, err := pkg.Logger()
+	logger, err := utils.Logger()
 	if err != nil {
 		return models.User{}, err
 	}

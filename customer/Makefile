@@ -27,7 +27,12 @@ help:
 	@echo "Use 'make <target>' to run a specific command."
 
 # Set PATH to include Go binaries
+ifeq ($(OS),Windows_NT)
 export PATH := $(USERPROFILE)/go/bin:$(PATH)
+else
+GOPATH ?= $(shell go env GOPATH)
+export PATH := $(GOPATH)/bin:$(PATH)
+endif
 
 # other
 launch-docker:
