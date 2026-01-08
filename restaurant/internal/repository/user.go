@@ -101,10 +101,3 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 
 	return user, nil
 }
-
-// CREATE TABLE restaurantS (
-//   empId UUID PRIMARY KEY,
-//   name TEXT NOT NULL,
-//   walletAddress TEXT NOT NULL,
-//   address TEXT NOT NULL
-// );
