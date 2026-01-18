@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"customer/models"
+
 	"github.com/google/uuid"
 )
 
@@ -26,11 +28,30 @@ type Filter struct {
 	Status     string
 }
 
+type OrderItemInput struct {
+	RestaurantItemID uuid.UUID
+	Price            float64
+	Quantity         int
+}
+
+type AcceptInput struct {
+	OrderID    uuid.UUID
+	CustomerID uuid.UUID
+	CourierID  uuid.UUID
+	Items      []OrderItemInput
+}
+
+type AcceptResult struct {
+	OrderID uuid.UUID `json:"order_id"`
+	Status  string    `json:"status"`
+}
+
 // update status (id, new status)
 
 type Repository interface {
 	Create(ctx context.Context, order Order) (Order, error)
 	List(ctx context.Context, filter Filter) ([]Order, error)
+	Accept(ctx context.Context, input AcceptInput) (AcceptResult, error)
 }
 
 var (
@@ -124,6 +145,87 @@ func (r *postgresRepository) List(ctx context.Context, filter Filter) ([]Order, 
 		return nil, err
 	}
 	return result, nil
+}
+
+func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (AcceptResult, error) {
+	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
+		return AcceptResult{}, errors.New("orders repository not fully initialized")
+	}
+	if input.OrderID == uuid.Nil {
+		return AcceptResult{}, errors.New("order_id must be a valid UUID")
+	}
+	if input.CustomerID == uuid.Nil {
+		return AcceptResult{}, errors.New("customer_id must be a valid UUID")
+	}
+	if input.CourierID == uuid.Nil {
+		return AcceptResult{}, errors.New("courier_id must be a valid UUID")
+	}
+
+	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", input.CustomerID); err != nil {
+		return AcceptResult{}, err
+	}
+	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", input.CourierID); err != nil {
+		return AcceptResult{}, err
+	}
+
+	tx, err := r.ordersDB.BeginTx(ctx, nil)
+	if err != nil {
+		return AcceptResult{}, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	var existingStatus string
+	statusQuery := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	scanErr := tx.QueryRowContext(ctx, statusQuery, input.OrderID).Scan(&existingStatus)
+	if scanErr == nil && strings.EqualFold(existingStatus, string(models.OrderStatusKitchenAccepted)) {
+		if err = tx.Commit(); err != nil {
+			return AcceptResult{}, err
+		}
+		return AcceptResult{OrderID: input.OrderID, Status: existingStatus}, nil
+	}
+	if scanErr != nil && !errors.Is(scanErr, sql.ErrNoRows) {
+		err = scanErr
+		return AcceptResult{}, err
+	}
+
+	now := time.Now().UTC()
+	const insertOrderQuery = `
+		INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (emp_id) DO UPDATE
+		SET status = EXCLUDED.status,
+			updated_at = EXCLUDED.updated_at
+	`
+	if _, err = tx.ExecContext(ctx, insertOrderQuery, input.OrderID, input.CustomerID, input.CourierID, now, now, string(models.OrderStatusKitchenAccepted)); err != nil {
+		return AcceptResult{}, err
+	}
+
+	var itemsCount int
+	countQuery := "SELECT COUNT(1) FROM ORDERS_ITEMS WHERE order_id = $1"
+	if err = tx.QueryRowContext(ctx, countQuery, input.OrderID).Scan(&itemsCount); err != nil {
+		return AcceptResult{}, err
+	}
+	if itemsCount == 0 && len(input.Items) > 0 {
+		const insertItemQuery = `
+			INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
+			VALUES ($1, $2, $3, $4, $5)
+		`
+		for _, item := range input.Items {
+			if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), input.OrderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
+				return AcceptResult{}, err
+			}
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return AcceptResult{}, err
+	}
+
+	return AcceptResult{OrderID: input.OrderID, Status: string(models.OrderStatusKitchenAccepted)}, nil
 }
 
 func (r *postgresRepository) ensureExists(ctx context.Context, db *sql.DB, query string, id uuid.UUID) (bool, error) {

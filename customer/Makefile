@@ -8,6 +8,10 @@ help:
 	@echo "  clear-redis          Stop and remove Redis container"
 	@echo "  launch-db            Start or run Postgres container and run migrations"
 	@echo "  clear-db             Stop and remove Postgres container"
+	@echo "  launch-minio         Start or run MinIO container"
+	@echo "  clear-minio          Stop and remove MinIO container"
+	@echo "  launch-rabbitmq      Start or run RabbitMQ container"
+	@echo "  clear-rabbitmq       Stop and remove RabbitMQ container"
 	@echo "  migrate-up           Run migrations up for customer DB"
 	@echo "  migrate-down         Run migrations down for customer DB"
 	@echo "  migrate-status       Show migrations status for customer DB"
@@ -21,7 +25,7 @@ help:
 	@echo "  run                  Full run (build, migrate, launch)"
 	@echo "  dev                  Full run with test data"
 	@echo "  build-all            Build required components"
-	@echo "  launch-all           Start all services (docker, redis, db, customer)"
+	@echo "  launch-all           Start all services (docker, redis, db, minio, rabbitmq, customer)"
 	@echo "  clear-all            Stop and remove containers"
 	@echo
 	@echo "Use 'make <target>' to run a specific command."
@@ -59,6 +63,36 @@ launch-db:
 clear-db:
 	-docker stop $(DB_CONTAINER_NAME)
 	-docker rm $(DB_CONTAINER_NAME)
+
+# minio
+launch-minio:
+	-docker start $(MINIO_CONTAINER_NAME) 2>nul || \
+		docker run --name $(MINIO_CONTAINER_NAME) \
+			-p $(MINIO_PORT):9000 \
+			-p $(MINIO_CONSOLE_PORT):9001 \
+			-e MINIO_ROOT_USER=$(MINIO_ROOT_USER) \
+			-e MINIO_ROOT_PASSWORD=$(MINIO_ROOT_PASSWORD) \
+			-d $(MINIO_IMAGE) server /data --console-address ":9001"
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+
+clear-minio:
+	-docker stop $(MINIO_CONTAINER_NAME)
+	-docker rm $(MINIO_CONTAINER_NAME)
+
+# rabbitmq
+launch-rabbitmq:
+	-docker start $(RABBITMQ_CONTAINER_NAME) 2>nul || \
+		docker run --name $(RABBITMQ_CONTAINER_NAME) \
+			-p $(RABBITMQ_PORT):5672 \
+			-p $(RABBITMQ_MANAGEMENT_PORT):15672 \
+			-e RABBITMQ_DEFAULT_USER=$(RABBITMQ_DEFAULT_USER) \
+			-e RABBITMQ_DEFAULT_PASS=$(RABBITMQ_DEFAULT_PASS) \
+			-d $(RABBITMQ_IMAGE)
+	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+
+clear-rabbitmq:
+	-docker stop $(RABBITMQ_CONTAINER_NAME)
+	-docker rm $(RABBITMQ_CONTAINER_NAME)
 
 # migrations
 migrate-up:
@@ -120,13 +154,13 @@ db-check:
 # all
 build-all: launch-db build-customer
 
-launch-all: launch-docker launch-redis launch-db launch-customer
+launch-all: launch-docker launch-redis launch-db launch-minio launch-rabbitmq launch-customer
 
-clear-all: clear-redis  clear-customer
+clear-all: clear-redis clear-minio clear-rabbitmq clear-customer
 	@echo "All containers removed!"
 
 stop-all:
-	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) $(REDIS_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) $(CUSTOMER_CONTAINER_NAME) $(REDIS_CONTAINER_NAME) $(MINIO_CONTAINER_NAME) $(RABBITMQ_CONTAINER_NAME)
 
 logs-all: debug-info-customer logs-customer
 

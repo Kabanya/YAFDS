@@ -16,8 +16,8 @@ import (
 	"customer/internal/repository"
 	"customer/internal/service"
 	"customer/internal/usecase"
-	pkg_app_orders "customer/pkg/app"
-	pkg_rep_orders "customer/pkg/repository"
+	orderapp "customer/pkg/app"
+	orderrepo "customer/pkg/repository"
 	"customer/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -102,7 +102,7 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := pkg_rep_orders.NewPostgresRepository(ordersDB, db, courierDB)
+	ordersRepository := orderrepo.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -158,13 +158,15 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", pkg_app_orders.NewHandler(ordersRepository))
-	http.HandleFunc("/couriers", pkg_app_orders.NewCouriersHandler(courierDB))
+	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository))
+	http.HandleFunc("/orders/", orderapp.NewAcceptHandler(ordersRepository))
+	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
 	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
+	logger.Println("  POST http://localhost:8091/orders/{order_id}/accept - Accept order")
 	logger.Println("  GET http://localhost:8091/couriers - List active couriers")
 	logger.Println("Starting HTTP server on :8091")
 

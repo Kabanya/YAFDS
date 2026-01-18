@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"customer/pkg/repository"
 	"customer/pkg/utils"
@@ -23,12 +25,6 @@ var (
 	ErrCourierNotFound  = repository.ErrCourierNotFound
 )
 
-type createRequest struct {
-	CustomerID string `json:"customer_id"`
-	CourierID  string `json:"courier_id"`
-	Status     string `json:"status"`
-}
-
 type errorResponse struct {
 	Error string `json:"error"`
 }
@@ -36,6 +32,24 @@ type errorResponse struct {
 type courierResponse struct {
 	ID   uuid.UUID `json:"id"`
 	Name string    `json:"name"`
+}
+
+type createRequest struct {
+	CustomerID string `json:"customer_id"`
+	CourierID  string `json:"courier_id"`
+	Status     string `json:"status"`
+}
+
+type acceptOrderItemRequest struct {
+	RestaurantItemID string  `json:"restaurant_item_id"`
+	Price            float64 `json:"price"`
+	Quantity         int     `json:"quantity"`
+}
+
+type acceptOrderRequest struct {
+	CustomerID string                   `json:"customer_id"`
+	CourierID  string                   `json:"courier_id"`
+	Items      []acceptOrderItemRequest `json:"items"`
 }
 
 func NewHandler(repo Repository) http.HandlerFunc {
@@ -163,6 +177,103 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		}
 
 		writeJSON(w, orders, http.StatusOK)
+	}
+}
+
+func NewAcceptHandler(repo Repository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger, _ := utils.Logger()
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method != http.MethodPost {
+			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		path := strings.TrimPrefix(r.URL.Path, "/orders/")
+		path = strings.Trim(path, "/")
+		parts := strings.Split(path, "/")
+		if len(parts) != 2 || parts[1] != "accept" {
+			writeError(w, "not found", http.StatusNotFound)
+			return
+		}
+
+		orderID, err := uuid.Parse(parts[0])
+		if err != nil {
+			writeError(w, "order_id must be UUID", http.StatusBadRequest)
+			return
+		}
+
+		var req acceptOrderRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			writeError(w, "invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		customerID, err := uuid.Parse(req.CustomerID)
+		if err != nil {
+			writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+			return
+		}
+		courierID, err := uuid.Parse(req.CourierID)
+		if err != nil {
+			writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+			return
+		}
+		if len(req.Items) == 0 {
+			writeError(w, "items must not be empty", http.StatusBadRequest)
+			return
+		}
+
+		items := make([]repository.OrderItemInput, 0, len(req.Items))
+		for i, item := range req.Items {
+			restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
+			if err != nil {
+				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			if item.Quantity <= 0 {
+				writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+				return
+			}
+			if item.Price <= 0 {
+				writeError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
+				return
+			}
+			items = append(items, repository.OrderItemInput{
+				RestaurantItemID: restaurantItemID,
+				Price:            item.Price,
+				Quantity:         item.Quantity,
+			})
+		}
+
+		accepted, err := repo.Accept(r.Context(), repository.AcceptInput{
+			OrderID:    orderID,
+			CustomerID: customerID,
+			CourierID:  courierID,
+			Items:      items,
+		})
+		if err != nil {
+			logger.Printf("orders: accept failed: %v", err)
+			switch {
+			case errors.Is(err, ErrCustomerNotFound):
+				writeError(w, "customer_id not found", http.StatusBadRequest)
+			case errors.Is(err, ErrCourierNotFound):
+				writeError(w, "courier_id not found", http.StatusBadRequest)
+			default:
+				writeError(w, "failed to accept order", http.StatusInternalServerError)
+			}
+			return
+		}
+
+		writeJSON(w, accepted, http.StatusOK)
 	}
 }
 
