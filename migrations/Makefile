@@ -9,7 +9,7 @@ help:
 	@echo "  up                 - Apply all migrations for all services"
 	@echo "  down               - Rollback all migrations for all services"
 	@echo "  migrate-status     - Show migration status for all services"
-	@echo "  clean-db           - Truncate all tables in the database (clear data)"
+	@echo "  clean.             - Truncate all tables in the database (clear data)"
 	@echo "  create-migration   - Create a new migration file (requires NAME and SERVICE)"
 	@echo "  help               - Show this help"
 
