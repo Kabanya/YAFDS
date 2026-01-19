@@ -9,7 +9,7 @@ help:
 	@echo "  up                 - Apply all migrations for all services"
 	@echo "  down               - Rollback all migrations for all services"
 	@echo "  migrate-status     - Show migration status for all services"
-	@echo "  clean.             - Truncate all tables in the database (clear data)"
+	@echo "  clean              - Truncate all tables in the database (clear data)"
 	@echo "  create-migration   - Create a new migration file (requires NAME and SERVICE)"
 	@echo "  help               - Show this help"
 
@@ -27,8 +27,8 @@ migrate-status: migrate-status-customer migrate-status-courier migrate-status-re
 
 # Clean database (truncate all tables)
 clean:
-	@echo "Copying migrations/clear_db.sql into container and executing against yafds_db..."
-	@docker cp clear_db.sql yafds-postgres:/tmp/clear_db.sql || docker cp ./clear_db.sql yafds-postgres:/tmp/clear_db.sql
+	@echo "Copying migrations/queries/clear_db.sql into container and executing against yafds_db..."
+	@docker cp queries/clear_db.sql yafds-postgres:/tmp/clear_db.sql
 	@docker exec yafds-postgres psql -U postgres -h localhost -p 5644 -d yafds_db -f /tmp/clear_db.sql
 	@docker exec yafds-postgres rm -f /tmp/clear_db.sql
 	@echo "Database cleared."

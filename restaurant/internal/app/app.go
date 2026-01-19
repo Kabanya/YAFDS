@@ -82,6 +82,9 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
+	restaurantMenuItemsRepo := repository.NewRestaurantMenuItemsRepo(db)
+	logger.Println("Initialized restaurant menu items repository")
+
 	ordersRepository := pkg_repository.NewPostgresRepository(ordersDB, nil, nil)
 	logger.Println("Initialized orders repository")
 
@@ -129,16 +132,24 @@ func Run() {
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
 	logger.Println("Initialized user service")
 
+	restaurantMenuItemsService := service.NewRestaurantMenuItemsService(restaurantMenuItemsRepo)
+	logger.Println("Initialized restaurant menu items service")
+
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
-	handler := NewHandler(userUseCase)
+	restaurantMenuItemsUseCase := usecase.NewRestaurantMenuItemsUseCase(restaurantMenuItemsService)
+	logger.Println("Initialized restaurant menu items usecase")
+
+	handler := NewHandler(userUseCase, restaurantMenuItemsUseCase)
 	logger.Println("Initialized handler")
 
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))
+	http.HandleFunc("/menu/show", handler.ShowMenuItems)
+	http.HandleFunc("/menu/upload", handler.UploadMenuItem)
 
 	port := os.Getenv("RESTAURANT_PORT")
 	if port == "" {
@@ -149,6 +160,8 @@ func Run() {
 	logger.Printf("  POST http://localhost:%s/register - Register user with password", port)
 	logger.Printf("  POST http://localhost:%s/login - Login user with password", port)
 	logger.Printf("  GET  http://localhost:%s/orders - List orders", port)
+	logger.Printf("  GET  http://localhost:%s/menu/show?restaurant_id=<uuid> - Show menu items", port)
+	logger.Printf("  POST http://localhost:%s/menu/upload - Upload menu item", port)
 	logger.Printf("Starting HTTP server on %s", addr)
 
 	err = http.ListenAndServe(addr, nil)

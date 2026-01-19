@@ -115,8 +115,8 @@ build: clear-all build-all
 launch: launch-all
 
 # main commands
-run: clear-all build-all launch-all
+run: clear-all build-all migrate-up launch-all
 	@echo "Courier launched successfully!"
 
-dev: clear-all build-all launch-all seed-up
+dev: clear-all build-all migrate-up launch-all seed-up
 	@echo "Courier launched with test data!"

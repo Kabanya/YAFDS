@@ -99,7 +99,7 @@ func Run() {
 	}
 	logger.Println("Successfully connected to courier database")
 
-	userRepository := repository.NewUser(db)
+	userRepository := repository.NewUserRepo(db)
 	logger.Println("Initialized user repository")
 
 	ordersRepository := orderrepo.NewPostgresRepository(ordersDB, db, courierDB)

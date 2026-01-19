@@ -21,7 +21,7 @@ type userRepo struct { //с маленькой = private; большая - publi
 	db *sql.DB
 }
 
-func NewUser(db *sql.DB) *userRepo {
+func NewUserRepo(db *sql.DB) *userRepo {
 	return &userRepo{db: db}
 }
 

@@ -7,4 +7,5 @@ AND table_name NOT IN (
     'goose_orders_version',
     'goose_customers_version',
     'goose_customer_version'
-);
+)
+ORDER BY table_name;

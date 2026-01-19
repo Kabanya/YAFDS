@@ -26,3 +26,16 @@ user.md
 send_requests**
 requirements.txt
 **/nul
+windows/
+
+make_nice_sql_html.py
+
+# Python virtual environments
+.venv-yafds/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
