@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"customer/models"
 	"customer/pkg/clients"
 	"customer/pkg/repository"
 	"customer/pkg/utils"
@@ -61,9 +62,10 @@ type acceptOrderItemRequest struct {
 }
 
 type acceptOrderRequest struct {
-	CustomerID string                   `json:"customer_id"`
-	CourierID  string                   `json:"courier_id"`
-	Items      []acceptOrderItemRequest `json:"items"`
+	CustomerID   string                   `json:"customer_id"`
+	CourierID    string                   `json:"courier_id"`
+	RestaurantID string                   `json:"restaurant_id"`
+	Items        []acceptOrderItemRequest `json:"items"`
 }
 
 type addOrderItemRequest struct {
@@ -448,6 +450,10 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) htt
 				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
 				return
 			}
+			if menuClient == nil {
+				writeError(w, "menu service unavailable", http.StatusInternalServerError)
+				return
+			}
 
 			var req acceptOrderRequest
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -465,12 +471,29 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) htt
 				writeError(w, "courier_id must be UUID", http.StatusBadRequest)
 				return
 			}
+			restaurantID, err := uuid.Parse(req.RestaurantID)
+			if err != nil {
+				writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+				return
+			}
 			if len(req.Items) == 0 {
 				writeError(w, "items must not be empty", http.StatusBadRequest)
 				return
 			}
 
+			menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
+			if err != nil {
+				logger.Printf("orders: fetch menu items failed: %v", err)
+				writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+				return
+			}
+			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+			for _, item := range menuItems {
+				menuByID[item.OrderItemID] = item
+			}
+
 			items := make([]repository.OrderItemInput, 0, len(req.Items))
+			status := models.OrderStatusKitchenAccepted
 			for i, item := range req.Items {
 				restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
 				if err != nil {
@@ -485,6 +508,10 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) htt
 					writeError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
 					return
 				}
+				menuItem, ok := menuByID[restaurantItemID]
+				if !ok || menuItem.Quantity <= 0 || item.Quantity > menuItem.Quantity {
+					status = models.OrderStatusKitchenDenied
+				}
 				items = append(items, repository.OrderItemInput{
 					RestaurantItemID: restaurantItemID,
 					Price:            item.Price,
@@ -497,6 +524,7 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) htt
 				CustomerID: customerID,
 				CourierID:  courierID,
 				Items:      items,
+				Status:     status,
 			})
 			if err != nil {
 				logger.Printf("orders: accept failed: %v", err)

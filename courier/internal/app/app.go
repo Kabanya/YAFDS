@@ -136,6 +136,7 @@ func Run() {
 	logger.Println("Initialized handler")
 
 	// registry endpoints
+	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))

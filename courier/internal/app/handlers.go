@@ -23,6 +23,11 @@ func NewHandler(userUC usecase.UserUseCase) *Handler {
 	}
 }
 
+// Health check endpoint
+func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
+	utils.WriteJSON(w, map[string]string{"status": "UP"}, http.StatusOK)
+}
+
 // Register user with password
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	logger, _ := utils.Logger()

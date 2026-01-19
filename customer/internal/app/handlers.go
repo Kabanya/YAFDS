@@ -15,11 +15,13 @@ const TransportType = "HTTP"
 
 type Handler struct {
 	userUseCase usecase.UserUseCase
+	db          *sql.DB
 }
 
-func NewHandler(userUC usecase.UserUseCase) *Handler {
+func NewHandler(userUC usecase.UserUseCase, db *sql.DB) *Handler {
 	return &Handler{
 		userUseCase: userUC,
+		db:          db,
 	}
 }
 
@@ -33,6 +35,19 @@ func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode i
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(models.ErrorResponce{ErrorMessage: message})
+}
+
+// Health check endpoint
+func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
+	status := "UP"
+	if h.db != nil {
+		if err := h.db.Ping(); err != nil {
+			status = "DOWN (DB connection failed)"
+			h.writeJSON(w, map[string]string{"status": status}, http.StatusServiceUnavailable)
+			return
+		}
+	}
+	h.writeJSON(w, map[string]string{"status": status}, http.StatusOK)
 }
 
 // Register user with password

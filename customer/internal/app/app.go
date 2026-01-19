@@ -160,10 +160,11 @@ func Run() {
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
-	handler := NewHandler(userUseCase)
+	handler := NewHandler(userUseCase, db)
 	logger.Println("Initialized handler")
 
 	// registry endpoints
+	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository, restaurantClient))
