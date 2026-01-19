@@ -20,6 +20,18 @@ export default function Dashboard() {
   const [couriersError, setCouriersError] = useState('')
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [createOrderError, setCreateOrderError] = useState('')
+  const [menuItems, setMenuItems] = useState([])
+  const [menuItemsLoading, setMenuItemsLoading] = useState(false)
+  const [menuItemsError, setMenuItemsError] = useState('')
+  const [menuForm, setMenuForm] = useState({
+    name: '',
+    price: '',
+    quantity: '',
+    description: ''
+  })
+  const [menuSaving, setMenuSaving] = useState(false)
+  const [menuSaveError, setMenuSaveError] = useState('')
+  const [menuSaveSuccess, setMenuSaveSuccess] = useState('')
 
   const apiBaseByRole = useMemo(
     () => ({
@@ -73,6 +85,7 @@ export default function Dashboard() {
       const params = new URLSearchParams()
       if (role === 'customer') params.set('customer_id', userId)
       if (role === 'courier') params.set('courier_id', userId)
+      if (role === 'restaurant') params.set('restaurant_id', userId)
       if (statusFilter) params.set('status', statusFilter)
 
       const query = params.toString()
@@ -128,6 +141,43 @@ export default function Dashboard() {
     fetchCouriers()
     return () => controller.abort()
   }, [apiBase, role])
+
+  const fetchMenuItems = async (signal) => {
+    if (role !== 'restaurant') return
+    const restaurantId = user?.id || user?.Id
+    if (!restaurantId) return
+
+    setMenuItemsLoading(true)
+    setMenuItemsError('')
+
+    try {
+      const response = await fetch(
+        `${apiBase}/menu/show?restaurant_id=${restaurantId}`,
+        { signal }
+      )
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Не удалось получить меню')
+      }
+
+      setMenuItems(Array.isArray(data) ? data : [])
+    } catch (error) {
+      if (error.name === 'AbortError') return
+      setMenuItemsError(error.message)
+      setMenuItems([])
+    } finally {
+      setMenuItemsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (role !== 'restaurant') return
+
+    const controller = new AbortController()
+    fetchMenuItems(controller.signal)
+    return () => controller.abort()
+  }, [apiBase, role, user])
 
   const handleExpiredSession = () => {
     setLoading(false)
@@ -200,7 +250,7 @@ export default function Dashboard() {
   const orderScopeLabel = useMemo(() => {
     if (role === 'customer') return 'Your orders'
     if (role === 'courier') return 'Your deliveries'
-    return 'All orders'
+    return 'Restaurant orders'
   }, [role])
 
   const formatDate = (value) => {
@@ -213,6 +263,72 @@ export default function Dashboard() {
     if (!value) return '—'
     const normalized = value.toString().trim()
     return normalized ? normalized.replace(/^./, (c) => c.toUpperCase()) : '—'
+  }
+
+  const formatPrice = (value) => {
+    const num = Number(value)
+    if (!Number.isFinite(num)) return '—'
+    return `$${num.toFixed(2)}`
+  }
+
+  const handleMenuUpload = async (event) => {
+    event.preventDefault()
+    setMenuSaveError('')
+    setMenuSaveSuccess('')
+
+    const restaurantId = user?.id || user?.Id
+    if (!restaurantId) {
+      setMenuSaveError('Restaurant ID is missing')
+      return
+    }
+
+    if (!menuForm.name.trim()) {
+      setMenuSaveError('Name is required')
+      return
+    }
+
+    if (!menuForm.description.trim()) {
+      setMenuSaveError('Description is required')
+      return
+    }
+
+    const priceValue = Number(menuForm.price)
+    if (!Number.isFinite(priceValue) || priceValue <= 0) {
+      setMenuSaveError('Price must be greater than 0')
+      return
+    }
+
+    const quantityValue = Number(menuForm.quantity || 0)
+    if (!Number.isInteger(quantityValue) || quantityValue < 0) {
+      setMenuSaveError('Quantity must be 0 or more')
+      return
+    }
+
+    setMenuSaving(true)
+    try {
+      const response = await fetch(`${apiBase}/menu/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurant_id: restaurantId,
+          name: menuForm.name.trim(),
+          price: priceValue,
+          quantity: quantityValue,
+          description: menuForm.description.trim()
+        })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.error || data?.error_message || 'Failed to upload menu item')
+      }
+      setMenuSaveSuccess('Menu item uploaded')
+      setMenuForm({ name: '', price: '', quantity: '', description: '' })
+      await fetchMenuItems()
+    } catch (error) {
+      setMenuSaveError(error.message)
+    } finally {
+      setMenuSaving(false)
+    }
   }
 
   if (loading) {
@@ -258,6 +374,12 @@ export default function Dashboard() {
               <dt>Delivery address</dt>
               <dd>{user?.address || '—'}</dd>
             </div>
+            {role === 'restaurant' && (
+              <div>
+                <dt>Active</dt>
+                <dd className="pill">{user?.is_active ? 'Active' : 'Inactive'}</dd>
+              </div>
+            )}
             <div>
               <dt>Role</dt>
               <dd className="pill">{role}</dd>
@@ -357,6 +479,103 @@ export default function Dashboard() {
             </div>
           )}
         </section>
+
+        {role === 'restaurant' && (
+          <section className="dashboard-card menu-card">
+            <header className="card-header">
+              <div>
+                <p className="eyebrow">Menu</p>
+                <h2 className="card-title">Your menu items</h2>
+              </div>
+              <button
+                onClick={() => fetchMenuItems()}
+                className="dashboard-ghost"
+                disabled={menuItemsLoading}
+              >
+                Refresh
+              </button>
+            </header>
+
+            {menuItemsLoading && <div className="orders-state">Загружаем меню...</div>}
+            {!menuItemsLoading && menuItemsError && (
+              <div className="dashboard-alert">{menuItemsError}</div>
+            )}
+            {!menuItemsLoading && !menuItemsError && menuItems.length === 0 && (
+              <div className="orders-state">There are no items on the menu yet</div>
+            )}
+
+            {!menuItemsLoading && !menuItemsError && menuItems.length > 0 && (
+              <div className="menu-list">
+                {menuItems.map((item) => (
+                  <div
+                    key={item.order_item_id || item.orderItemID || item.id}
+                    className="menu-row"
+                  >
+                    <div>
+                      <p className="label">Название</p>
+                      <p className="menu-name">{item.name || '—'}</p>
+                      <p className="menu-desc">{item.description || '—'}</p>
+                    </div>
+                    <div className="menu-meta">
+                      <p className="label">Цена</p>
+                      <p className="menu-value">{formatPrice(item.price)}</p>
+                      <p className="menu-hint">Количество: {item.quantity ?? '—'}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="menu-divider" />
+
+            <form className="menu-form" onSubmit={handleMenuUpload}>
+              <h3 className="menu-form-title">Add new menu item</h3>
+              <div className="menu-form-grid">
+                <input
+                  type="text"
+                  value={menuForm.name}
+                  onChange={(e) => setMenuForm((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="Item name"
+                  className="menu-input"
+                  required
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={menuForm.price}
+                  onChange={(e) => setMenuForm((prev) => ({ ...prev, price: e.target.value }))}
+                  placeholder="Price"
+                  className="menu-input"
+                  required
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={menuForm.quantity}
+                  onChange={(e) => setMenuForm((prev) => ({ ...prev, quantity: e.target.value }))}
+                  placeholder="Quantity"
+                  className="menu-input"
+                  required
+                />
+              </div>
+              <textarea
+                value={menuForm.description}
+                onChange={(e) => setMenuForm((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Description"
+                className="menu-textarea"
+                rows={3}
+                required
+              />
+              {menuSaveError && <div className="dashboard-alert">{menuSaveError}</div>}
+              {menuSaveSuccess && <div className="menu-success">{menuSaveSuccess}</div>}
+              <button type="submit" className="menu-submit" disabled={menuSaving}>
+                {menuSaving ? 'Uploading...' : 'Upload menu item'}
+              </button>
+            </form>
+          </section>
+        )}
 
         {createOrderModal && (
           <div

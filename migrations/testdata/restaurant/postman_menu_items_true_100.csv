@@ -1,0 +1,811 @@
+order_item_id,restaurant_id,name,price,quantity,image,description
+d78a86c4-a421-4e84-bfb7-0897e5a83c76,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Greek Salad,4.41,75,,"Feta, olives, cucumber, and oregano vinaigrette"
+3d89d860-e2d8-4bbc-946e-beb48eea7d53,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Penne Arrabiata,11.62,193,,Penne pasta with spicy tomato sauce
+62bcf970-bc56-4ed5-a765-2e6a2653a56c,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Caesar Salad,28.13,233,,"Romaine, parmesan, croutons, and Caesar dressing"
+77b99001-41a0-430f-ba19-128d15fbf6d7,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Veggie Burger,24.99,13,,Plant-based patty with fresh vegetables
+63be631d-5ec6-43f9-b014-72df6f51391c,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Pepperoni Pizza,6.91,64,,Spicy pepperoni with mozzarella cheese
+78235230-df95-4178-bdf3-8f3268f9058c,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Pepperoni Pizza,23.93,188,,Spicy pepperoni with mozzarella cheese
+c17bc316-6d2c-4eea-85d8-1cccf54ee4cf,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,French Fries,11.52,155,,Golden fries with sea salt
+964d04c5-915f-41c8-ae3c-2b003e3bd0d5,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Pad Thai,32.96,6,,Rice noodles with peanuts and tamarind
+c17affa3-e477-40d2-899f-ea08dfd158a4,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Sushi Combo,28.91,92,,Assorted sushi rolls with soy sauce
+5cc8b728-fd7b-4602-83a3-274dff3b254e,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Pad Thai,9.16,250,,Rice noodles with peanuts and tamarind
+7a7efa89-710f-4074-a9fb-9fcdb12add93,ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a,Chicken Burrito,7.22,102,,Large burrito with chicken and beans
+e81e8973-da98-4e7f-86c9-e71b6e23347e,77d52c1d-a430-4b33-a45d-4b7b91ec00d9,Ribeye Steak,34.35,159,,Grilled ribeye with herb butter
+15471295-3b43-4f4a-be33-b503b5344b77,77d52c1d-a430-4b33-a45d-4b7b91ec00d9,Chicken Alfredo,32.88,191,,Pasta in rich alfredo sauce with chicken
+2d1f38d7-561d-46d0-9e02-930d237436c8,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Greek Salad,38.92,101,,"Feta, olives, cucumber, and oregano vinaigrette"
+4c21a4db-df23-436e-a03f-0a6505390a41,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Veggie Burger,23.59,217,,Plant-based patty with fresh vegetables
+e5c5fb40-dc51-483f-af0e-6bfd42048a45,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Grilled Salmon,24.52,185,,Salmon fillet with lemon butter
+dfd8a8e9-1075-4502-a76c-9a135dc1a7f4,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Bacon Burger,5.17,63,,"Crispy bacon, cheddar, and house sauce"
+cdfdeb65-d5cc-4adc-95fa-8db44cc9777c,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Kung Pao Chicken,39.36,223,,Spicy stir-fry with peanuts and peppers
+797cfc68-6b66-4ced-87ad-fb1ff0461e9e,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Lasagna,35.04,102,,Layered pasta with beef ragù and béchamel
+2a512095-13fc-48d3-8c24-b08d6f3ade25,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Pad Thai,20.00,218,,Rice noodles with peanuts and tamarind
+d5ae77e0-d8ce-40b2-aaf0-9ce1e0ad7154,80d1ee53-b28f-411b-ab9a-f6a59bd55d17,Grilled Salmon,9.42,95,,Salmon fillet with lemon butter
+18bba099-95cd-4788-a36e-f18b3601219d,abab0a64-4589-495b-8a8b-f73d514f000a,Pad Thai,29.05,179,,Rice noodles with peanuts and tamarind
+57366a90-9b8a-49ee-b447-2cb43f1bca36,abab0a64-4589-495b-8a8b-f73d514f000a,Bacon Burger,25.67,48,,"Crispy bacon, cheddar, and house sauce"
+c6757277-0322-41be-b94c-550010c21c77,abab0a64-4589-495b-8a8b-f73d514f000a,Penne Arrabiata,9.45,102,,Penne pasta with spicy tomato sauce
+adf16b0a-ab7d-44a7-93e6-306c9ad8539f,abab0a64-4589-495b-8a8b-f73d514f000a,Pad Thai,39.52,168,,Rice noodles with peanuts and tamarind
+62fa6931-dbe6-4c92-8816-509a0a3f762d,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Lasagna,28.42,220,,Layered pasta with beef ragù and béchamel
+d229d11d-6f87-4143-aa39-681f22bf0720,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Cheeseburger,11.84,13,,"Beef patty with cheddar, lettuce, and tomato"
+7d8aedea-7d8a-4425-9414-1e4079a26242,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Fish Tacos,18.10,21,,Grilled fish with slaw and lime
+fedfb341-15bd-469d-bbb7-e8e1a39a21f9,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Spaghetti Carbonara,36.74,150,,Creamy pasta with pancetta and parmesan
+f145778a-398c-4632-a9f1-81707cda46d7,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Fish Tacos,11.24,132,,Grilled fish with slaw and lime
+21d568fb-eed7-4a80-81aa-3c5ad2116192,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Mozzarella Sticks,35.70,169,,Fried mozzarella with marinara
+8e851ee7-9c89-4be3-9056-0bc14c3906fc,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Cappuccino,8.70,40,,Espresso with steamed milk foam
+2096c85e-51e7-460d-8b68-77d8ba3b2620,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Penne Arrabiata,30.62,142,,Penne pasta with spicy tomato sauce
+32bd1c16-8d1c-4fea-a60e-9461c0c5df3f,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Chicken Alfredo,30.69,114,,Pasta in rich alfredo sauce with chicken
+404ad2aa-cad8-4a94-b6ed-be0cbd110811,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Mozzarella Sticks,16.68,40,,Fried mozzarella with marinara
+b7c34cfb-399f-4247-af6a-46adeaceab31,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Iced Tea,6.81,17,,Chilled black tea with lemon
+b01dcfe0-41e5-4aba-9684-9064fb5ee388,f7172498-c48a-416a-8aa1-f5a964d1a0e8,Greek Salad,9.06,45,,"Feta, olives, cucumber, and oregano vinaigrette"
+1044d499-146c-45cf-8881-c4986ffb2ed4,2e791716-af42-4612-bf78-cc988df59693,Chocolate Cake,25.21,103,,Rich chocolate cake with ganache
+5f9a8ca4-06a8-45ba-a9d2-68ae4f91f5c1,2e791716-af42-4612-bf78-cc988df59693,Chicken Wings,25.19,124,,Crispy wings with buffalo sauce
+6fa558ef-3705-45d0-8775-0f14d3178558,2e791716-af42-4612-bf78-cc988df59693,Chicken Alfredo,38.85,225,,Pasta in rich alfredo sauce with chicken
+e277e151-4df8-4643-abba-2d8007f824e1,2e791716-af42-4612-bf78-cc988df59693,Margherita Pizza,28.26,34,,"Classic pizza with tomato, mozzarella, and basil"
+4ad1bebc-f335-4c19-b2ec-374417b24048,2e791716-af42-4612-bf78-cc988df59693,Pad Thai,31.48,92,,Rice noodles with peanuts and tamarind
+e86a9822-385c-4f96-9a09-5365d991e12a,2e791716-af42-4612-bf78-cc988df59693,Greek Salad,14.18,45,,"Feta, olives, cucumber, and oregano vinaigrette"
+6b631a54-56c5-49c6-a45b-4fafaeeb674f,2e791716-af42-4612-bf78-cc988df59693,Cappuccino,3.62,189,,Espresso with steamed milk foam
+fc73e983-b6f4-4e5f-90f7-c19de5ba51b4,2e791716-af42-4612-bf78-cc988df59693,Chicken Alfredo,38.88,200,,Pasta in rich alfredo sauce with chicken
+4e0cf7d0-ff62-4e9b-bf35-618b191529af,2e791716-af42-4612-bf78-cc988df59693,Salmon Roll,21.98,32,,Fresh salmon with avocado and rice
+e556e94c-57da-4c34-859f-4d652dc5fac7,2e791716-af42-4612-bf78-cc988df59693,Beef Tacos,34.14,134,,Seasoned beef tacos with salsa
+cc88ebb2-88cc-497d-8811-850795fdef47,2e791716-af42-4612-bf78-cc988df59693,Tuna Roll,9.06,200,,Tuna roll with sesame and nori
+2ae78550-ab02-49a4-9779-d1d572c2ce45,2e791716-af42-4612-bf78-cc988df59693,Sushi Combo,23.13,204,,Assorted sushi rolls with soy sauce
+31e1a68b-979e-4d55-8339-65ced44571a3,2e791716-af42-4612-bf78-cc988df59693,Margherita Pizza,25.30,130,,"Classic pizza with tomato, mozzarella, and basil"
+d7736170-2f10-4139-8e1d-a006d5b61ad8,881ad30b-2d0f-4515-9b30-f69dcb494031,Greek Salad,37.32,229,,"Feta, olives, cucumber, and oregano vinaigrette"
+77db9c36-47d3-4aab-ab29-510ecd530b01,f67d4068-5684-479e-a42e-0d851ab31da5,Beef Tacos,12.22,66,,Seasoned beef tacos with salsa
+8c58e7c0-9def-4115-bbdb-02e1833c1cc9,f67d4068-5684-479e-a42e-0d851ab31da5,Veggie Burger,6.62,129,,Plant-based patty with fresh vegetables
+e7d6494a-a6c2-4008-9446-f380bb0423e1,f67d4068-5684-479e-a42e-0d851ab31da5,Bacon Burger,39.10,141,,"Crispy bacon, cheddar, and house sauce"
+6793feeb-6ec2-43a6-ac79-2f6e8e63db61,f67d4068-5684-479e-a42e-0d851ab31da5,Tomato Soup,8.17,126,,Creamy tomato soup with herbs
+1d412fe5-c920-4e60-a2f3-cb131c73519d,f67d4068-5684-479e-a42e-0d851ab31da5,Sushi Combo,13.15,228,,Assorted sushi rolls with soy sauce
+1a8bc3e2-3084-4754-a95f-9890bf9898d6,f67d4068-5684-479e-a42e-0d851ab31da5,Chocolate Cake,38.60,242,,Rich chocolate cake with ganache
+4572c612-364e-466c-a445-ec39325572d3,f67d4068-5684-479e-a42e-0d851ab31da5,Tuna Roll,29.45,107,,Tuna roll with sesame and nori
+67dc8ac7-6867-484a-a93b-977e12eb5a45,f67d4068-5684-479e-a42e-0d851ab31da5,Grilled Salmon,19.45,137,,Salmon fillet with lemon butter
+4f67f353-f561-4441-9222-2be83cbe08aa,f67d4068-5684-479e-a42e-0d851ab31da5,Cheesecake,7.90,62,,Creamy cheesecake with berry sauce
+60feae39-b3ba-4f65-bb74-9c8672d61325,f67d4068-5684-479e-a42e-0d851ab31da5,Bacon Burger,15.81,155,,"Crispy bacon, cheddar, and house sauce"
+8f592b93-8a68-46c9-af5d-9f85e83217e1,f67d4068-5684-479e-a42e-0d851ab31da5,Lasagna,24.92,6,,Layered pasta with beef ragù and béchamel
+defe8a55-510b-4c08-8507-0d24d0654a8a,f67d4068-5684-479e-a42e-0d851ab31da5,Bacon Burger,29.27,20,,"Crispy bacon, cheddar, and house sauce"
+0c06a7ab-7197-4aaa-87b4-ce0d994a93c4,f67d4068-5684-479e-a42e-0d851ab31da5,Lasagna,5.95,13,,Layered pasta with beef ragù and béchamel
+56c80386-9083-40c2-91a0-42a2b6392684,f67d4068-5684-479e-a42e-0d851ab31da5,Chicken Burrito,6.08,65,,Large burrito with chicken and beans
+02cc529f-2ce8-4f2b-87c4-6fca2fd5f9ba,413e334f-43d6-406b-9180-e7eed25e2a3f,Iced Tea,11.30,38,,Chilled black tea with lemon
+6ec4d2de-a8a9-4c20-bfc6-31df507e4291,413e334f-43d6-406b-9180-e7eed25e2a3f,Latte,12.35,126,,Smooth espresso with milk
+4fc53be8-8aa3-4dd5-89d2-0afb04e740ca,413e334f-43d6-406b-9180-e7eed25e2a3f,French Fries,10.43,29,,Golden fries with sea salt
+a453aff2-95ad-4a01-8fb3-1e03879f5f97,413e334f-43d6-406b-9180-e7eed25e2a3f,Chocolate Cake,16.40,110,,Rich chocolate cake with ganache
+6ccc46e8-1574-4c7c-afed-5d2491f441e5,413e334f-43d6-406b-9180-e7eed25e2a3f,Cappuccino,34.94,18,,Espresso with steamed milk foam
+338f7908-d740-404b-9505-c99536054fa1,cdf2de35-71a7-4200-ba08-3d2704154a05,Caesar Salad,5.71,191,,"Romaine, parmesan, croutons, and Caesar dressing"
+feb30a1f-caa2-409a-8b71-6044bb767bce,cdf2de35-71a7-4200-ba08-3d2704154a05,Chicken Burrito,32.64,32,,Large burrito with chicken and beans
+86eccf00-80de-471f-a032-2a03ad90b005,cdf2de35-71a7-4200-ba08-3d2704154a05,Penne Arrabiata,10.47,142,,Penne pasta with spicy tomato sauce
+9df5ffd9-2263-4e5a-804c-f412707cbeb1,cdf2de35-71a7-4200-ba08-3d2704154a05,Cheesecake,8.60,51,,Creamy cheesecake with berry sauce
+80c36dda-fec3-4743-9a6a-7dc9df269adf,cdf2de35-71a7-4200-ba08-3d2704154a05,Pad Thai,20.34,228,,Rice noodles with peanuts and tamarind
+91089b20-6a28-4694-941a-04fae9e7977d,cdf2de35-71a7-4200-ba08-3d2704154a05,Bacon Burger,19.63,225,,"Crispy bacon, cheddar, and house sauce"
+99d470bd-65ad-4a9d-8dd6-747c2336d0c5,cdf2de35-71a7-4200-ba08-3d2704154a05,Caesar Salad,5.34,143,,"Romaine, parmesan, croutons, and Caesar dressing"
+9065f69e-b483-4a5d-a83a-afc3c7106932,cdf2de35-71a7-4200-ba08-3d2704154a05,Margherita Pizza,38.77,242,,"Classic pizza with tomato, mozzarella, and basil"
+ad58644a-9fad-424d-943a-f081485b1858,cdf2de35-71a7-4200-ba08-3d2704154a05,Penne Arrabiata,9.55,129,,Penne pasta with spicy tomato sauce
+e70d0616-d231-4cf4-8508-744be97bd26c,cdf2de35-71a7-4200-ba08-3d2704154a05,Latte,11.28,107,,Smooth espresso with milk
+63836734-2c8e-4050-b82d-3e054925bb89,cdf2de35-71a7-4200-ba08-3d2704154a05,Cheeseburger,9.49,5,,"Beef patty with cheddar, lettuce, and tomato"
+f0f1c47d-9b53-4d5b-8750-94b1a4d91e35,1c768e01-a07d-40be-9a25-f8c1bfc02211,Chicken Alfredo,37.23,205,,Pasta in rich alfredo sauce with chicken
+7f302445-c721-4902-b21a-1646be865962,1c768e01-a07d-40be-9a25-f8c1bfc02211,Cappuccino,13.88,183,,Espresso with steamed milk foam
+08b4abd4-d939-491f-a086-f81ca02a0042,1c768e01-a07d-40be-9a25-f8c1bfc02211,Iced Tea,9.13,80,,Chilled black tea with lemon
+99dedb16-15cb-43f9-865f-b5d06a45ef1d,1c768e01-a07d-40be-9a25-f8c1bfc02211,Spaghetti Carbonara,38.76,153,,Creamy pasta with pancetta and parmesan
+4bcd686e-a8ea-45be-9547-ad6464ee6056,1c768e01-a07d-40be-9a25-f8c1bfc02211,Cheeseburger,30.73,19,,"Beef patty with cheddar, lettuce, and tomato"
+571b0641-2440-422e-a046-e3528dbd7602,1c768e01-a07d-40be-9a25-f8c1bfc02211,Cheeseburger,24.76,133,,"Beef patty with cheddar, lettuce, and tomato"
+aac6f615-3c6e-4338-982d-cb7dc348e9e9,1c768e01-a07d-40be-9a25-f8c1bfc02211,Sushi Combo,5.57,135,,Assorted sushi rolls with soy sauce
+eb65e3d8-86d8-4777-a878-38b209602380,05ed9e3b-f04b-4ee5-9940-4bb4c5e360cb,Salmon Roll,5.99,22,,Fresh salmon with avocado and rice
+b910b5a8-3a7e-452c-b07a-37a1a3bdc99f,05ed9e3b-f04b-4ee5-9940-4bb4c5e360cb,Penne Arrabiata,18.20,246,,Penne pasta with spicy tomato sauce
+a19b4217-8f1a-4fa8-baa0-2e595031dba6,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Penne Arrabiata,24.57,15,,Penne pasta with spicy tomato sauce
+80d97000-d636-44b3-8af9-264a34096cee,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Veggie Burger,18.76,154,,Plant-based patty with fresh vegetables
+a1962068-e81a-4380-9abb-7cdf3e028924,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Fish Tacos,37.52,57,,Grilled fish with slaw and lime
+3b458363-4a04-43fe-88fa-df4989009b42,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Fish Tacos,12.19,106,,Grilled fish with slaw and lime
+6c922e33-b5ba-4684-a92f-e4a134e1c997,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Tomato Soup,27.95,81,,Creamy tomato soup with herbs
+7a38960a-d50a-4561-8b27-f272eeee9f6e,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Cappuccino,15.01,197,,Espresso with steamed milk foam
+940680cf-0756-4556-8910-e61aafc4e005,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Bacon Burger,3.84,164,,"Crispy bacon, cheddar, and house sauce"
+1cc37d09-cc0a-4414-bc5a-99907fa751e8,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Caesar Salad,6.17,59,,"Romaine, parmesan, croutons, and Caesar dressing"
+bad56fee-8148-4efe-8d1c-6e0a5787487b,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Chicken Alfredo,8.32,94,,Pasta in rich alfredo sauce with chicken
+b289cf85-ad6b-42c4-bdbb-f7538173a97c,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Bacon Burger,35.51,99,,"Crispy bacon, cheddar, and house sauce"
+33f3ab0f-1529-488e-a464-9e296bf6b8d1,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Kung Pao Chicken,9.24,218,,Spicy stir-fry with peanuts and peppers
+f4bdcff3-a480-46ff-a5fd-86be3fc02eea,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Beef Tacos,25.77,211,,Seasoned beef tacos with salsa
+0ff6558a-9848-4dac-90ff-c652e969c17a,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Margherita Pizza,27.81,146,,"Classic pizza with tomato, mozzarella, and basil"
+95a24f4a-7952-48dc-97a3-12a25f7965aa,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Beef Tacos,37.42,31,,Seasoned beef tacos with salsa
+9fb39a2a-5e53-4ab2-870a-e732426f7ae9,b9571fb6-3247-410f-abd4-99e8d6bf57f8,Tomato Soup,13.13,232,,Creamy tomato soup with herbs
+b27e0173-c1dc-4a3a-9d3d-d14cad56bf28,a5c4f5ee-b3e4-40a9-aea6-69d499f11eed,Chicken Noodle Soup,13.41,159,,Hearty chicken broth with noodles
+4dad353b-374d-4930-9928-ee273034ba30,a5c4f5ee-b3e4-40a9-aea6-69d499f11eed,Spaghetti Carbonara,29.62,57,,Creamy pasta with pancetta and parmesan
+43484825-5d67-4a81-9a4d-de8ddf2407a7,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Chicken Alfredo,21.90,69,,Pasta in rich alfredo sauce with chicken
+c21f6b70-aa0a-4b9e-9914-ce34aa7439bb,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Cheeseburger,6.86,113,,"Beef patty with cheddar, lettuce, and tomato"
+af57ab1e-0482-4bfc-99f4-a9850c65c1f4,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Pad Thai,5.10,90,,Rice noodles with peanuts and tamarind
+5705b85b-c6b6-45f4-a8f5-b6cb86eaaeee,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Tomato Soup,26.69,72,,Creamy tomato soup with herbs
+e69bde84-6a2a-4dd5-b39d-63133b11cf6f,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Sushi Combo,30.48,146,,Assorted sushi rolls with soy sauce
+02fc9d68-a15a-4165-9352-a9a9d327777d,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Chocolate Cake,23.92,33,,Rich chocolate cake with ganache
+5ce613b9-e76d-4f3b-8712-d90bcc5f1d92,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Bacon Burger,37.90,181,,"Crispy bacon, cheddar, and house sauce"
+8792c4d9-c04c-486a-aa0e-60c236cb3016,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Chicken Noodle Soup,23.36,218,,Hearty chicken broth with noodles
+a123a71d-19bd-48ff-9545-b512abcd8499,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Grilled Salmon,24.70,42,,Salmon fillet with lemon butter
+f52d37d1-28a4-4cd6-97c6-dcfbaafb8bde,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Chocolate Cake,8.14,83,,Rich chocolate cake with ganache
+b17f4ee5-763c-485e-b68e-94cd311421d8,d6e38a62-c18e-46b6-bb34-0fc04ec84132,Grilled Salmon,36.22,208,,Salmon fillet with lemon butter
+a5840132-b7c6-4dbc-8b5a-a4f77099da50,1f8f08fe-91fa-4ecf-a633-26812a8cd917,BBQ Chicken Pizza,36.22,58,,"Smoky BBQ sauce, grilled chicken, and red onion"
+b5983d1c-3ee5-4b24-b778-313e3095280c,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Penne Arrabiata,27.78,95,,Penne pasta with spicy tomato sauce
+4930b4c3-aa7d-4cc3-8785-fad50d352e33,1f8f08fe-91fa-4ecf-a633-26812a8cd917,French Fries,38.95,196,,Golden fries with sea salt
+271a85d0-53d9-44a0-88ec-dfabd0230d95,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Chicken Noodle Soup,37.20,65,,Hearty chicken broth with noodles
+b8487f5d-a782-4b64-80ec-3944558b1754,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Sushi Combo,39.03,212,,Assorted sushi rolls with soy sauce
+aafc4107-9224-4a69-aeee-f822d93b1ee0,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Salmon Roll,35.58,11,,Fresh salmon with avocado and rice
+0a23fb3c-7804-4736-9b63-780379b087a8,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Salmon Roll,30.31,90,,Fresh salmon with avocado and rice
+6e50aacf-8b90-407e-8a1d-4553e703afa0,1f8f08fe-91fa-4ecf-a633-26812a8cd917,French Fries,32.70,226,,Golden fries with sea salt
+70097fa0-6b05-4be7-bf4e-1a5a8db0edfb,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Penne Arrabiata,13.21,206,,Penne pasta with spicy tomato sauce
+cf510352-1a04-401f-9ea0-7e95375ac533,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Caesar Salad,17.42,14,,"Romaine, parmesan, croutons, and Caesar dressing"
+1ff1b106-ac44-47fa-acf4-139383ab614e,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Latte,11.60,214,,Smooth espresso with milk
+3497f6eb-9812-4394-8ee2-b4a312befc49,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Cappuccino,16.23,215,,Espresso with steamed milk foam
+f4f80b90-0574-4cde-9031-24c09b0b1995,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Lasagna,11.61,173,,Layered pasta with beef ragù and béchamel
+c4cb1ba4-1d08-4470-8a70-d5ff67fe4246,1f8f08fe-91fa-4ecf-a633-26812a8cd917,Tuna Roll,18.00,76,,Tuna roll with sesame and nori
+2a582ced-6679-4cb1-b55d-824112d86549,8124bae9-c928-4451-b431-987c749b4d61,Bacon Burger,38.69,76,,"Crispy bacon, cheddar, and house sauce"
+c5aa61f2-a717-492a-a026-5e290ac91312,8124bae9-c928-4451-b431-987c749b4d61,Ribeye Steak,26.85,107,,Grilled ribeye with herb butter
+510b749a-2df3-4506-8e22-2e8648373e82,8124bae9-c928-4451-b431-987c749b4d61,Chicken Burrito,37.69,34,,Large burrito with chicken and beans
+ab096ed0-c5e4-4cf0-8b47-1577a1b0cb43,8124bae9-c928-4451-b431-987c749b4d61,Chicken Alfredo,10.00,72,,Pasta in rich alfredo sauce with chicken
+65d6ce80-95c6-4cba-8f3b-51ae551f30ed,8124bae9-c928-4451-b431-987c749b4d61,BBQ Chicken Pizza,7.45,116,,"Smoky BBQ sauce, grilled chicken, and red onion"
+3c605858-0cfb-4b6b-aec3-8d20a52779df,8124bae9-c928-4451-b431-987c749b4d61,Ribeye Steak,30.02,85,,Grilled ribeye with herb butter
+80c9a55d-9bbc-467e-ba01-2db2fadab0a9,8124bae9-c928-4451-b431-987c749b4d61,Chocolate Cake,25.57,135,,Rich chocolate cake with ganache
+b6d35066-d1bc-412b-a59f-a38d7cf12a97,8124bae9-c928-4451-b431-987c749b4d61,Greek Salad,17.52,152,,"Feta, olives, cucumber, and oregano vinaigrette"
+1cc345ce-315e-49c7-8dde-1ea03450738c,8124bae9-c928-4451-b431-987c749b4d61,Tuna Roll,12.77,186,,Tuna roll with sesame and nori
+7ffa8d2b-159b-420c-a36d-2b782ff32473,8124bae9-c928-4451-b431-987c749b4d61,Chocolate Cake,3.56,241,,Rich chocolate cake with ganache
+f5c39640-0310-4209-9c11-a0ca6cf9f953,8124bae9-c928-4451-b431-987c749b4d61,Tuna Roll,16.76,22,,Tuna roll with sesame and nori
+5ebcfa6c-8848-4da2-8fab-17f547a3511e,8124bae9-c928-4451-b431-987c749b4d61,Chicken Burrito,26.18,174,,Large burrito with chicken and beans
+22009805-7421-4fd4-b940-485aba0254fb,8124bae9-c928-4451-b431-987c749b4d61,Greek Salad,29.70,81,,"Feta, olives, cucumber, and oregano vinaigrette"
+9e267ada-f7a7-42d0-b3ba-bf1cebed14ee,8124bae9-c928-4451-b431-987c749b4d61,Beef Tacos,27.77,88,,Seasoned beef tacos with salsa
+0f9ee482-09f9-4f91-81e1-68f9d3411a0a,c052670d-96c0-49be-a0b7-0f194576d55d,Kung Pao Chicken,23.68,54,,Spicy stir-fry with peanuts and peppers
+971bfe8f-c1fc-4055-a492-3f26e49aae12,c052670d-96c0-49be-a0b7-0f194576d55d,French Fries,27.70,102,,Golden fries with sea salt
+96ae25fa-12ea-48ee-9d74-99caefbb7c92,c052670d-96c0-49be-a0b7-0f194576d55d,Salmon Roll,25.90,82,,Fresh salmon with avocado and rice
+52e4eeea-0449-4cab-b5e5-cb3a48212fe3,c052670d-96c0-49be-a0b7-0f194576d55d,Mozzarella Sticks,23.44,5,,Fried mozzarella with marinara
+36c5af31-4d0e-41ab-9794-b5185a2d3459,c052670d-96c0-49be-a0b7-0f194576d55d,Beef Tacos,13.94,115,,Seasoned beef tacos with salsa
+b0d52e3c-f687-47c5-b818-3cf54d357c84,c052670d-96c0-49be-a0b7-0f194576d55d,Fish Tacos,20.43,118,,Grilled fish with slaw and lime
+eed75b54-82fd-4b2a-b24d-6d206e176303,c052670d-96c0-49be-a0b7-0f194576d55d,Spaghetti Carbonara,22.11,208,,Creamy pasta with pancetta and parmesan
+5456fe6f-cdf5-465a-8a2b-d2a093e3e961,8f60625b-6a60-4265-bb23-e221448caa1e,Sushi Combo,27.48,77,,Assorted sushi rolls with soy sauce
+affcdbd4-5e5a-4885-84e9-abbfea8f3178,8f60625b-6a60-4265-bb23-e221448caa1e,Chicken Burrito,6.90,248,,Large burrito with chicken and beans
+c5c9bdc5-ef2a-44ab-87b7-7b43d479aa42,8f60625b-6a60-4265-bb23-e221448caa1e,Penne Arrabiata,27.99,62,,Penne pasta with spicy tomato sauce
+2076647b-a441-4da8-88ac-661461e4adab,8f60625b-6a60-4265-bb23-e221448caa1e,Tuna Roll,8.86,16,,Tuna roll with sesame and nori
+4fc4c1cf-b89d-4839-95b8-4f6c84fa96cb,8f60625b-6a60-4265-bb23-e221448caa1e,Penne Arrabiata,39.32,161,,Penne pasta with spicy tomato sauce
+24094564-fad1-49fd-85f3-08725f305c2a,8f60625b-6a60-4265-bb23-e221448caa1e,Bacon Burger,20.08,231,,"Crispy bacon, cheddar, and house sauce"
+4cf92b0e-e591-4853-8af8-f1792cfe55f2,8f60625b-6a60-4265-bb23-e221448caa1e,Tuna Roll,29.65,103,,Tuna roll with sesame and nori
+0aaee493-da64-49f7-bd42-7a50227f02a9,8f60625b-6a60-4265-bb23-e221448caa1e,Iced Tea,18.05,42,,Chilled black tea with lemon
+dbc33e18-e11d-4bd7-b237-73afb0ea4b87,8f60625b-6a60-4265-bb23-e221448caa1e,Margherita Pizza,35.99,225,,"Classic pizza with tomato, mozzarella, and basil"
+2ff6b855-e2a6-423d-aed6-a2bf7a785926,8f60625b-6a60-4265-bb23-e221448caa1e,Caesar Salad,31.83,61,,"Romaine, parmesan, croutons, and Caesar dressing"
+a7e8a32c-9032-4130-b275-0fbcf2df30e8,8f60625b-6a60-4265-bb23-e221448caa1e,Salmon Roll,32.77,183,,Fresh salmon with avocado and rice
+9f3f4039-23d0-424f-ac82-89ce5242030c,8f60625b-6a60-4265-bb23-e221448caa1e,Cappuccino,5.33,68,,Espresso with steamed milk foam
+0f34a702-8cc1-49ed-bf8d-d4631ba7f2f9,8f60625b-6a60-4265-bb23-e221448caa1e,Greek Salad,20.12,210,,"Feta, olives, cucumber, and oregano vinaigrette"
+d837e93c-e43e-4640-9d24-8f15d637e01a,8f60625b-6a60-4265-bb23-e221448caa1e,Cappuccino,27.80,148,,Espresso with steamed milk foam
+73168800-d121-47f7-8a72-529634c5c585,8f60625b-6a60-4265-bb23-e221448caa1e,Fish Tacos,38.08,233,,Grilled fish with slaw and lime
+1451fc8f-e13e-4316-8d4a-52d9fc63c9ca,6d7b7269-b1a6-4476-aafc-6cf71a087943,Chocolate Cake,33.73,145,,Rich chocolate cake with ganache
+b0ff49cf-d549-41b6-90a8-ae4d4b52e8d0,6d7b7269-b1a6-4476-aafc-6cf71a087943,Cheesecake,36.16,195,,Creamy cheesecake with berry sauce
+ee294b5e-eccd-44ce-9318-01145451ec4e,6d7b7269-b1a6-4476-aafc-6cf71a087943,Latte,19.88,197,,Smooth espresso with milk
+4b0f392c-efe9-46e1-a0ce-cb4ed711003d,6d7b7269-b1a6-4476-aafc-6cf71a087943,Penne Arrabiata,34.07,75,,Penne pasta with spicy tomato sauce
+92a7f455-e555-449e-8417-efe9e46608a0,6d7b7269-b1a6-4476-aafc-6cf71a087943,Iced Tea,26.31,75,,Chilled black tea with lemon
+24cb3d10-8dc6-44fa-8b7b-a84bded01737,6d7b7269-b1a6-4476-aafc-6cf71a087943,Cheesecake,6.32,78,,Creamy cheesecake with berry sauce
+5240d7db-af42-4580-9e88-2071c137f6b7,6d7b7269-b1a6-4476-aafc-6cf71a087943,Penne Arrabiata,13.39,86,,Penne pasta with spicy tomato sauce
+ceba84a8-be98-489f-b246-f81a9a9c34b5,6d7b7269-b1a6-4476-aafc-6cf71a087943,Veggie Burger,8.54,64,,Plant-based patty with fresh vegetables
+4b3c6d7c-fffb-4186-8ce2-b1b0e7701a44,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,Chicken Noodle Soup,29.21,21,,Hearty chicken broth with noodles
+aa2938f5-05d6-4122-8f3c-d4226b39abdc,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,French Fries,18.34,143,,Golden fries with sea salt
+1befeb55-2271-453d-b45b-1d9f0ecdc21d,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,Cappuccino,18.63,57,,Espresso with steamed milk foam
+c9a2195d-9e48-4cc0-aba0-42b64f6d5017,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,French Fries,17.68,202,,Golden fries with sea salt
+13672c31-a9d7-4338-8854-fc0a003b953f,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,Pepperoni Pizza,34.69,200,,Spicy pepperoni with mozzarella cheese
+c78134a9-e89e-4203-9bac-861e6f702407,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,Chicken Wings,20.86,246,,Crispy wings with buffalo sauce
+6deedd42-82dc-4edc-9fda-be9f16bd51bb,aea1756c-f0ab-4c9f-8a2a-c79e5b539805,Ribeye Steak,14.37,104,,Grilled ribeye with herb butter
+8f6ec0f2-3587-4bd4-a491-65b18580de7c,f413e8ec-f405-40c1-a9dc-3ca7f575d357,French Fries,23.09,193,,Golden fries with sea salt
+b7290b28-6d71-4f19-b324-d61f8bf72b3e,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Lasagna,21.27,74,,Layered pasta with beef ragù and béchamel
+6e5d97e7-09e4-4c51-a6a3-50f6a996a001,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Chocolate Cake,21.18,104,,Rich chocolate cake with ganache
+edc7539d-6b78-4fac-9e93-62a596c4e10b,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Chicken Burrito,27.85,209,,Large burrito with chicken and beans
+01841cc7-6005-430b-97a5-f3f43838ec2d,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Mozzarella Sticks,29.86,220,,Fried mozzarella with marinara
+5889d6a2-239f-499a-a6e5-7790053d1032,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Cappuccino,36.97,164,,Espresso with steamed milk foam
+cbc78509-b2fc-4186-942d-45aa55410288,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Pepperoni Pizza,36.51,156,,Spicy pepperoni with mozzarella cheese
+2572f16f-f5ae-4e57-a63d-455442f0202b,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Pepperoni Pizza,6.56,114,,Spicy pepperoni with mozzarella cheese
+ac49b880-f1f4-4a71-85d5-6c501e82fc0a,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Tomato Soup,35.05,51,,Creamy tomato soup with herbs
+fe29858a-9f5b-4c98-ae31-abb7642e1602,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Cheeseburger,12.97,88,,"Beef patty with cheddar, lettuce, and tomato"
+177d2a0c-e41c-4523-b9ae-d3b3f2048383,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Spaghetti Carbonara,20.05,91,,Creamy pasta with pancetta and parmesan
+5d4b44e1-b754-4c02-a762-7f6457db57a2,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Chicken Wings,13.63,248,,Crispy wings with buffalo sauce
+ed686e1c-5170-4664-84c9-5033662b6818,f413e8ec-f405-40c1-a9dc-3ca7f575d357,French Fries,12.68,25,,Golden fries with sea salt
+402ebd3b-12ce-4e1d-bac7-f484ac34afc7,f413e8ec-f405-40c1-a9dc-3ca7f575d357,Latte,4.21,143,,Smooth espresso with milk
+579fedae-4736-4923-9757-a41c1a3ed62c,e2c0418e-0bc7-4936-8931-92f9011d8d45,Ribeye Steak,11.66,22,,Grilled ribeye with herb butter
+b1475658-9cbb-46c7-9871-c6f6dab2b0ea,38c7133c-5ba5-44c1-b028-0ea5d15b6443,BBQ Chicken Pizza,30.95,248,,"Smoky BBQ sauce, grilled chicken, and red onion"
+1deea64a-914b-4268-b654-f663a5d4f23d,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Penne Arrabiata,10.76,10,,Penne pasta with spicy tomato sauce
+6e13126f-c89d-4609-a711-eb3c68a3f145,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Chicken Noodle Soup,12.18,126,,Hearty chicken broth with noodles
+aed21b2a-6618-46a3-9e6a-64d18ee9a87c,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Greek Salad,24.03,60,,"Feta, olives, cucumber, and oregano vinaigrette"
+65b99d08-1af4-4dfc-9434-7e93e61e3b52,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Cappuccino,28.96,201,,Espresso with steamed milk foam
+fd345899-55a8-4c3d-b4b9-a1947748cbab,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Grilled Salmon,9.61,160,,Salmon fillet with lemon butter
+a5bf2b1f-9f3a-4f5c-acc1-bf1d8fd648f9,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Greek Salad,31.81,46,,"Feta, olives, cucumber, and oregano vinaigrette"
+39cc2f03-57ce-4c30-8a52-7555bc8b70da,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Beef Tacos,7.43,11,,Seasoned beef tacos with salsa
+d9f4b6a3-2cc2-41e4-8fe7-733878868872,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Beef Tacos,24.46,237,,Seasoned beef tacos with salsa
+41a95308-6999-4cf7-9aad-b202c1717724,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Chicken Wings,17.94,188,,Crispy wings with buffalo sauce
+f5a3e097-fee2-40ee-a88e-77159a050b1a,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Tuna Roll,6.27,181,,Tuna roll with sesame and nori
+9e2b7292-831a-4705-a592-a29865c4922e,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Penne Arrabiata,7.21,202,,Penne pasta with spicy tomato sauce
+832e3f53-6c85-4e04-b78f-45afa1305b9a,38c7133c-5ba5-44c1-b028-0ea5d15b6443,Beef Tacos,34.45,158,,Seasoned beef tacos with salsa
+4ec1f8e5-e86f-4156-8bd7-b07aeae9dee6,2294803b-7195-47f6-a1a4-b89c977b1907,Greek Salad,32.48,149,,"Feta, olives, cucumber, and oregano vinaigrette"
+44aac2d8-a078-4500-aeb6-2f02b0bbb59a,2294803b-7195-47f6-a1a4-b89c977b1907,BBQ Chicken Pizza,16.14,114,,"Smoky BBQ sauce, grilled chicken, and red onion"
+cb87c44d-88b8-4a14-8001-0de2e3cb2566,2294803b-7195-47f6-a1a4-b89c977b1907,Grilled Salmon,6.01,170,,Salmon fillet with lemon butter
+3e7cfcf6-a502-46e7-8865-8ccf145d90fc,2294803b-7195-47f6-a1a4-b89c977b1907,Chicken Burrito,3.96,112,,Large burrito with chicken and beans
+7ca03423-f7eb-4a72-9581-13addaf828f3,2294803b-7195-47f6-a1a4-b89c977b1907,Iced Tea,7.34,250,,Chilled black tea with lemon
+2ce12bb7-4986-4e63-8640-b7404925fac0,2294803b-7195-47f6-a1a4-b89c977b1907,Grilled Salmon,26.64,217,,Salmon fillet with lemon butter
+9f30b597-0a26-40c6-89e5-6359bae76ae2,2294803b-7195-47f6-a1a4-b89c977b1907,Cappuccino,29.25,116,,Espresso with steamed milk foam
+3cc2e1b2-e646-499a-bfa9-ae0ab6471ea7,2294803b-7195-47f6-a1a4-b89c977b1907,Salmon Roll,30.21,171,,Fresh salmon with avocado and rice
+b56ca873-f306-42ca-9c3f-f31530ae7b0e,2294803b-7195-47f6-a1a4-b89c977b1907,Pad Thai,25.92,240,,Rice noodles with peanuts and tamarind
+bb8ae987-c3f2-40b0-9c61-11c8ab326c25,2294803b-7195-47f6-a1a4-b89c977b1907,Latte,20.42,216,,Smooth espresso with milk
+70faee98-a058-4d34-9603-c07d1980375e,2294803b-7195-47f6-a1a4-b89c977b1907,Pad Thai,15.23,67,,Rice noodles with peanuts and tamarind
+2ef3c833-758a-4e6b-a558-1e6036f068b9,2294803b-7195-47f6-a1a4-b89c977b1907,Veggie Burger,13.65,120,,Plant-based patty with fresh vegetables
+7a1700f5-fa55-45fc-806e-92bc858743ce,2294803b-7195-47f6-a1a4-b89c977b1907,Penne Arrabiata,30.82,150,,Penne pasta with spicy tomato sauce
+e7b594c3-4475-4a72-b791-186c8e18d140,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Chicken Wings,15.74,131,,Crispy wings with buffalo sauce
+ad4c668e-8a80-495b-ac03-f0c94acf514c,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Fish Tacos,10.12,59,,Grilled fish with slaw and lime
+1326d491-dd88-4a89-90f5-b3a9e5b5b860,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Ribeye Steak,32.54,92,,Grilled ribeye with herb butter
+42be6aef-0194-4528-9715-08483c0c2721,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Pad Thai,35.54,184,,Rice noodles with peanuts and tamarind
+fe50059d-701e-4ab9-b7e8-7dc25885e689,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Pad Thai,23.73,137,,Rice noodles with peanuts and tamarind
+cf2224e9-6092-4c0a-ad38-6d0cf2a60c6f,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Tuna Roll,6.62,189,,Tuna roll with sesame and nori
+e85bfc6c-5453-4d01-916a-0885c98c4210,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,French Fries,21.28,199,,Golden fries with sea salt
+15d301b7-9d17-4f56-80ea-17f45ddf4c4f,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Penne Arrabiata,28.64,170,,Penne pasta with spicy tomato sauce
+8b8c679d-7174-4c2f-8ad4-20b7409bd085,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Iced Tea,19.81,9,,Chilled black tea with lemon
+3dc866d2-503d-4f4b-922c-20b0e737d338,160ed1cf-cffc-41b5-b231-6a416eb3b3e6,Veggie Burger,14.21,108,,Plant-based patty with fresh vegetables
+cc3213f1-ffd6-4253-993b-63ec6a9b3ef2,b935065f-76f3-40d4-8fe5-b4b30d20a644,Penne Arrabiata,14.65,153,,Penne pasta with spicy tomato sauce
+32071d0a-e6c5-437b-a101-231ebc2c8cb3,b935065f-76f3-40d4-8fe5-b4b30d20a644,Grilled Salmon,20.73,140,,Salmon fillet with lemon butter
+c0119405-d8cd-44d4-8a8f-fa0c9cfa8be9,b935065f-76f3-40d4-8fe5-b4b30d20a644,Ribeye Steak,18.99,195,,Grilled ribeye with herb butter
+cbd01a1f-7131-46ea-9772-79e2a55eb2bc,b935065f-76f3-40d4-8fe5-b4b30d20a644,Chicken Burrito,16.31,121,,Large burrito with chicken and beans
+9031b382-2484-4e5b-84bc-f6559579780f,b935065f-76f3-40d4-8fe5-b4b30d20a644,Pad Thai,14.66,64,,Rice noodles with peanuts and tamarind
+178f09d8-a61a-49a8-b90b-14ec5d7e913c,b935065f-76f3-40d4-8fe5-b4b30d20a644,Greek Salad,29.75,85,,"Feta, olives, cucumber, and oregano vinaigrette"
+4ee32391-0095-4f44-9f40-c1d44c223a19,b935065f-76f3-40d4-8fe5-b4b30d20a644,Greek Salad,30.54,248,,"Feta, olives, cucumber, and oregano vinaigrette"
+f8b4c3e2-fc2a-4b4d-9675-d2b6ca6d41c8,b935065f-76f3-40d4-8fe5-b4b30d20a644,Salmon Roll,10.47,194,,Fresh salmon with avocado and rice
+2bb58ea5-295c-4a86-a7d5-e4c9fc305f20,b935065f-76f3-40d4-8fe5-b4b30d20a644,Latte,13.56,155,,Smooth espresso with milk
+6d9b134d-dbad-4f68-82f1-4dcb74404729,b935065f-76f3-40d4-8fe5-b4b30d20a644,Kung Pao Chicken,39.19,218,,Spicy stir-fry with peanuts and peppers
+40bf7b33-20a6-48b7-b1b2-cc4ed6e241ef,b935065f-76f3-40d4-8fe5-b4b30d20a644,Tuna Roll,14.28,97,,Tuna roll with sesame and nori
+2e183eaa-bb7b-4c51-9bd4-53e2e3d76c55,b935065f-76f3-40d4-8fe5-b4b30d20a644,Salmon Roll,14.50,186,,Fresh salmon with avocado and rice
+93b67e65-e2cb-438f-aaf2-c09144b5ae3b,87904746-0008-4242-9e8f-5ff814e89d1a,Tomato Soup,13.48,18,,Creamy tomato soup with herbs
+47574cf9-4d43-408a-bf0b-d2ce3fbb8bb5,87904746-0008-4242-9e8f-5ff814e89d1a,Kung Pao Chicken,28.89,37,,Spicy stir-fry with peanuts and peppers
+b06c5a20-e5f1-4381-9215-fe2df65f84cb,87904746-0008-4242-9e8f-5ff814e89d1a,Iced Tea,7.23,8,,Chilled black tea with lemon
+2167ef6a-1f64-4ed2-be05-f4c1601f8939,87904746-0008-4242-9e8f-5ff814e89d1a,Kung Pao Chicken,20.59,117,,Spicy stir-fry with peanuts and peppers
+7e157f2d-c8d5-43ef-bb19-e4404990563a,87904746-0008-4242-9e8f-5ff814e89d1a,Chicken Burrito,10.21,18,,Large burrito with chicken and beans
+28fcfce7-7e9c-4d8b-8707-88d1219d61a4,87904746-0008-4242-9e8f-5ff814e89d1a,Chicken Alfredo,37.75,127,,Pasta in rich alfredo sauce with chicken
+e7574198-d7a2-45bd-b68e-47b78b7249c2,87904746-0008-4242-9e8f-5ff814e89d1a,Greek Salad,33.43,107,,"Feta, olives, cucumber, and oregano vinaigrette"
+31f5377c-0898-4f46-943b-f9912bbfa5b5,87904746-0008-4242-9e8f-5ff814e89d1a,Iced Tea,6.20,166,,Chilled black tea with lemon
+76c4e5ec-47f9-42e2-9b1f-269741c20a3a,87904746-0008-4242-9e8f-5ff814e89d1a,Cheeseburger,9.02,212,,"Beef patty with cheddar, lettuce, and tomato"
+091a7ee5-f73a-423a-aa7f-a83894fd9782,e124b5ea-55ec-47cb-908a-7265f048e5fa,Beef Tacos,6.60,68,,Seasoned beef tacos with salsa
+47ed3b21-499e-4b36-8345-151ab0e391d8,e124b5ea-55ec-47cb-908a-7265f048e5fa,Greek Salad,23.81,111,,"Feta, olives, cucumber, and oregano vinaigrette"
+7d761a48-f96b-432e-a865-9e80800e3610,e124b5ea-55ec-47cb-908a-7265f048e5fa,Lasagna,31.74,102,,Layered pasta with beef ragù and béchamel
+497cfc00-158c-45dd-b1a3-561eb4b2bf77,e124b5ea-55ec-47cb-908a-7265f048e5fa,Cheesecake,36.57,81,,Creamy cheesecake with berry sauce
+b72d5391-7295-4aea-8adb-fe0070321bb4,e124b5ea-55ec-47cb-908a-7265f048e5fa,Chocolate Cake,14.62,163,,Rich chocolate cake with ganache
+41bafb38-b947-4d16-b3b7-5ed9d2cb3909,e124b5ea-55ec-47cb-908a-7265f048e5fa,Cheeseburger,25.69,194,,"Beef patty with cheddar, lettuce, and tomato"
+05a15481-5e98-48d6-9c54-bc1394205845,e124b5ea-55ec-47cb-908a-7265f048e5fa,Caesar Salad,37.99,58,,"Romaine, parmesan, croutons, and Caesar dressing"
+a337975f-803a-4ece-a328-0e3fb66894bb,e124b5ea-55ec-47cb-908a-7265f048e5fa,Spaghetti Carbonara,13.13,25,,Creamy pasta with pancetta and parmesan
+1078baf6-3f38-4bae-ab58-bea80b96cb8d,e124b5ea-55ec-47cb-908a-7265f048e5fa,Sushi Combo,12.23,146,,Assorted sushi rolls with soy sauce
+dc36bb51-864a-4185-baec-7529e80ae8fb,e124b5ea-55ec-47cb-908a-7265f048e5fa,Bacon Burger,9.20,109,,"Crispy bacon, cheddar, and house sauce"
+19086e0a-3c06-4187-8d08-61ccb42c5359,c22d887b-9cc1-4842-b155-4606fc5d23d2,Latte,14.10,64,,Smooth espresso with milk
+a838028f-bc15-4b9c-b667-ede259552ab4,c22d887b-9cc1-4842-b155-4606fc5d23d2,Kung Pao Chicken,29.23,184,,Spicy stir-fry with peanuts and peppers
+b8d285c0-4280-49e0-821d-d6826b71b743,c22d887b-9cc1-4842-b155-4606fc5d23d2,Cappuccino,6.09,64,,Espresso with steamed milk foam
+c2b1d0a7-4422-4f12-9703-ebaba485f416,c22d887b-9cc1-4842-b155-4606fc5d23d2,Chicken Alfredo,32.18,165,,Pasta in rich alfredo sauce with chicken
+0baf8e43-5497-4a0a-b878-1fcf01d705a0,c22d887b-9cc1-4842-b155-4606fc5d23d2,Tuna Roll,18.98,144,,Tuna roll with sesame and nori
+1094adc0-1743-4a59-a284-a1ea3783ff18,c22d887b-9cc1-4842-b155-4606fc5d23d2,Lasagna,27.07,237,,Layered pasta with beef ragù and béchamel
+ce84740e-504d-4a09-8db7-92b56159b637,c22d887b-9cc1-4842-b155-4606fc5d23d2,Pad Thai,33.59,23,,Rice noodles with peanuts and tamarind
+c2a5a261-a44c-4129-a379-e5cd7ccb2c97,c22d887b-9cc1-4842-b155-4606fc5d23d2,Cheeseburger,9.54,83,,"Beef patty with cheddar, lettuce, and tomato"
+d023a40b-5ad6-4d05-8b3b-d8a52d30d238,7bb2d0c9-414e-4b31-9118-381553ca85f6,Kung Pao Chicken,19.49,124,,Spicy stir-fry with peanuts and peppers
+db2a1bfb-c901-4b1f-a39f-6380d5fef8ae,7bb2d0c9-414e-4b31-9118-381553ca85f6,Beef Tacos,28.97,246,,Seasoned beef tacos with salsa
+a219c14d-9d73-477a-b671-85df1548ff11,7bb2d0c9-414e-4b31-9118-381553ca85f6,Pad Thai,21.72,131,,Rice noodles with peanuts and tamarind
+c8994264-aafa-41cc-9a7b-7095015ecbd8,7bb2d0c9-414e-4b31-9118-381553ca85f6,Cheesecake,6.43,15,,Creamy cheesecake with berry sauce
+62f51ca7-ea6b-4ae9-85cd-095ccc577ee1,7bb2d0c9-414e-4b31-9118-381553ca85f6,Chocolate Cake,30.24,159,,Rich chocolate cake with ganache
+3ece33dd-b921-4beb-8065-1bf38542cbe0,7bb2d0c9-414e-4b31-9118-381553ca85f6,Chicken Alfredo,4.44,63,,Pasta in rich alfredo sauce with chicken
+282ff04c-f598-4b93-a0cd-8f564a7e9661,7bb2d0c9-414e-4b31-9118-381553ca85f6,Pepperoni Pizza,39.88,177,,Spicy pepperoni with mozzarella cheese
+33e1af7b-bcb1-4baa-aac6-fa1c93998d49,7bb2d0c9-414e-4b31-9118-381553ca85f6,Pad Thai,24.48,200,,Rice noodles with peanuts and tamarind
+0af83078-3635-4fbb-9078-deed692d0082,7bb2d0c9-414e-4b31-9118-381553ca85f6,Salmon Roll,20.63,171,,Fresh salmon with avocado and rice
+df8c7909-71c1-4b53-9839-3de50b83dc3c,7bb2d0c9-414e-4b31-9118-381553ca85f6,Cheesecake,36.85,51,,Creamy cheesecake with berry sauce
+58af11d0-3040-4063-a209-a60ff63b16e1,9a30a2bc-5549-4270-9e10-759164d547d7,Chocolate Cake,26.61,130,,Rich chocolate cake with ganache
+f62ad52d-9dd9-4e66-92fa-152e5f19bd36,9a30a2bc-5549-4270-9e10-759164d547d7,Veggie Burger,20.61,109,,Plant-based patty with fresh vegetables
+ed6f9336-92b4-4634-9075-3c19aa099203,9a30a2bc-5549-4270-9e10-759164d547d7,Chicken Burrito,15.19,31,,Large burrito with chicken and beans
+bfeb8593-2977-4f31-b850-4bad01c6a28d,9a30a2bc-5549-4270-9e10-759164d547d7,Sushi Combo,15.50,182,,Assorted sushi rolls with soy sauce
+e1a04500-c7c2-4ea1-8dfb-09d24daf840b,9a30a2bc-5549-4270-9e10-759164d547d7,Iced Tea,13.99,246,,Chilled black tea with lemon
+8109f818-95be-4c91-9a24-9905ee2baca8,9a30a2bc-5549-4270-9e10-759164d547d7,Mozzarella Sticks,33.11,145,,Fried mozzarella with marinara
+b6d5ba1e-b583-46e9-8131-7b2f8213e181,9a30a2bc-5549-4270-9e10-759164d547d7,BBQ Chicken Pizza,20.06,85,,"Smoky BBQ sauce, grilled chicken, and red onion"
+8a094c63-e1c0-4df3-b681-5391a61f13a8,9a30a2bc-5549-4270-9e10-759164d547d7,Chicken Alfredo,15.27,202,,Pasta in rich alfredo sauce with chicken
+685e8787-8d02-436d-8cc4-7989322f8970,9a30a2bc-5549-4270-9e10-759164d547d7,Mozzarella Sticks,34.98,216,,Fried mozzarella with marinara
+80b5629d-69a2-46c3-bf23-2bc37f543d81,9a30a2bc-5549-4270-9e10-759164d547d7,Margherita Pizza,27.44,143,,"Classic pizza with tomato, mozzarella, and basil"
+66975f45-2afd-4589-9c4e-4bd8c9f348ac,10e94e70-fc14-49a1-8b84-490c5369f788,French Fries,5.47,137,,Golden fries with sea salt
+dfe17e93-e3c0-4ac6-b6af-b3ea7d73e99b,10e94e70-fc14-49a1-8b84-490c5369f788,Grilled Salmon,26.16,132,,Salmon fillet with lemon butter
+f88e22c0-2dd7-4975-959c-b1a544fa26cb,10e94e70-fc14-49a1-8b84-490c5369f788,Cheesecake,31.16,57,,Creamy cheesecake with berry sauce
+cb7bf1e0-ee41-41a0-9c05-4cbfa271acc5,10e94e70-fc14-49a1-8b84-490c5369f788,Pad Thai,23.49,242,,Rice noodles with peanuts and tamarind
+8fd4c74c-9d7a-436b-bae9-162f8ace3dbd,10e94e70-fc14-49a1-8b84-490c5369f788,Kung Pao Chicken,19.45,183,,Spicy stir-fry with peanuts and peppers
+4dd113cd-91f6-4343-a274-9bba27fee934,10e94e70-fc14-49a1-8b84-490c5369f788,Iced Tea,7.92,166,,Chilled black tea with lemon
+2b01eeab-f52d-4aff-bcf7-e3830935c5fb,10e94e70-fc14-49a1-8b84-490c5369f788,Penne Arrabiata,29.34,84,,Penne pasta with spicy tomato sauce
+d96a25c1-5705-4dfa-a985-b91bf3b916b4,10e94e70-fc14-49a1-8b84-490c5369f788,Margherita Pizza,23.60,28,,"Classic pizza with tomato, mozzarella, and basil"
+744bea6a-b641-4b46-9bc1-f922cbe6054f,f4d51ce5-49c6-44c4-9dbd-8b5cc4cf0fa8,Greek Salad,20.30,35,,"Feta, olives, cucumber, and oregano vinaigrette"
+549bfcdb-37b9-473b-9081-a74b205c35e6,f4d51ce5-49c6-44c4-9dbd-8b5cc4cf0fa8,Chicken Noodle Soup,21.64,188,,Hearty chicken broth with noodles
+aab8a868-fc19-42fd-ab9d-b5548df56a9f,f4d51ce5-49c6-44c4-9dbd-8b5cc4cf0fa8,Kung Pao Chicken,22.02,74,,Spicy stir-fry with peanuts and peppers
+5f09af00-eb4e-4059-8a28-1cb800f7b1d4,f4d51ce5-49c6-44c4-9dbd-8b5cc4cf0fa8,French Fries,33.88,125,,Golden fries with sea salt
+20b53b5c-646d-4428-941a-c4abbb41cade,22957205-c117-4d7c-b179-50faeec0da92,Cappuccino,23.57,103,,Espresso with steamed milk foam
+bf794fa5-bfb5-45fe-99b5-c1d0e8c74e29,22957205-c117-4d7c-b179-50faeec0da92,Tuna Roll,37.06,135,,Tuna roll with sesame and nori
+f09063f6-3ef5-4fb3-a40d-8024275870ed,22957205-c117-4d7c-b179-50faeec0da92,Tomato Soup,34.95,75,,Creamy tomato soup with herbs
+8937fb2a-eea4-47cd-b69b-152abbc3aea3,22957205-c117-4d7c-b179-50faeec0da92,French Fries,15.87,206,,Golden fries with sea salt
+d4bd1bd2-8df1-4537-8403-c94cbf74412b,cf425e13-8093-4419-a158-cb40caabb3ac,Pad Thai,33.37,77,,Rice noodles with peanuts and tamarind
+c7204e50-00c1-4cb8-afd6-8fbc88631a0e,cf425e13-8093-4419-a158-cb40caabb3ac,Beef Tacos,33.98,153,,Seasoned beef tacos with salsa
+2fd40f4d-a3a8-40e4-8d98-4f5fba0ac631,cf425e13-8093-4419-a158-cb40caabb3ac,Iced Tea,35.00,119,,Chilled black tea with lemon
+2efefb58-8046-45d1-8fbc-e75a51ec621e,cf425e13-8093-4419-a158-cb40caabb3ac,Latte,16.06,146,,Smooth espresso with milk
+3c6cc0b7-f19b-467f-bc0d-4b90b81867fb,cf425e13-8093-4419-a158-cb40caabb3ac,Chicken Wings,20.07,87,,Crispy wings with buffalo sauce
+5ffed5e2-a8be-4f42-a0fb-c7cdd5ef42f1,cf425e13-8093-4419-a158-cb40caabb3ac,Tuna Roll,39.20,66,,Tuna roll with sesame and nori
+2c1e7ecb-2381-4e45-8280-5455f4973e67,cf425e13-8093-4419-a158-cb40caabb3ac,Chicken Wings,12.00,203,,Crispy wings with buffalo sauce
+b04b33a8-dcd2-498b-8ee3-a915e58404f7,cf425e13-8093-4419-a158-cb40caabb3ac,French Fries,5.09,195,,Golden fries with sea salt
+8bf1a92a-860e-46a2-abb4-85b5a12a1ca1,cf425e13-8093-4419-a158-cb40caabb3ac,Latte,29.17,212,,Smooth espresso with milk
+20216ec8-02b0-42be-9bec-e693624ed25d,75a37be7-1cf6-463d-958b-6d42017c45e3,Chicken Wings,39.48,207,,Crispy wings with buffalo sauce
+15d92001-804b-4644-9a03-a822d1c53cc9,75a37be7-1cf6-463d-958b-6d42017c45e3,Chicken Noodle Soup,21.53,14,,Hearty chicken broth with noodles
+9f7c2e00-e429-41a9-a381-6a3ef7750271,75a37be7-1cf6-463d-958b-6d42017c45e3,Tomato Soup,21.78,156,,Creamy tomato soup with herbs
+568d6a2b-cd84-4ef4-9429-28c9cfb1172d,75a37be7-1cf6-463d-958b-6d42017c45e3,Chicken Burrito,35.16,228,,Large burrito with chicken and beans
+fbe22d27-7eb8-4445-b161-07392b193235,75a37be7-1cf6-463d-958b-6d42017c45e3,Cheesecake,7.13,238,,Creamy cheesecake with berry sauce
+894d280e-aa5c-4796-8082-43c49e2ac58d,75a37be7-1cf6-463d-958b-6d42017c45e3,Cappuccino,4.06,41,,Espresso with steamed milk foam
+38b8da06-14b7-4d75-85c7-933c5e1f50d8,75a37be7-1cf6-463d-958b-6d42017c45e3,French Fries,35.20,44,,Golden fries with sea salt
+e85851d5-f59a-400b-a30e-50433c54db30,bfb6fb07-8d88-4d0f-a980-5dca49d1817d,Latte,31.95,72,,Smooth espresso with milk
+b2dac76f-dd6f-4fe0-8d40-4af4944fa5d9,bfb6fb07-8d88-4d0f-a980-5dca49d1817d,Chicken Burrito,26.19,106,,Large burrito with chicken and beans
+40435ce6-92b8-4ef1-a051-1fbe05c0f3e7,cd017417-fe89-4f15-8739-d3ae0685afd9,Veggie Burger,34.50,223,,Plant-based patty with fresh vegetables
+d3445af6-f817-4fd2-8e66-f0d4992f8568,cd017417-fe89-4f15-8739-d3ae0685afd9,Chicken Wings,38.23,165,,Crispy wings with buffalo sauce
+847f7ad6-638c-4202-8a96-0ee17c6b7575,cd017417-fe89-4f15-8739-d3ae0685afd9,Iced Tea,35.25,14,,Chilled black tea with lemon
+a2dae295-2e69-4f27-aa0c-a8458cd9c85c,cd017417-fe89-4f15-8739-d3ae0685afd9,Bacon Burger,12.05,180,,"Crispy bacon, cheddar, and house sauce"
+11455b73-a533-465b-aa5a-01f7d35a1ef3,cd017417-fe89-4f15-8739-d3ae0685afd9,Kung Pao Chicken,39.81,196,,Spicy stir-fry with peanuts and peppers
+0c24942a-6625-47c4-ae9a-83374813081a,cd017417-fe89-4f15-8739-d3ae0685afd9,Veggie Burger,19.30,30,,Plant-based patty with fresh vegetables
+3b090b1b-b5a4-4041-a68a-c1e2501cb4c4,cd017417-fe89-4f15-8739-d3ae0685afd9,Caesar Salad,19.65,182,,"Romaine, parmesan, croutons, and Caesar dressing"
+c740cd39-44e8-4daa-bd67-33260b75f690,cd017417-fe89-4f15-8739-d3ae0685afd9,Beef Tacos,36.38,16,,Seasoned beef tacos with salsa
+4d80ddd0-f9ef-43c5-8bf2-fed9cbb283ba,cd017417-fe89-4f15-8739-d3ae0685afd9,Fish Tacos,32.48,80,,Grilled fish with slaw and lime
+12184c66-dbf2-4436-b417-2b0e724e3696,cd017417-fe89-4f15-8739-d3ae0685afd9,Ribeye Steak,17.14,42,,Grilled ribeye with herb butter
+cc564cc6-09fd-4b32-955f-49fe12764d61,cd017417-fe89-4f15-8739-d3ae0685afd9,Penne Arrabiata,22.83,149,,Penne pasta with spicy tomato sauce
+43482c32-4eea-49d8-90ad-b0da46545a03,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Salmon Roll,9.69,25,,Fresh salmon with avocado and rice
+0fd3148c-aea0-4e63-bee4-2da82005804d,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Chicken Wings,26.06,66,,Crispy wings with buffalo sauce
+07d8a0ee-f30d-4403-b864-2e9fab1b6ce3,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Iced Tea,36.73,41,,Chilled black tea with lemon
+20f4b510-4d86-49c7-8236-a3f8e7c9f9d0,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Lasagna,20.29,70,,Layered pasta with beef ragù and béchamel
+815e5035-764a-4cc7-9110-0284b5f9a16a,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Cappuccino,12.79,7,,Espresso with steamed milk foam
+1ceb5224-c141-43c5-8fe5-99556f8517f7,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Cappuccino,36.30,178,,Espresso with steamed milk foam
+4db5ccfb-a849-46db-94c8-5ab47a6455b8,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Sushi Combo,6.19,246,,Assorted sushi rolls with soy sauce
+6a1bd107-af15-4d0d-bd84-5d5ca0badb57,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Ribeye Steak,39.45,81,,Grilled ribeye with herb butter
+8358fb08-6387-4e44-98e8-0575b6f6fc12,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Chocolate Cake,28.63,121,,Rich chocolate cake with ganache
+29a5b2a9-a8de-4855-92ef-5571c2f6a2c9,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Beef Tacos,10.75,103,,Seasoned beef tacos with salsa
+b7bf98ac-06e6-44f3-85e4-7b63bc52fcb6,9ddd9dc1-148c-43b0-bc33-008a6cbf6753,Latte,7.38,102,,Smooth espresso with milk
+0eeb4abb-54fc-496c-b40c-2ee2d112281b,23d6ba3a-9764-4a60-bbf3-198c82692066,Ribeye Steak,24.42,184,,Grilled ribeye with herb butter
+dd29a441-7829-435e-9432-a9efbad0c0f2,23d6ba3a-9764-4a60-bbf3-198c82692066,Kung Pao Chicken,4.30,217,,Spicy stir-fry with peanuts and peppers
+9764af5e-1965-4c59-9a10-695c190242d5,23d6ba3a-9764-4a60-bbf3-198c82692066,Mozzarella Sticks,13.49,149,,Fried mozzarella with marinara
+8b603267-26da-4344-9442-6c3e2db5bee9,23d6ba3a-9764-4a60-bbf3-198c82692066,Cheeseburger,36.65,195,,"Beef patty with cheddar, lettuce, and tomato"
+5601f34a-18ff-45bf-9934-c88b35403fe4,23d6ba3a-9764-4a60-bbf3-198c82692066,Iced Tea,33.82,236,,Chilled black tea with lemon
+b5171e40-59d6-4ae7-aa00-57cdb2fbb7eb,23d6ba3a-9764-4a60-bbf3-198c82692066,Kung Pao Chicken,31.74,63,,Spicy stir-fry with peanuts and peppers
+5987f016-1872-4704-8f04-e018b875b138,23d6ba3a-9764-4a60-bbf3-198c82692066,Ribeye Steak,11.47,53,,Grilled ribeye with herb butter
+15d37deb-3168-4dd5-bdbf-59c25fbc15b4,23d6ba3a-9764-4a60-bbf3-198c82692066,Chicken Alfredo,28.17,189,,Pasta in rich alfredo sauce with chicken
+b358e5da-2429-4e77-9067-48ba6a058d1d,23d6ba3a-9764-4a60-bbf3-198c82692066,Tomato Soup,26.37,236,,Creamy tomato soup with herbs
+51ec7108-f9db-4e23-83e6-6c00d24dc094,23d6ba3a-9764-4a60-bbf3-198c82692066,BBQ Chicken Pizza,14.75,117,,"Smoky BBQ sauce, grilled chicken, and red onion"
+1ae43cac-0865-4332-a17e-d7bfcb4c15c9,ae15a453-cc9f-4655-92d8-dfe3e4e9c327,Grilled Salmon,30.16,28,,Salmon fillet with lemon butter
+6949dd94-6eff-4854-b9b2-4c8e7676de26,6a7abf4d-d188-4378-98b2-8517a7a993fa,Kung Pao Chicken,15.39,111,,Spicy stir-fry with peanuts and peppers
+d34fd675-ea2c-4a93-a2b9-04d78ebbb50d,6a7abf4d-d188-4378-98b2-8517a7a993fa,Salmon Roll,10.81,206,,Fresh salmon with avocado and rice
+76fcf68c-d141-48ae-a0f7-d2f551c7a85b,6a7abf4d-d188-4378-98b2-8517a7a993fa,Grilled Salmon,22.82,238,,Salmon fillet with lemon butter
+dcc9d116-6265-4aa6-afa1-74726fefd9bf,6a7abf4d-d188-4378-98b2-8517a7a993fa,Pad Thai,33.73,70,,Rice noodles with peanuts and tamarind
+615b8c16-9ef0-46dc-a971-0bacc4c1e5cb,6a7abf4d-d188-4378-98b2-8517a7a993fa,Latte,38.71,80,,Smooth espresso with milk
+8dda99cb-78d4-4fa7-8d02-03899dc932f1,6a7abf4d-d188-4378-98b2-8517a7a993fa,Chicken Burrito,32.77,124,,Large burrito with chicken and beans
+32af2835-8653-46a5-992f-3f91cb80fb2b,6a7abf4d-d188-4378-98b2-8517a7a993fa,Bacon Burger,8.62,62,,"Crispy bacon, cheddar, and house sauce"
+52186ac3-6c75-4baa-ab78-b1f74eff2b59,6a7abf4d-d188-4378-98b2-8517a7a993fa,Mozzarella Sticks,38.71,210,,Fried mozzarella with marinara
+3ac8efd6-6bdd-4c55-8227-4d353ba37fbb,6a7abf4d-d188-4378-98b2-8517a7a993fa,Grilled Salmon,6.79,106,,Salmon fillet with lemon butter
+9304308e-5aed-4dd2-b1cb-7495960d8df4,6a7abf4d-d188-4378-98b2-8517a7a993fa,Margherita Pizza,13.13,36,,"Classic pizza with tomato, mozzarella, and basil"
+63b58f30-c644-421b-b754-2f3566a054bc,6a7abf4d-d188-4378-98b2-8517a7a993fa,Cappuccino,16.92,196,,Espresso with steamed milk foam
+38fc59be-eb25-4dbb-8bf3-72d84bfa05a1,6a7abf4d-d188-4378-98b2-8517a7a993fa,Chicken Alfredo,24.78,215,,Pasta in rich alfredo sauce with chicken
+b851f09a-bebc-46d0-8d33-0c90f6311d93,6a7abf4d-d188-4378-98b2-8517a7a993fa,Grilled Salmon,7.44,64,,Salmon fillet with lemon butter
+0ba43669-8f79-4064-a5ea-4d598559e82f,6a7abf4d-d188-4378-98b2-8517a7a993fa,Latte,4.41,231,,Smooth espresso with milk
+52f55910-8a7f-4bc6-8dd6-9fef670d20ba,6a7abf4d-d188-4378-98b2-8517a7a993fa,Fish Tacos,36.82,61,,Grilled fish with slaw and lime
+01d865f5-5359-4441-b0b5-0c23f8cefbc6,d3406aa3-0696-4bdb-a163-b9148cacb64f,Bacon Burger,26.63,123,,"Crispy bacon, cheddar, and house sauce"
+943c80ef-8496-4539-b7a6-98ceb941f6da,d3406aa3-0696-4bdb-a163-b9148cacb64f,Beef Tacos,27.13,34,,Seasoned beef tacos with salsa
+eddcb853-2507-403d-94f5-68be6372f1e1,d3406aa3-0696-4bdb-a163-b9148cacb64f,Tomato Soup,5.15,14,,Creamy tomato soup with herbs
+80fd0b19-608a-4568-ac0b-092af5f173f6,d3406aa3-0696-4bdb-a163-b9148cacb64f,Beef Tacos,39.75,34,,Seasoned beef tacos with salsa
+e4f622b4-b957-445c-81c1-1b8af7d105cb,d3406aa3-0696-4bdb-a163-b9148cacb64f,Caesar Salad,12.05,142,,"Romaine, parmesan, croutons, and Caesar dressing"
+729bffc7-7884-4e8d-a4c5-b88cb078a7bc,d3406aa3-0696-4bdb-a163-b9148cacb64f,Tomato Soup,17.65,99,,Creamy tomato soup with herbs
+bd7e7abe-bda1-4799-a023-4c3def0cd2c7,d3406aa3-0696-4bdb-a163-b9148cacb64f,French Fries,24.88,191,,Golden fries with sea salt
+f32742da-6da2-4513-9b53-f1d61e9df50d,d3406aa3-0696-4bdb-a163-b9148cacb64f,Chicken Noodle Soup,35.73,172,,Hearty chicken broth with noodles
+e3b72de9-d40e-45cc-a31b-31e5bfe214f2,d3406aa3-0696-4bdb-a163-b9148cacb64f,Caesar Salad,33.85,162,,"Romaine, parmesan, croutons, and Caesar dressing"
+ea7221e6-cd19-4e6a-8626-b721f6caf07a,d3406aa3-0696-4bdb-a163-b9148cacb64f,French Fries,37.68,76,,Golden fries with sea salt
+fba413b2-5244-4c57-abb7-c983884e21d4,d3406aa3-0696-4bdb-a163-b9148cacb64f,BBQ Chicken Pizza,28.63,60,,"Smoky BBQ sauce, grilled chicken, and red onion"
+cd3171ca-c5d1-441a-9ee7-7c15e098d54a,c229d412-79c6-4f65-b38c-b5532a6c2bba,Cheesecake,38.10,223,,Creamy cheesecake with berry sauce
+74af446d-78bc-4a30-bbef-bf21c335aeb8,c229d412-79c6-4f65-b38c-b5532a6c2bba,Grilled Salmon,7.12,180,,Salmon fillet with lemon butter
+1b8aef49-dbce-460d-bb0f-ac015e916c68,c229d412-79c6-4f65-b38c-b5532a6c2bba,Grilled Salmon,23.32,170,,Salmon fillet with lemon butter
+a667c97a-c41c-476d-9fef-ddd278860603,c229d412-79c6-4f65-b38c-b5532a6c2bba,Ribeye Steak,5.70,75,,Grilled ribeye with herb butter
+f6de0cfd-6ef2-41e1-b218-e21bc26c5cfd,c229d412-79c6-4f65-b38c-b5532a6c2bba,Tuna Roll,38.74,247,,Tuna roll with sesame and nori
+f5ceeaf4-57ff-4372-ad10-83a8f1aa7d4a,c229d412-79c6-4f65-b38c-b5532a6c2bba,Cappuccino,6.84,59,,Espresso with steamed milk foam
+bd76b3f6-0060-427f-bcfc-8498fe681cd0,c229d412-79c6-4f65-b38c-b5532a6c2bba,Pepperoni Pizza,5.34,90,,Spicy pepperoni with mozzarella cheese
+10c976e2-7036-4fce-95a9-321224029cf4,c229d412-79c6-4f65-b38c-b5532a6c2bba,Penne Arrabiata,39.49,206,,Penne pasta with spicy tomato sauce
+2f75a515-6e45-4473-b1fb-7c89cb2993d4,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Spaghetti Carbonara,6.00,200,,Creamy pasta with pancetta and parmesan
+380dd31c-52a8-4446-802f-92a519dc4673,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Spaghetti Carbonara,24.84,213,,Creamy pasta with pancetta and parmesan
+ee207ae8-e4d4-4117-8cee-b94ba365e1dc,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Lasagna,15.46,42,,Layered pasta with beef ragù and béchamel
+99175a15-a560-4bb8-a24b-74ce02197884,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Margherita Pizza,13.59,42,,"Classic pizza with tomato, mozzarella, and basil"
+94c425ef-7770-43ed-83af-2e22fea22453,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Tomato Soup,23.16,209,,Creamy tomato soup with herbs
+4b013ecd-90f3-438e-8235-d7e25c22e42e,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Salmon Roll,7.50,226,,Fresh salmon with avocado and rice
+fc24b6e1-2115-44c3-a70c-fac1e9a39933,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Pepperoni Pizza,8.30,96,,Spicy pepperoni with mozzarella cheese
+44c17600-4063-4f5e-96d8-5b6507953c43,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Penne Arrabiata,24.93,9,,Penne pasta with spicy tomato sauce
+a73d8d50-cced-4044-a807-57baadf5b551,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,Salmon Roll,13.16,37,,Fresh salmon with avocado and rice
+3354586e-23f4-448f-a4a9-e4cdf3189433,cffa555d-a72b-4776-9c4a-8e4ef7c7fcf3,French Fries,22.65,195,,Golden fries with sea salt
+1bb42b5e-a5c6-4edd-81b8-4b4627d8c474,1968faa8-5d70-4215-8add-89ac0f66e28b,Latte,19.82,97,,Smooth espresso with milk
+a73e33af-8232-48da-bf5e-f855075a2d76,1968faa8-5d70-4215-8add-89ac0f66e28b,Caesar Salad,19.95,61,,"Romaine, parmesan, croutons, and Caesar dressing"
+c64b8e70-a590-49f2-8f0c-849a2c499a79,552a8f03-9db4-4082-8f3e-ca20bc85b841,BBQ Chicken Pizza,29.97,237,,"Smoky BBQ sauce, grilled chicken, and red onion"
+08d08c7a-5430-4958-b4ba-0b47a91e1fee,552a8f03-9db4-4082-8f3e-ca20bc85b841,Beef Tacos,20.17,12,,Seasoned beef tacos with salsa
+1f2521cb-c639-45d0-aa37-a1a0c52829f6,552a8f03-9db4-4082-8f3e-ca20bc85b841,Cheeseburger,39.85,221,,"Beef patty with cheddar, lettuce, and tomato"
+f95e38f2-b591-49b0-97ff-16bdf2d49cb9,552a8f03-9db4-4082-8f3e-ca20bc85b841,Mozzarella Sticks,19.02,32,,Fried mozzarella with marinara
+3a845d0f-3c65-4c75-8bc5-f499884cb04c,552a8f03-9db4-4082-8f3e-ca20bc85b841,Iced Tea,29.43,118,,Chilled black tea with lemon
+7247939f-2bb2-447f-9c06-8fb46dc937e9,552a8f03-9db4-4082-8f3e-ca20bc85b841,Bacon Burger,36.23,87,,"Crispy bacon, cheddar, and house sauce"
+1b7e369f-186e-4f13-9862-53b77dec30ed,552a8f03-9db4-4082-8f3e-ca20bc85b841,Chicken Noodle Soup,5.89,75,,Hearty chicken broth with noodles
+04bbb1cb-7073-4921-b944-7a39494e1e5b,552a8f03-9db4-4082-8f3e-ca20bc85b841,Fish Tacos,17.36,157,,Grilled fish with slaw and lime
+4498a00f-9013-4d8e-a71d-b0ac08c496e1,552a8f03-9db4-4082-8f3e-ca20bc85b841,Kung Pao Chicken,20.02,159,,Spicy stir-fry with peanuts and peppers
+703fc094-e295-4c68-80ff-4262a49d9d66,552a8f03-9db4-4082-8f3e-ca20bc85b841,Chocolate Cake,7.11,184,,Rich chocolate cake with ganache
+6458b87b-0878-49d3-b15e-047047370b1e,4725ec5c-c493-4711-9531-9cc0f9e3958f,Spaghetti Carbonara,19.15,232,,Creamy pasta with pancetta and parmesan
+9684dfe5-877c-466e-bbc5-bef9c1004962,4725ec5c-c493-4711-9531-9cc0f9e3958f,Lasagna,18.56,216,,Layered pasta with beef ragù and béchamel
+847bdfb7-627e-4f4a-b250-3f8964c49f5a,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Mozzarella Sticks,18.64,29,,Fried mozzarella with marinara
+fb28ca74-04c3-4148-abc3-34df572b98f2,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Fish Tacos,19.03,175,,Grilled fish with slaw and lime
+3bbae77a-fed8-4507-9286-b5f708ef0d4e,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Chicken Alfredo,17.12,44,,Pasta in rich alfredo sauce with chicken
+b395e230-85c6-4005-819a-9325c70235a7,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Latte,5.94,217,,Smooth espresso with milk
+22b1cf3e-1447-46ca-a12f-53178214852d,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Veggie Burger,6.89,29,,Plant-based patty with fresh vegetables
+5c3d6846-07eb-4f93-aea8-4d41bb9d52e6,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Grilled Salmon,33.05,147,,Salmon fillet with lemon butter
+b6cce382-6ae6-4778-928f-991b06a9266b,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Cheeseburger,24.85,148,,"Beef patty with cheddar, lettuce, and tomato"
+5173b67a-e7cc-41e8-98bf-c3a1a0614b4b,bdcddc67-2d4b-43cf-bae8-360a8a0818a1,Chicken Burrito,27.89,110,,Large burrito with chicken and beans
+07a5af1c-7dd0-4c77-ab4a-c748b6daecc3,2440ba10-a8a4-430a-9a14-d4800defc94a,Chocolate Cake,35.10,189,,Rich chocolate cake with ganache
+5050526f-91ff-40e5-a710-b1d7e92d5a41,2440ba10-a8a4-430a-9a14-d4800defc94a,Cheeseburger,38.75,158,,"Beef patty with cheddar, lettuce, and tomato"
+c90d5784-3428-4577-8c46-41d95cc30ea2,2440ba10-a8a4-430a-9a14-d4800defc94a,Beef Tacos,16.30,152,,Seasoned beef tacos with salsa
+c72d2a0f-d483-4252-a10b-03cf2bf8b42b,2440ba10-a8a4-430a-9a14-d4800defc94a,Spaghetti Carbonara,9.13,128,,Creamy pasta with pancetta and parmesan
+7e62f95f-484b-4cc8-959c-b02db0f32ff7,2440ba10-a8a4-430a-9a14-d4800defc94a,Lasagna,34.34,94,,Layered pasta with beef ragù and béchamel
+a5aa0052-7f31-4cab-9ded-2f163cbf903d,2440ba10-a8a4-430a-9a14-d4800defc94a,Grilled Salmon,7.68,76,,Salmon fillet with lemon butter
+4821d441-970a-434f-ad51-d5d8bb3c847c,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Lasagna,32.88,221,,Layered pasta with beef ragù and béchamel
+59a8546a-008d-45e9-adcd-e5b25161cb00,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Pepperoni Pizza,25.67,173,,Spicy pepperoni with mozzarella cheese
+ef82ae2e-c13d-4ece-8314-e12926e88550,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Pad Thai,4.55,74,,Rice noodles with peanuts and tamarind
+615c145b-a232-41b9-aabc-f2045ece3906,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Beef Tacos,37.04,94,,Seasoned beef tacos with salsa
+63bb30d4-591b-4c80-a757-7fb033ccc5a2,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Margherita Pizza,10.10,41,,"Classic pizza with tomato, mozzarella, and basil"
+84221e4e-1395-4da4-8970-aaa0d837e26a,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Mozzarella Sticks,6.03,194,,Fried mozzarella with marinara
+4bfac6ea-535e-4def-a3d3-a22256070b33,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Pepperoni Pizza,6.84,140,,Spicy pepperoni with mozzarella cheese
+cd92070c-4a32-4873-9d38-f621392db5df,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Spaghetti Carbonara,17.19,121,,Creamy pasta with pancetta and parmesan
+6e2678c0-4562-4984-9bee-639022743f1b,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Chicken Burrito,9.23,84,,Large burrito with chicken and beans
+fe4d4cd7-d49d-41ce-83e2-ff82c95a1254,f4ea1a6d-58d1-4652-84dd-3ff6ba920fa2,Fish Tacos,31.78,150,,Grilled fish with slaw and lime
+90289ad0-40e6-4d7e-8a9b-442e74f8fb30,cd621397-edf6-4789-9951-df477c1d9acc,Veggie Burger,35.65,44,,Plant-based patty with fresh vegetables
+a84d99c7-0ec6-46d2-a4c0-4445c6d62147,cd621397-edf6-4789-9951-df477c1d9acc,Sushi Combo,30.96,17,,Assorted sushi rolls with soy sauce
+78527c1b-a1e3-442d-9014-28087c2e264c,cd621397-edf6-4789-9951-df477c1d9acc,Veggie Burger,13.40,174,,Plant-based patty with fresh vegetables
+49d06633-72bb-45a5-a3de-e1e5a4402b36,cd621397-edf6-4789-9951-df477c1d9acc,Chocolate Cake,21.18,118,,Rich chocolate cake with ganache
+616084e9-ff70-4f93-9488-fea7834635e7,cd621397-edf6-4789-9951-df477c1d9acc,French Fries,13.44,198,,Golden fries with sea salt
+7cc82c0d-fb41-44cc-b111-bc6a786c9c89,cd621397-edf6-4789-9951-df477c1d9acc,Greek Salad,16.06,33,,"Feta, olives, cucumber, and oregano vinaigrette"
+12a55e95-c7f1-469a-972b-df8252e4a67d,cd621397-edf6-4789-9951-df477c1d9acc,Kung Pao Chicken,28.19,156,,Spicy stir-fry with peanuts and peppers
+96dbb019-68fe-4822-ad4c-af16eedb0148,cd621397-edf6-4789-9951-df477c1d9acc,Iced Tea,22.68,83,,Chilled black tea with lemon
+0dc72fc4-0e72-4338-8177-b15a150ef089,cd621397-edf6-4789-9951-df477c1d9acc,BBQ Chicken Pizza,11.53,158,,"Smoky BBQ sauce, grilled chicken, and red onion"
+2c2151a6-4598-4aa9-af76-6b49dd8c6b76,cd621397-edf6-4789-9951-df477c1d9acc,Cheeseburger,3.78,82,,"Beef patty with cheddar, lettuce, and tomato"
+408ff8f5-8c7a-4e86-be86-eebc2da74a48,cac9fa90-9232-4a17-9c57-bef26c02b1b3,Tomato Soup,31.32,79,,Creamy tomato soup with herbs
+40665300-8a9e-46ea-a6e3-75cca2916593,cac9fa90-9232-4a17-9c57-bef26c02b1b3,Fish Tacos,7.87,132,,Grilled fish with slaw and lime
+c17673ee-f1cd-4ffb-82fd-4c30194161e1,cac9fa90-9232-4a17-9c57-bef26c02b1b3,Chocolate Cake,9.90,102,,Rich chocolate cake with ganache
+0c1d9581-e86e-413d-8843-cbabe04ff78f,cac9fa90-9232-4a17-9c57-bef26c02b1b3,Lasagna,21.71,218,,Layered pasta with beef ragù and béchamel
+b16b5f3a-4f23-4b67-8d6d-3d16d6154f35,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Ribeye Steak,6.12,225,,Grilled ribeye with herb butter
+de0b005c-a417-4896-a74e-12dcb90d62eb,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,BBQ Chicken Pizza,19.38,122,,"Smoky BBQ sauce, grilled chicken, and red onion"
+cfad7a43-e487-4c9c-811f-a88ee81ff602,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Bacon Burger,34.88,152,,"Crispy bacon, cheddar, and house sauce"
+75c8ed7d-8af8-4215-9b0b-e6f07f1e6b08,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Chocolate Cake,24.37,186,,Rich chocolate cake with ganache
+36d8a719-1876-43cc-8b0c-a62ea6695cb0,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,French Fries,14.04,108,,Golden fries with sea salt
+653b3b72-5f0e-4e3a-a499-eb6cea1fdec3,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Pepperoni Pizza,38.67,48,,Spicy pepperoni with mozzarella cheese
+260f41b6-7c94-4ed7-afbc-b05ba4036cac,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Cappuccino,33.79,240,,Espresso with steamed milk foam
+c9d8a2d7-4b92-44a5-8f4d-18a768c1d8f7,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Grilled Salmon,6.71,221,,Salmon fillet with lemon butter
+8a1d0842-68dc-403b-b8d4-1759374b56b7,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Caesar Salad,12.36,155,,"Romaine, parmesan, croutons, and Caesar dressing"
+1a0eb987-79e2-45d5-ae82-40a62bc9694f,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Mozzarella Sticks,22.57,106,,Fried mozzarella with marinara
+8c3002ce-2e5d-4e72-a0a4-33cf530b0ae5,d48fa2d2-902c-4b25-9b9e-ec6436cd1c87,Beef Tacos,30.65,61,,Seasoned beef tacos with salsa
+b2bdcbcc-6ba3-49a5-9baf-423611c0de6c,5db72890-753b-4f85-b750-242034f991fb,Sushi Combo,6.28,167,,Assorted sushi rolls with soy sauce
+bb5c8dc4-a14e-4de5-b88d-1c4583639ddd,5db72890-753b-4f85-b750-242034f991fb,Greek Salad,22.81,54,,"Feta, olives, cucumber, and oregano vinaigrette"
+5d9242e3-c118-49be-87e6-b47852d15b7b,5db72890-753b-4f85-b750-242034f991fb,Ribeye Steak,16.28,250,,Grilled ribeye with herb butter
+1409f735-1cf4-43f7-a41b-966c78da516a,5db72890-753b-4f85-b750-242034f991fb,Chicken Noodle Soup,12.10,42,,Hearty chicken broth with noodles
+50298f1d-bfaa-4cea-acde-1864671965d1,5db72890-753b-4f85-b750-242034f991fb,Chicken Alfredo,10.68,159,,Pasta in rich alfredo sauce with chicken
+8374ddd6-99a3-442b-91dc-88997669e19e,5db72890-753b-4f85-b750-242034f991fb,Chicken Noodle Soup,31.17,172,,Hearty chicken broth with noodles
+ca67d935-869f-46fb-8321-8f0430dc0ded,caf9e35b-295a-4e3c-a92b-fecd5187a1ea,Salmon Roll,38.13,165,,Fresh salmon with avocado and rice
+14f8d09e-963b-460e-b0b6-683037dcaeec,caf9e35b-295a-4e3c-a92b-fecd5187a1ea,Iced Tea,20.39,149,,Chilled black tea with lemon
+cab4692c-3dac-44e4-a7d3-990a2cd24f26,9b07d13c-cca8-44c2-b206-47361fa3c764,Cheesecake,28.29,230,,Creamy cheesecake with berry sauce
+f88ad1b6-a1cc-4dc8-99f5-6ccf0f4a3d1a,9b07d13c-cca8-44c2-b206-47361fa3c764,Fish Tacos,34.96,165,,Grilled fish with slaw and lime
+6a49e7c7-d112-4bb3-bdf5-ecd430cb2b43,9b07d13c-cca8-44c2-b206-47361fa3c764,Fish Tacos,8.99,22,,Grilled fish with slaw and lime
+87d6c4ac-982e-4b5f-89f6-04219f51e209,9b07d13c-cca8-44c2-b206-47361fa3c764,Latte,19.60,82,,Smooth espresso with milk
+352591e9-787e-4c41-954a-e342f8498bee,9b07d13c-cca8-44c2-b206-47361fa3c764,Pad Thai,25.03,95,,Rice noodles with peanuts and tamarind
+e97ca0f7-04ae-4a62-9825-f9681d773ce8,9b07d13c-cca8-44c2-b206-47361fa3c764,Bacon Burger,14.80,120,,"Crispy bacon, cheddar, and house sauce"
+6fc3d3e2-9671-4bc7-a8dd-80583ac12f6b,9b07d13c-cca8-44c2-b206-47361fa3c764,BBQ Chicken Pizza,5.57,217,,"Smoky BBQ sauce, grilled chicken, and red onion"
+7ca1c8a9-50a7-4ed1-92ee-4de18d927f9f,9b07d13c-cca8-44c2-b206-47361fa3c764,Kung Pao Chicken,6.29,226,,Spicy stir-fry with peanuts and peppers
+52a044f8-4c4f-474a-b9e8-82b38751e29d,9b07d13c-cca8-44c2-b206-47361fa3c764,Veggie Burger,25.89,134,,Plant-based patty with fresh vegetables
+d2269671-0628-45c5-a312-3b533730c583,9b07d13c-cca8-44c2-b206-47361fa3c764,Chicken Wings,20.34,146,,Crispy wings with buffalo sauce
+14c8099f-a69e-41e9-b274-09adb5e9d865,9b07d13c-cca8-44c2-b206-47361fa3c764,BBQ Chicken Pizza,19.87,212,,"Smoky BBQ sauce, grilled chicken, and red onion"
+588644ef-549c-4292-acfe-5774894587b8,9b07d13c-cca8-44c2-b206-47361fa3c764,Tuna Roll,15.20,126,,Tuna roll with sesame and nori
+33202883-fc1b-4aeb-9cfa-1361c7dff26e,9b07d13c-cca8-44c2-b206-47361fa3c764,Chicken Noodle Soup,38.36,120,,Hearty chicken broth with noodles
+bed3d260-6cb6-444c-999e-795336f6cce3,0b63100a-138f-40b2-8630-b528d411ab38,Chicken Burrito,39.26,26,,Large burrito with chicken and beans
+c94092e6-9de4-4123-a069-2867eb0af2b2,0b63100a-138f-40b2-8630-b528d411ab38,Salmon Roll,4.92,186,,Fresh salmon with avocado and rice
+d02d761b-2fbd-426f-b9fe-ae57e0f3ca80,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Cheesecake,22.58,161,,Creamy cheesecake with berry sauce
+0ff7696c-8b88-4c3c-bafe-8e8cd19b5c37,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Sushi Combo,16.75,239,,Assorted sushi rolls with soy sauce
+a275de53-7043-46ec-a046-0b59e20e8cda,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Kung Pao Chicken,17.60,203,,Spicy stir-fry with peanuts and peppers
+25f96771-a0b8-4d20-b01e-583f1b1a058d,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Chicken Burrito,28.21,18,,Large burrito with chicken and beans
+edb4985b-4caf-4347-ac81-d9993a4f5fa3,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Chicken Burrito,5.90,29,,Large burrito with chicken and beans
+344fda45-e53b-4c54-886c-3f7785e4040c,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Chicken Wings,13.84,190,,Crispy wings with buffalo sauce
+be74720f-cc10-42a0-8c6d-ee624f6aa6f5,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Chicken Noodle Soup,15.63,154,,Hearty chicken broth with noodles
+cc8021e1-cd8a-462a-b7ab-3e2763dec28b,0705da43-60fa-4a4b-813d-14a47a9c2a8d,Chicken Noodle Soup,36.87,84,,Hearty chicken broth with noodles
+14df2a5e-146e-4010-9b12-abd8a8526ff9,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Mozzarella Sticks,8.19,186,,Fried mozzarella with marinara
+4d403d11-a07d-4a60-a42d-6ce66ea02884,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Veggie Burger,14.77,101,,Plant-based patty with fresh vegetables
+f8cb7327-6fcd-48f5-8ed5-ad53c564d25b,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Chicken Burrito,33.10,176,,Large burrito with chicken and beans
+02410298-b49e-4950-9bec-0f3613c27fb4,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Veggie Burger,27.02,113,,Plant-based patty with fresh vegetables
+06428936-ad22-446a-8d26-5e285b86509c,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Grilled Salmon,4.16,84,,Salmon fillet with lemon butter
+26a1ded2-3cd6-4de1-84a3-a792ecba0267,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Salmon Roll,38.12,92,,Fresh salmon with avocado and rice
+23e698da-0c3f-4679-bec1-5077512c9baf,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Iced Tea,10.49,40,,Chilled black tea with lemon
+530cf1e6-8d45-40bc-bfae-347ef6aa64dd,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Chicken Noodle Soup,6.31,221,,Hearty chicken broth with noodles
+2d1713a5-7ca3-4c02-a7cf-c9a3f1ced676,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Caesar Salad,21.98,143,,"Romaine, parmesan, croutons, and Caesar dressing"
+e25fc3cb-9b08-4125-a342-ccc9d056e19c,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,BBQ Chicken Pizza,27.59,229,,"Smoky BBQ sauce, grilled chicken, and red onion"
+fe30f907-1f8c-4cab-8563-c6e87137525b,e5eaa708-e9c1-49fd-96a0-b07d7ebb44b6,Tomato Soup,25.24,44,,Creamy tomato soup with herbs
+a93fcf77-eb8a-453a-a4b9-6221bc81469b,b165da72-356b-4059-a4ef-cbf94ca19112,Salmon Roll,33.76,202,,Fresh salmon with avocado and rice
+11f057d7-43cf-4ace-ad4a-ef7fd4e366b0,b165da72-356b-4059-a4ef-cbf94ca19112,Sushi Combo,29.75,16,,Assorted sushi rolls with soy sauce
+3704600f-512c-4d0d-8ddb-2d4e524d08e4,b165da72-356b-4059-a4ef-cbf94ca19112,French Fries,16.76,189,,Golden fries with sea salt
+e1b8908b-75dc-40e6-bd73-254362b4b485,c1c742d2-62ca-4f96-9151-86f3bda48648,Cheesecake,25.73,197,,Creamy cheesecake with berry sauce
+3f2381b9-a535-4c3e-8989-628962b3175b,c1c742d2-62ca-4f96-9151-86f3bda48648,Cheesecake,12.02,66,,Creamy cheesecake with berry sauce
+46790885-a22b-4511-99d7-02ab3931ce63,c1c742d2-62ca-4f96-9151-86f3bda48648,Beef Tacos,38.65,205,,Seasoned beef tacos with salsa
+789ccba6-ae6b-4dc2-9552-f10efe2784ba,c1c742d2-62ca-4f96-9151-86f3bda48648,Latte,36.40,54,,Smooth espresso with milk
+6848e409-57c1-45b5-aeb7-2da060b56009,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Cheesecake,20.31,77,,Creamy cheesecake with berry sauce
+d791088c-142c-4f40-9112-9172b281bbb1,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Chicken Wings,21.81,112,,Crispy wings with buffalo sauce
+cfb44d21-e077-4ec9-9dc3-7d297f9b443d,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Sushi Combo,33.23,210,,Assorted sushi rolls with soy sauce
+2fcf03a0-86a9-4688-8efc-f6de242b3103,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Tomato Soup,35.28,18,,Creamy tomato soup with herbs
+c20b3090-d166-4fd9-91cf-3690eea10667,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Latte,35.32,146,,Smooth espresso with milk
+bbce0ef1-132f-4421-a37e-52c0d4ec45de,4c174cd9-4b60-4bb1-87b6-c3011a279b82,Caesar Salad,29.39,137,,"Romaine, parmesan, croutons, and Caesar dressing"
+e442baf2-bfd8-4463-a722-c34d710b4c95,28436492-7152-4223-a2f8-9466bd67ff1a,Greek Salad,13.88,200,,"Feta, olives, cucumber, and oregano vinaigrette"
+e2a313a7-4991-4f63-9916-847adf30f306,28436492-7152-4223-a2f8-9466bd67ff1a,Sushi Combo,13.43,236,,Assorted sushi rolls with soy sauce
+a1b34356-e5b8-470e-9897-517f9a622f9b,28436492-7152-4223-a2f8-9466bd67ff1a,Chicken Noodle Soup,33.75,28,,Hearty chicken broth with noodles
+8a1e1329-1b9f-400f-ad2a-d58651acf64a,28436492-7152-4223-a2f8-9466bd67ff1a,Lasagna,33.23,231,,Layered pasta with beef ragù and béchamel
+1791c706-3787-42c9-8ede-2b8207745f17,28436492-7152-4223-a2f8-9466bd67ff1a,Ribeye Steak,37.37,111,,Grilled ribeye with herb butter
+e1d9ba34-5afe-47df-a527-1e8f4db0c2ac,28436492-7152-4223-a2f8-9466bd67ff1a,Cheeseburger,17.93,100,,"Beef patty with cheddar, lettuce, and tomato"
+40ef6553-5632-4c8f-8211-44f2ee120e43,28436492-7152-4223-a2f8-9466bd67ff1a,Penne Arrabiata,17.56,25,,Penne pasta with spicy tomato sauce
+7f7d067e-0db7-4b6b-bcb8-fb2a2d5b9e6f,28436492-7152-4223-a2f8-9466bd67ff1a,Grilled Salmon,11.67,86,,Salmon fillet with lemon butter
+1212763f-4e33-4a98-8f24-6820f48bd55d,28436492-7152-4223-a2f8-9466bd67ff1a,Caesar Salad,34.05,171,,"Romaine, parmesan, croutons, and Caesar dressing"
+30ec82ec-d5d3-4f63-aee5-b983837262f5,28436492-7152-4223-a2f8-9466bd67ff1a,Chicken Burrito,32.31,40,,Large burrito with chicken and beans
+0f2d8f5a-59f4-467e-acf5-38e68fe73eaf,28436492-7152-4223-a2f8-9466bd67ff1a,BBQ Chicken Pizza,13.94,217,,"Smoky BBQ sauce, grilled chicken, and red onion"
+5817803f-2df7-42c7-a6f2-cfa482c5dee5,28436492-7152-4223-a2f8-9466bd67ff1a,Latte,28.84,40,,Smooth espresso with milk
+5aef1a51-ad4d-4e62-b61a-bb8cd7237721,28436492-7152-4223-a2f8-9466bd67ff1a,Latte,19.83,6,,Smooth espresso with milk
+d8c9b5d5-5e27-443a-a7c6-3c46aba937de,28436492-7152-4223-a2f8-9466bd67ff1a,Veggie Burger,4.19,60,,Plant-based patty with fresh vegetables
+7f93e25f-f818-4568-857b-d3d1d448913d,48afbea5-d08c-4960-80b6-0e29b0cac37a,Chicken Noodle Soup,23.48,191,,Hearty chicken broth with noodles
+c12c9cc4-cc16-4c40-ae67-7c8e41c55d74,48afbea5-d08c-4960-80b6-0e29b0cac37a,Chocolate Cake,7.55,78,,Rich chocolate cake with ganache
+ea2ce9f4-6234-466c-a92a-5cbf93bbc733,48afbea5-d08c-4960-80b6-0e29b0cac37a,Penne Arrabiata,14.46,17,,Penne pasta with spicy tomato sauce
+3ab9590d-be93-4b07-b490-256c2d8ebb26,48afbea5-d08c-4960-80b6-0e29b0cac37a,Penne Arrabiata,18.78,208,,Penne pasta with spicy tomato sauce
+65095ef2-57a9-4a7e-81f9-a51702e3bf30,48afbea5-d08c-4960-80b6-0e29b0cac37a,Cappuccino,5.79,219,,Espresso with steamed milk foam
+e7a85372-52f6-46d1-a316-121d062788df,48afbea5-d08c-4960-80b6-0e29b0cac37a,Iced Tea,25.22,9,,Chilled black tea with lemon
+bc517a0c-c4d2-4d75-b4f5-ccd49a8d8af4,48afbea5-d08c-4960-80b6-0e29b0cac37a,Penne Arrabiata,29.66,79,,Penne pasta with spicy tomato sauce
+3029b200-356c-4f19-be1e-b9c3ffecbd98,48afbea5-d08c-4960-80b6-0e29b0cac37a,Chocolate Cake,3.56,95,,Rich chocolate cake with ganache
+c223fa02-cb61-4994-ba79-d929dbc81ebf,48afbea5-d08c-4960-80b6-0e29b0cac37a,Penne Arrabiata,24.27,52,,Penne pasta with spicy tomato sauce
+e80bf0ba-335b-4ccd-a228-030e4cd2167a,48afbea5-d08c-4960-80b6-0e29b0cac37a,Veggie Burger,22.55,97,,Plant-based patty with fresh vegetables
+ad6b606a-5da1-493b-8d22-d581ce81c782,48afbea5-d08c-4960-80b6-0e29b0cac37a,Bacon Burger,38.20,144,,"Crispy bacon, cheddar, and house sauce"
+99ef82b2-2f77-4c9d-9805-ac81125c0002,48afbea5-d08c-4960-80b6-0e29b0cac37a,Pepperoni Pizza,17.71,125,,Spicy pepperoni with mozzarella cheese
+90b2a0ab-f776-4cc6-84a7-df37296cd4c0,48afbea5-d08c-4960-80b6-0e29b0cac37a,BBQ Chicken Pizza,26.64,100,,"Smoky BBQ sauce, grilled chicken, and red onion"
+b5b54028-3d54-4e51-bfbb-bbc220e154e9,48afbea5-d08c-4960-80b6-0e29b0cac37a,Chicken Alfredo,30.70,96,,Pasta in rich alfredo sauce with chicken
+54d5d4fa-bb48-4ce1-9fdf-9fba8d0b5bbd,d8b16b16-2cb5-498f-a859-48ed50d1013b,Bacon Burger,16.05,192,,"Crispy bacon, cheddar, and house sauce"
+91f38442-66c1-4f4a-94f3-cc38a8fa3f71,d8b16b16-2cb5-498f-a859-48ed50d1013b,Caesar Salad,31.58,193,,"Romaine, parmesan, croutons, and Caesar dressing"
+93d5ed62-0a9c-47da-a1ba-24f5961ac945,d8b16b16-2cb5-498f-a859-48ed50d1013b,Chicken Burrito,8.36,95,,Large burrito with chicken and beans
+9d13fdc4-d1c1-4f0c-aee5-440e0e525870,d8b16b16-2cb5-498f-a859-48ed50d1013b,Chicken Burrito,33.11,49,,Large burrito with chicken and beans
+c4b6a71c-fd69-4829-91ca-5d42635e4dd1,d8b16b16-2cb5-498f-a859-48ed50d1013b,Cappuccino,39.20,127,,Espresso with steamed milk foam
+40eef3e1-6230-4cf1-a496-125e08552e16,d8b16b16-2cb5-498f-a859-48ed50d1013b,Salmon Roll,33.04,21,,Fresh salmon with avocado and rice
+9917500c-c4a4-4c84-bde6-3d23fc771e81,d8b16b16-2cb5-498f-a859-48ed50d1013b,Cappuccino,4.85,56,,Espresso with steamed milk foam
+ffeb680a-a62f-453e-9fb5-669c72b69c9b,d8b16b16-2cb5-498f-a859-48ed50d1013b,BBQ Chicken Pizza,32.30,231,,"Smoky BBQ sauce, grilled chicken, and red onion"
+592a000d-5697-4586-a1de-4f5e4a18e661,d8b16b16-2cb5-498f-a859-48ed50d1013b,BBQ Chicken Pizza,14.99,84,,"Smoky BBQ sauce, grilled chicken, and red onion"
+4cf001f3-9ea0-4fae-a4fa-eff838f1ed48,d8b16b16-2cb5-498f-a859-48ed50d1013b,Mozzarella Sticks,39.50,144,,Fried mozzarella with marinara
+3032a441-1c3b-416b-bae3-5271ad4c4c7f,d8b16b16-2cb5-498f-a859-48ed50d1013b,Latte,12.72,197,,Smooth espresso with milk
+c79062c6-5567-4280-a988-8a6e29be09c2,d8b16b16-2cb5-498f-a859-48ed50d1013b,Tuna Roll,13.91,225,,Tuna roll with sesame and nori
+4463d01a-0bc0-4d97-9555-e9ba7e91dedc,d8b16b16-2cb5-498f-a859-48ed50d1013b,Cheeseburger,35.02,89,,"Beef patty with cheddar, lettuce, and tomato"
+1c82c6de-a85e-462b-b69b-193bdda20725,bc7ab29e-5e64-4633-bc65-42cc9733515d,Greek Salad,32.60,116,,"Feta, olives, cucumber, and oregano vinaigrette"
+a4d6139f-a3de-417f-87d6-df3a640d8c39,bc7ab29e-5e64-4633-bc65-42cc9733515d,Mozzarella Sticks,30.56,234,,Fried mozzarella with marinara
+a828432e-32b9-41d4-bec0-9616b87d4abc,bc7ab29e-5e64-4633-bc65-42cc9733515d,Chicken Wings,15.84,52,,Crispy wings with buffalo sauce
+84d8c487-45dc-4abd-b8bb-e9f045cdd2d0,bc7ab29e-5e64-4633-bc65-42cc9733515d,Iced Tea,28.69,99,,Chilled black tea with lemon
+60fb4bcd-b070-4edc-9792-b71da5996581,bc7ab29e-5e64-4633-bc65-42cc9733515d,Pad Thai,32.66,191,,Rice noodles with peanuts and tamarind
+a1066913-eea5-4750-81a1-b1400fcb5cfe,c5140b24-8800-46ac-8db5-a5c6946816fd,Veggie Burger,19.17,215,,Plant-based patty with fresh vegetables
+694f6011-594d-49cc-b38c-367d9d162508,c5140b24-8800-46ac-8db5-a5c6946816fd,Salmon Roll,23.36,87,,Fresh salmon with avocado and rice
+974b1628-5bfb-403d-a574-9589e3cfb7fe,c5140b24-8800-46ac-8db5-a5c6946816fd,Caesar Salad,6.41,174,,"Romaine, parmesan, croutons, and Caesar dressing"
+135d781d-f69b-4737-880f-79425e82ead2,c5140b24-8800-46ac-8db5-a5c6946816fd,Kung Pao Chicken,14.66,159,,Spicy stir-fry with peanuts and peppers
+66379c0f-2095-4d94-b3ac-df13a0477ff9,c5140b24-8800-46ac-8db5-a5c6946816fd,Chocolate Cake,9.57,118,,Rich chocolate cake with ganache
+07f68292-300d-465d-9a22-cb4a0f23e85c,c5140b24-8800-46ac-8db5-a5c6946816fd,Ribeye Steak,19.78,191,,Grilled ribeye with herb butter
+6fea0c40-6b50-4cde-ac26-7204172a3d53,c5140b24-8800-46ac-8db5-a5c6946816fd,Ribeye Steak,25.88,116,,Grilled ribeye with herb butter
+dce0df0c-394d-4dff-8da4-cda226e6590b,7ad9d861-59cc-44e7-b61c-d751aed9e8bd,Cheeseburger,6.23,168,,"Beef patty with cheddar, lettuce, and tomato"
+6fde7229-fff1-4e7a-b437-7d9be4148742,7ad9d861-59cc-44e7-b61c-d751aed9e8bd,Mozzarella Sticks,16.72,210,,Fried mozzarella with marinara
+cb92f17d-63ac-4531-9f62-bc97628f56a2,7ad9d861-59cc-44e7-b61c-d751aed9e8bd,Sushi Combo,38.18,41,,Assorted sushi rolls with soy sauce
+04f33e00-8b7e-412a-a0d1-d14d2d291006,7ad9d861-59cc-44e7-b61c-d751aed9e8bd,Cheesecake,4.77,22,,Creamy cheesecake with berry sauce
+12f153c8-0709-4d79-b797-899c3015af7e,7ad9d861-59cc-44e7-b61c-d751aed9e8bd,Penne Arrabiata,31.84,98,,Penne pasta with spicy tomato sauce
+30ccbf42-4325-448a-bbdc-daa47a9d8718,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Chicken Wings,38.06,13,,Crispy wings with buffalo sauce
+54505bbb-8386-447a-bb10-aa340a8a3ab5,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Chicken Noodle Soup,28.22,247,,Hearty chicken broth with noodles
+223bbad9-82ff-4e22-b372-08e665fc5e7d,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Grilled Salmon,17.04,200,,Salmon fillet with lemon butter
+4609fb27-1bf9-4c2e-b414-80749ce92b44,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Bacon Burger,24.39,140,,"Crispy bacon, cheddar, and house sauce"
+2decd6bf-33c6-4ba2-a769-04c781eb31c0,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Grilled Salmon,17.99,171,,Salmon fillet with lemon butter
+fc582ba9-7039-4187-9b7c-445868d294bd,f2a37a87-d18c-4201-a5f7-d2b8a2682c42,Pad Thai,12.59,34,,Rice noodles with peanuts and tamarind
+7b663fc2-cb9a-4799-880c-5a3afa0fc1a9,8f071d30-aac5-40dd-a1fe-0704ed301134,Salmon Roll,21.67,104,,Fresh salmon with avocado and rice
+223f07e9-efa3-4482-9c0b-e5ffa980bea1,a60bf696-9517-4ba2-8d57-5b876f0b6163,Greek Salad,13.03,71,,"Feta, olives, cucumber, and oregano vinaigrette"
+e11ec711-5b71-493b-ad29-341c995cb39f,a60bf696-9517-4ba2-8d57-5b876f0b6163,Cheesecake,11.31,161,,Creamy cheesecake with berry sauce
+cd60875c-b633-479a-8bec-a46761d7575e,a60bf696-9517-4ba2-8d57-5b876f0b6163,Kung Pao Chicken,28.76,130,,Spicy stir-fry with peanuts and peppers
+32b85d50-71e4-427f-956c-3cca9f64094a,a60bf696-9517-4ba2-8d57-5b876f0b6163,Tuna Roll,7.96,223,,Tuna roll with sesame and nori
+72307e0d-f3c9-4b94-a2dd-0b5ae5013c89,a60bf696-9517-4ba2-8d57-5b876f0b6163,Bacon Burger,19.95,235,,"Crispy bacon, cheddar, and house sauce"
+13c979bd-3fd2-46bc-a8b8-cb5532208306,a60bf696-9517-4ba2-8d57-5b876f0b6163,Cheesecake,39.80,212,,Creamy cheesecake with berry sauce
+41e8e16e-980a-4357-9f75-0081da342d19,a60bf696-9517-4ba2-8d57-5b876f0b6163,Fish Tacos,27.81,186,,Grilled fish with slaw and lime
+ee2e0734-d98d-45c5-b859-7d8942a8f5ac,a60bf696-9517-4ba2-8d57-5b876f0b6163,Bacon Burger,23.52,79,,"Crispy bacon, cheddar, and house sauce"
+b4b1f13a-ca6a-4889-b185-49fe8363d757,a60bf696-9517-4ba2-8d57-5b876f0b6163,Beef Tacos,34.49,187,,Seasoned beef tacos with salsa
+205ee9fc-bb19-4393-b7d2-22da397608e2,a60bf696-9517-4ba2-8d57-5b876f0b6163,Salmon Roll,32.39,135,,Fresh salmon with avocado and rice
+3c5c49e3-20be-49ab-b0cf-7c3c3e4a9743,a60bf696-9517-4ba2-8d57-5b876f0b6163,Lasagna,7.92,56,,Layered pasta with beef ragù and béchamel
+2f2850e1-8d16-4b1a-b2b4-86b933839a06,a60bf696-9517-4ba2-8d57-5b876f0b6163,Tomato Soup,12.12,131,,Creamy tomato soup with herbs
+558e79d7-cb07-4e2c-a46a-181a56a5e183,a60bf696-9517-4ba2-8d57-5b876f0b6163,Pepperoni Pizza,16.64,151,,Spicy pepperoni with mozzarella cheese
+7e81f9ca-8b73-4bc1-9d3f-82988fa88ae5,a60bf696-9517-4ba2-8d57-5b876f0b6163,Grilled Salmon,20.51,146,,Salmon fillet with lemon butter
+aa11d992-9fa0-4142-8784-b9fba5d7bf7a,a60bf696-9517-4ba2-8d57-5b876f0b6163,Tomato Soup,25.77,27,,Creamy tomato soup with herbs
+1950f610-f380-4fb3-8557-ccbb57dfe735,f2b103a9-d015-44a9-8171-cf16ee30e7ce,Beef Tacos,17.99,188,,Seasoned beef tacos with salsa
+2243cabd-0652-4d38-89ed-c446a361ffad,f2b103a9-d015-44a9-8171-cf16ee30e7ce,Latte,22.64,201,,Smooth espresso with milk
+4a91f8b4-8f9f-42f5-9d6e-fac4d44a0522,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Bacon Burger,8.06,86,,"Crispy bacon, cheddar, and house sauce"
+f64d0d26-ad00-4db6-ad09-a457291b4195,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Bacon Burger,19.88,179,,"Crispy bacon, cheddar, and house sauce"
+d0805bf1-fbc6-48ee-a8d3-4681e78a96d1,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Ribeye Steak,8.17,217,,Grilled ribeye with herb butter
+2b9cd84c-758c-4066-b045-0e6f175acd68,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Salmon Roll,31.45,38,,Fresh salmon with avocado and rice
+96a0fb33-9bf6-40a5-997e-ce8e0d277885,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Chocolate Cake,21.80,227,,Rich chocolate cake with ganache
+9cad6ca0-485d-4900-973b-ffbab81d0099,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Cheeseburger,33.76,137,,"Beef patty with cheddar, lettuce, and tomato"
+e7419406-79ff-442c-adb2-f8df7e2056d8,2435fab0-d6f6-4dc7-b9df-3b66c1c16135,Chicken Noodle Soup,14.57,46,,Hearty chicken broth with noodles
+c7891cba-9fad-46fd-b9fe-2d18bf1397ec,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Lasagna,16.10,245,,Layered pasta with beef ragù and béchamel
+1712fecd-545a-4734-98f1-678d1d6352fb,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Kung Pao Chicken,34.29,69,,Spicy stir-fry with peanuts and peppers
+dc9ed9cb-e824-4de3-a542-d89f9811d627,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Tuna Roll,26.62,146,,Tuna roll with sesame and nori
+fd7d7a7c-cf39-4a65-b06e-3831637aa212,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Pad Thai,8.06,82,,Rice noodles with peanuts and tamarind
+cb920a86-9603-4df1-a0c5-a6720a6b4c3d,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Veggie Burger,21.79,48,,Plant-based patty with fresh vegetables
+6d38e094-cf30-44c6-a4db-7a050a8900d1,ab089824-b06b-4fd9-b9c5-ebebb1269d1a,Chicken Noodle Soup,9.73,164,,Hearty chicken broth with noodles
+d1032d90-398c-4026-bbba-65040a86e6d7,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Chicken Burrito,34.17,149,,Large burrito with chicken and beans
+357266fa-7abe-45fe-8902-d92a68d211d2,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,BBQ Chicken Pizza,33.54,12,,"Smoky BBQ sauce, grilled chicken, and red onion"
+f418f95e-dbec-48b2-b0cd-1a2aa8b244e1,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Veggie Burger,5.15,169,,Plant-based patty with fresh vegetables
+a7e1a54b-ab46-461b-989d-67b2f495134e,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Chicken Alfredo,27.20,201,,Pasta in rich alfredo sauce with chicken
+fe20dd0d-baad-411e-a8c5-674d910e1cf9,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,French Fries,26.00,12,,Golden fries with sea salt
+d089eafd-d7e8-4121-9c2f-145c47969f5b,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Iced Tea,35.86,144,,Chilled black tea with lemon
+76a9d6ae-23fb-41b1-9682-b01180a1a8b4,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Kung Pao Chicken,26.87,82,,Spicy stir-fry with peanuts and peppers
+0e779408-3895-446b-846e-5fbf6b55d6a0,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Latte,12.41,211,,Smooth espresso with milk
+55aeb509-c6ed-4d88-9ade-e2b812cb00c6,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Mozzarella Sticks,14.33,23,,Fried mozzarella with marinara
+a214ea33-c3f7-4233-aaa9-eb4734442974,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Cheeseburger,9.25,111,,"Beef patty with cheddar, lettuce, and tomato"
+c2846214-7f77-4367-b89b-c9eb11b69cf0,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Latte,20.41,92,,Smooth espresso with milk
+a0dff2c4-c4c7-4e88-aacd-8e56b2547308,41228ed0-f87e-4f26-a015-4b0ceb2dd2a0,Chicken Noodle Soup,14.88,188,,Hearty chicken broth with noodles
+54d9e543-0fd8-4a08-9794-07f45e2770fb,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Ribeye Steak,39.00,38,,Grilled ribeye with herb butter
+8b8c97d0-f398-40a2-926e-4479f5cde19d,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Grilled Salmon,22.25,32,,Salmon fillet with lemon butter
+8f515a34-2020-4bee-b88d-881cd64916f9,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Fish Tacos,12.30,36,,Grilled fish with slaw and lime
+7cc9513d-9260-4ae3-90c2-5ca30540941c,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Pad Thai,19.87,41,,Rice noodles with peanuts and tamarind
+67fb2e0e-a35c-4b45-a312-6c00dea8169b,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Caesar Salad,5.34,247,,"Romaine, parmesan, croutons, and Caesar dressing"
+315284cc-421c-4ed1-bcdb-23edff3cdf94,11ed7330-a3a0-4f97-9d8d-be6f9a1f3ddf,Chicken Wings,34.96,112,,Crispy wings with buffalo sauce
+9ed223d9-ec26-4e55-99ad-3799c693504f,db4b5af3-7688-4b94-87ed-62720377b224,Sushi Combo,33.11,244,,Assorted sushi rolls with soy sauce
+7ad8d822-be7d-4ff1-a0fc-50f8bbecb02e,db4b5af3-7688-4b94-87ed-62720377b224,Fish Tacos,10.41,45,,Grilled fish with slaw and lime
+e050dbea-a3c4-445a-944d-8b0682fd63e4,db4b5af3-7688-4b94-87ed-62720377b224,Iced Tea,39.75,124,,Chilled black tea with lemon
+b5e9092e-74b2-421e-b64a-4ba46810c261,db4b5af3-7688-4b94-87ed-62720377b224,Iced Tea,35.50,132,,Chilled black tea with lemon
+71dea6b0-7233-4299-97be-15f7171a6df3,67f2c7fe-adad-4380-b2fa-c3cc4808110a,Veggie Burger,37.91,134,,Plant-based patty with fresh vegetables
+055930d6-498d-467e-b7be-75c7c27f65c2,a4f7a600-1191-4258-9ae5-bbd418f7293f,Penne Arrabiata,11.33,95,,Penne pasta with spicy tomato sauce
+03b4ca57-2caf-4555-baa0-92253bdbaa9a,a4f7a600-1191-4258-9ae5-bbd418f7293f,Cheeseburger,5.34,131,,"Beef patty with cheddar, lettuce, and tomato"
+f3fab3a6-f321-4188-ad42-15d65e0b9459,a4f7a600-1191-4258-9ae5-bbd418f7293f,Latte,13.90,7,,Smooth espresso with milk
+3c3302c8-3371-41a0-9a26-2103c3ca8e5a,a4f7a600-1191-4258-9ae5-bbd418f7293f,Caesar Salad,19.19,230,,"Romaine, parmesan, croutons, and Caesar dressing"
+f06ff7e0-c0ef-4079-90d6-a91b9110b796,a4f7a600-1191-4258-9ae5-bbd418f7293f,Chicken Alfredo,29.98,200,,Pasta in rich alfredo sauce with chicken
+c0208ee0-4c4b-4f0a-b2a0-2056467f7729,a4f7a600-1191-4258-9ae5-bbd418f7293f,Mozzarella Sticks,16.82,107,,Fried mozzarella with marinara
+bb5e5bc2-43d2-4476-9683-45054cac5cad,a4f7a600-1191-4258-9ae5-bbd418f7293f,Cheeseburger,24.26,54,,"Beef patty with cheddar, lettuce, and tomato"
+65fa1268-81b9-4225-8a1d-9a920ce4cbca,a4f7a600-1191-4258-9ae5-bbd418f7293f,Grilled Salmon,23.64,23,,Salmon fillet with lemon butter
+bb723771-12bf-4bec-99b8-2b6628b798eb,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Cheesecake,31.32,76,,Creamy cheesecake with berry sauce
+10c25a0c-24b6-430c-bf37-d77441aa0353,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Greek Salad,8.18,29,,"Feta, olives, cucumber, and oregano vinaigrette"
+e7765795-0db3-4091-bc3d-10c235cce3d7,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Mozzarella Sticks,17.08,91,,Fried mozzarella with marinara
+05f8b1ca-2a7e-4f6e-a07c-7b27e88989fd,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Grilled Salmon,30.98,55,,Salmon fillet with lemon butter
+cd9c4213-c30d-4eb1-916d-0c0a88099d92,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Mozzarella Sticks,21.70,16,,Fried mozzarella with marinara
+71bf8342-e8e7-47b3-ba17-cc42b3febc37,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,BBQ Chicken Pizza,8.49,90,,"Smoky BBQ sauce, grilled chicken, and red onion"
+4d2ee1ad-959a-49f7-baed-9cd2520d8baf,8d59f4e2-a01c-4e16-bf0b-46e19b23a2d8,Latte,22.40,43,,Smooth espresso with milk
+e4320378-dc92-46c6-be94-78d7867702d1,de924a15-0399-4792-a2b0-99637fc671b6,Tomato Soup,15.44,161,,Creamy tomato soup with herbs
+f4a5073b-a86e-4f6b-8215-3add951d3a44,de924a15-0399-4792-a2b0-99637fc671b6,Fish Tacos,9.42,162,,Grilled fish with slaw and lime
+475efa3d-95e5-4649-8b2e-afaecd7a1c1d,de924a15-0399-4792-a2b0-99637fc671b6,Beef Tacos,25.11,134,,Seasoned beef tacos with salsa
+626cc0c4-b80b-4ebc-89dc-16d0f3259c7a,de924a15-0399-4792-a2b0-99637fc671b6,Iced Tea,29.30,81,,Chilled black tea with lemon
+b30a3ade-68ed-4930-92e1-acd3157eb940,de924a15-0399-4792-a2b0-99637fc671b6,Latte,33.19,99,,Smooth espresso with milk
+adbe4e68-638e-460b-b2de-3b898cb3c929,de924a15-0399-4792-a2b0-99637fc671b6,Chicken Burrito,28.03,111,,Large burrito with chicken and beans
+0ce8401f-46bd-48c6-a58c-7e01c4fe73d2,de924a15-0399-4792-a2b0-99637fc671b6,Beef Tacos,32.50,190,,Seasoned beef tacos with salsa
+42f7a9ef-77f3-409f-af3b-e44874fc1f79,de924a15-0399-4792-a2b0-99637fc671b6,Pepperoni Pizza,25.23,72,,Spicy pepperoni with mozzarella cheese
+58d5900c-54ee-41d2-bedc-50cd3bfeaa9c,de924a15-0399-4792-a2b0-99637fc671b6,Lasagna,29.76,154,,Layered pasta with beef ragù and béchamel
+4f8810a9-574e-49dd-9519-5c54f43b43ea,de924a15-0399-4792-a2b0-99637fc671b6,Latte,9.71,166,,Smooth espresso with milk
+6ffe8ddb-01a6-4fba-a827-44245a49385e,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Chicken Wings,8.88,179,,Crispy wings with buffalo sauce
+7c2ba043-a956-47f3-a6dc-6f231e303c91,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Penne Arrabiata,4.65,247,,Penne pasta with spicy tomato sauce
+21500261-2bff-4f21-b921-59f4fa7b0d87,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Greek Salad,10.44,117,,"Feta, olives, cucumber, and oregano vinaigrette"
+51da1f47-bd16-46d5-9566-55b47c122ec8,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Fish Tacos,18.74,110,,Grilled fish with slaw and lime
+ad43c83d-1069-4b68-b066-84f4a44e33e2,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Spaghetti Carbonara,18.44,203,,Creamy pasta with pancetta and parmesan
+54c7f2d6-785c-41cb-a772-61ada0b0710d,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Latte,35.27,193,,Smooth espresso with milk
+9b2a9c5e-bc0e-4e17-a135-cf191627a8a9,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Cheeseburger,29.19,137,,"Beef patty with cheddar, lettuce, and tomato"
+da03e989-edfa-4af9-bb8f-a69d53efe14e,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Spaghetti Carbonara,23.92,174,,Creamy pasta with pancetta and parmesan
+760c9849-5010-4cc4-9806-e11733adc1aa,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Latte,22.63,85,,Smooth espresso with milk
+3c0bf1bb-a39f-46c6-9b74-7c46236a3744,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Salmon Roll,20.23,141,,Fresh salmon with avocado and rice
+79f4f9a2-8b5d-42da-b7c8-0d00fe86edbc,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Chicken Burrito,23.38,178,,Large burrito with chicken and beans
+cdeaf385-b0e5-4719-89f0-5a146d51f9c6,65cb1993-eb0a-4f3a-b1fb-bb199956ec46,Chicken Alfredo,25.71,54,,Pasta in rich alfredo sauce with chicken
+61be22f4-8605-46a5-8707-b4676236d22e,be6f934d-1965-4371-b40e-dce5bd3fa8b6,Pad Thai,23.81,62,,Rice noodles with peanuts and tamarind
+b92967f0-d764-47c4-8398-906e49389c0d,be6f934d-1965-4371-b40e-dce5bd3fa8b6,Beef Tacos,31.57,185,,Seasoned beef tacos with salsa
+d24fcea6-9169-4bdb-97b6-b022e8295f81,be6f934d-1965-4371-b40e-dce5bd3fa8b6,Spaghetti Carbonara,28.62,130,,Creamy pasta with pancetta and parmesan
+5a57012b-ea27-45f6-830f-19bbdb8421c5,be6f934d-1965-4371-b40e-dce5bd3fa8b6,Fish Tacos,20.96,148,,Grilled fish with slaw and lime
+aa83b0cf-bef0-4cfa-bd39-edfffe1d60d1,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Pad Thai,13.98,151,,Rice noodles with peanuts and tamarind
+5f3dd2ed-c00a-4c1f-9811-2c98c04ee4b2,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Chicken Wings,36.11,106,,Crispy wings with buffalo sauce
+94e514c3-fa68-4bcd-a61c-5c1f68c4895a,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Ribeye Steak,38.25,210,,Grilled ribeye with herb butter
+ecfceea7-dbf2-4c8e-8690-6096c2405c2f,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Chicken Noodle Soup,14.07,78,,Hearty chicken broth with noodles
+3ec84166-cb1a-4175-94d5-9eaa18eedb8d,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Veggie Burger,16.11,118,,Plant-based patty with fresh vegetables
+0ba2c97b-d3c2-4871-80e1-610b2a1c3e0e,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Chicken Alfredo,30.70,59,,Pasta in rich alfredo sauce with chicken
+1662a703-8595-4d66-8130-65c112fc8ad0,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Tuna Roll,33.64,74,,Tuna roll with sesame and nori
+913f5653-f3b3-4a26-9931-88c129fea3bc,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Pad Thai,8.50,162,,Rice noodles with peanuts and tamarind
+e83aefbc-6b66-451c-93d7-d7b7626b7261,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Penne Arrabiata,12.33,176,,Penne pasta with spicy tomato sauce
+c7f503a3-b48b-47ac-a25c-13e654f81d13,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Lasagna,26.72,18,,Layered pasta with beef ragù and béchamel
+6298842d-72b1-4e72-9bdf-4275cb828e9b,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Caesar Salad,18.54,188,,"Romaine, parmesan, croutons, and Caesar dressing"
+fbec5dfe-b576-4da9-a2fc-5ad7008d6770,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Latte,7.16,202,,Smooth espresso with milk
+def3c0be-7c3e-48c3-b536-5bcb73001168,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Tomato Soup,3.69,145,,Creamy tomato soup with herbs
+67c9e950-866a-4ba9-a3cd-df0b45dde0d1,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Sushi Combo,18.31,244,,Assorted sushi rolls with soy sauce
+9f9dcd78-2bb4-4abf-9615-639da1ee6ab6,dd39ab8f-c36e-4dad-90f8-a9fa3bdb54b8,Latte,20.88,56,,Smooth espresso with milk
+5a1609d9-c2bb-4ed3-9652-6cc1c70f1671,c9938b3a-9bb8-4778-96f0-354b266efe92,Kung Pao Chicken,15.19,170,,Spicy stir-fry with peanuts and peppers
+c8299569-b40c-4279-80eb-1aa8e04e2377,c9938b3a-9bb8-4778-96f0-354b266efe92,Cheeseburger,36.55,27,,"Beef patty with cheddar, lettuce, and tomato"
+0eacc394-0d5a-4cc8-9603-93843facde21,c9938b3a-9bb8-4778-96f0-354b266efe92,Lasagna,22.98,190,,Layered pasta with beef ragù and béchamel
+29f0a9a1-289e-45f9-8a45-386284a33d0a,c9938b3a-9bb8-4778-96f0-354b266efe92,BBQ Chicken Pizza,36.74,49,,"Smoky BBQ sauce, grilled chicken, and red onion"
+831ca444-1263-49ce-874d-34eafd8af5ee,c9938b3a-9bb8-4778-96f0-354b266efe92,French Fries,35.61,50,,Golden fries with sea salt
+ff28a8ce-d2bb-4461-8da7-7cae8f544476,c9938b3a-9bb8-4778-96f0-354b266efe92,BBQ Chicken Pizza,39.80,106,,"Smoky BBQ sauce, grilled chicken, and red onion"
+a8add277-814f-4dfe-b08f-6f1febae533c,c9938b3a-9bb8-4778-96f0-354b266efe92,Iced Tea,10.28,196,,Chilled black tea with lemon
+9fe6d9b1-5030-492b-8eb7-fd0a185153e5,c9938b3a-9bb8-4778-96f0-354b266efe92,Kung Pao Chicken,35.41,7,,Spicy stir-fry with peanuts and peppers
+fe6b4ac4-1c8e-4953-9cc6-14842497c1cf,c9938b3a-9bb8-4778-96f0-354b266efe92,Beef Tacos,24.17,32,,Seasoned beef tacos with salsa
+07b84c23-b4ff-49df-a261-35fa52a9e8dc,c9938b3a-9bb8-4778-96f0-354b266efe92,Chicken Burrito,13.86,169,,Large burrito with chicken and beans
+e32f27ee-a152-43dc-b1f4-dda0a23e2da2,c9938b3a-9bb8-4778-96f0-354b266efe92,Iced Tea,35.87,39,,Chilled black tea with lemon
+15367ac0-f858-4bfe-a9af-6ace2f9fdb18,c9938b3a-9bb8-4778-96f0-354b266efe92,Cappuccino,13.43,212,,Espresso with steamed milk foam
+0db30c35-a992-46aa-99a4-db1c9eb11292,c9938b3a-9bb8-4778-96f0-354b266efe92,Greek Salad,15.54,192,,"Feta, olives, cucumber, and oregano vinaigrette"
+3de70b9b-6e86-4312-90d6-3ba2176b1713,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Chicken Alfredo,29.66,8,,Pasta in rich alfredo sauce with chicken
+dc55ee59-7508-473f-bb6a-be90f08ae704,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Chicken Burrito,32.28,150,,Large burrito with chicken and beans
+9849b970-17ea-4e91-9b4f-763312b866ab,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Tuna Roll,9.89,224,,Tuna roll with sesame and nori
+007697c6-b696-4e16-8194-7b0dfbf06ad8,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Mozzarella Sticks,33.60,136,,Fried mozzarella with marinara
+fdd6c4de-ae54-44a3-8dbf-d2806e240041,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Fish Tacos,6.66,176,,Grilled fish with slaw and lime
+a7a1dc74-3a69-4bbc-8806-8b7df1499d21,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Caesar Salad,10.23,40,,"Romaine, parmesan, croutons, and Caesar dressing"
+055189e6-f0ab-4a87-bba3-d82bcd6990c5,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Latte,15.28,68,,Smooth espresso with milk
+0c557e74-cfc1-474f-83a4-a740d721284f,0d9adfd9-910a-4fba-8c3e-6494ed21305c,Margherita Pizza,12.99,65,,"Classic pizza with tomato, mozzarella, and basil"
+920c4c6d-cdec-40c1-b656-6eb59f445a2e,faad9638-ce60-41cd-ad7c-9b1c45b65264,Pad Thai,38.23,82,,Rice noodles with peanuts and tamarind
+7a7f4f92-9c40-49ad-864a-5fcf7c1182d5,faad9638-ce60-41cd-ad7c-9b1c45b65264,Margherita Pizza,13.02,97,,"Classic pizza with tomato, mozzarella, and basil"
+7ea3e879-0e3c-4e37-b1aa-3390ed408b9c,faad9638-ce60-41cd-ad7c-9b1c45b65264,Penne Arrabiata,5.76,35,,Penne pasta with spicy tomato sauce
+486c5b62-e957-4649-982b-6696bbb8df7f,faad9638-ce60-41cd-ad7c-9b1c45b65264,Cappuccino,14.67,108,,Espresso with steamed milk foam
+1285862f-b789-485f-9fc0-d0d1d07a23d2,faad9638-ce60-41cd-ad7c-9b1c45b65264,Beef Tacos,28.63,168,,Seasoned beef tacos with salsa
+5a2b84d6-36c7-4542-bbe5-cd681d6c510d,faad9638-ce60-41cd-ad7c-9b1c45b65264,Kung Pao Chicken,16.88,61,,Spicy stir-fry with peanuts and peppers
+43d68ae3-cf8b-4a8a-a494-e1a2f9147714,faad9638-ce60-41cd-ad7c-9b1c45b65264,Lasagna,38.35,127,,Layered pasta with beef ragù and béchamel
+76d57371-5613-4efe-927e-741c712b1d94,faad9638-ce60-41cd-ad7c-9b1c45b65264,Chicken Noodle Soup,20.06,160,,Hearty chicken broth with noodles
+159b49fc-72a4-4b4e-ab0c-1ef6a6efa7a4,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,French Fries,29.05,238,,Golden fries with sea salt
+eadb8e15-841e-4d0b-853c-dd1545ad01e5,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,Latte,31.07,210,,Smooth espresso with milk
+9f9472b6-c474-4d0f-a68a-ea38a42ec432,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,Spaghetti Carbonara,31.23,179,,Creamy pasta with pancetta and parmesan
+1304190a-291e-4687-81d5-4a59309dc6ab,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,Veggie Burger,22.63,140,,Plant-based patty with fresh vegetables
+044f4c3b-4826-4fc0-9fca-0d479763eaed,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,Grilled Salmon,6.34,149,,Salmon fillet with lemon butter
+e0316d85-3fa6-42d6-bc87-8074c19c27b5,4350f073-47e4-4e41-9dcf-0560fbc3cdd7,Greek Salad,5.75,145,,"Feta, olives, cucumber, and oregano vinaigrette"
+6232a823-a233-44a6-9951-42be10ff22a5,c96b9c37-3af0-4211-8a67-58c54f984fbb,Tuna Roll,24.35,43,,Tuna roll with sesame and nori
+69f95601-e13f-4119-861c-94328cf155d2,c96b9c37-3af0-4211-8a67-58c54f984fbb,Sushi Combo,15.44,138,,Assorted sushi rolls with soy sauce
+04c7c020-e859-41b1-9ab1-71016d7a940c,c96b9c37-3af0-4211-8a67-58c54f984fbb,Cheesecake,7.73,57,,Creamy cheesecake with berry sauce
+8fde9a63-20c3-48dd-bf8b-6b61316e244c,c96b9c37-3af0-4211-8a67-58c54f984fbb,Iced Tea,6.81,135,,Chilled black tea with lemon
+e10f79b0-366b-4306-a240-10b2880282d4,c96b9c37-3af0-4211-8a67-58c54f984fbb,Cheesecake,32.94,121,,Creamy cheesecake with berry sauce
+1be09fc0-9065-42b8-b9c9-0fcbf694dfa8,c96b9c37-3af0-4211-8a67-58c54f984fbb,Tomato Soup,22.18,121,,Creamy tomato soup with herbs
+53f27a4d-65ee-44b1-9ab6-4b7598947996,c96b9c37-3af0-4211-8a67-58c54f984fbb,Cheeseburger,23.84,177,,"Beef patty with cheddar, lettuce, and tomato"
+ebc41298-e4de-4d66-a6d9-7a246f1d453a,c96b9c37-3af0-4211-8a67-58c54f984fbb,Beef Tacos,29.83,106,,Seasoned beef tacos with salsa
+a5ff77df-5d42-417b-8e54-a35dbfd21b6f,c96b9c37-3af0-4211-8a67-58c54f984fbb,Chicken Alfredo,33.22,195,,Pasta in rich alfredo sauce with chicken
+36727b36-550d-4059-b032-926d6f52961d,c96b9c37-3af0-4211-8a67-58c54f984fbb,Spaghetti Carbonara,24.55,16,,Creamy pasta with pancetta and parmesan
+3da386ea-56e6-4659-92e5-f4661d1b27ea,c96b9c37-3af0-4211-8a67-58c54f984fbb,Chocolate Cake,16.04,21,,Rich chocolate cake with ganache
+68c8ca1b-208e-460e-a55c-edc90774fa9f,c96b9c37-3af0-4211-8a67-58c54f984fbb,Cheeseburger,37.52,22,,"Beef patty with cheddar, lettuce, and tomato"
+12acc342-44ab-42f7-9b27-84a1925dd2d8,c96b9c37-3af0-4211-8a67-58c54f984fbb,Latte,4.66,109,,Smooth espresso with milk
+a5276946-7e65-4a1e-be18-80b32c77e1d0,c96b9c37-3af0-4211-8a67-58c54f984fbb,Salmon Roll,31.49,201,,Fresh salmon with avocado and rice
+8c5914d3-59b1-489b-ae32-5f1a447e095d,c96b9c37-3af0-4211-8a67-58c54f984fbb,French Fries,17.13,233,,Golden fries with sea salt
+20b5e932-1a59-496b-822d-d584c87ddc09,51e06bee-0cc2-4082-9098-a13a3b3008e5,Cheesecake,35.15,237,,Creamy cheesecake with berry sauce
+b52e5e70-ab50-48ef-a0b3-74a340ae8c0c,51e06bee-0cc2-4082-9098-a13a3b3008e5,Chicken Wings,17.17,179,,Crispy wings with buffalo sauce
+9667b465-d4a2-46d0-ae90-51839c13f4ba,51e06bee-0cc2-4082-9098-a13a3b3008e5,Tomato Soup,27.29,94,,Creamy tomato soup with herbs
+de51578e-bcf3-4e73-a39d-e25deb1cc5fd,51e06bee-0cc2-4082-9098-a13a3b3008e5,Greek Salad,10.00,142,,"Feta, olives, cucumber, and oregano vinaigrette"
+26ad9123-3f74-4451-99f6-c91ac2db144c,51e06bee-0cc2-4082-9098-a13a3b3008e5,Mozzarella Sticks,22.75,191,,Fried mozzarella with marinara
+ec10ad0c-9876-4010-aefc-a7bea6e1bb44,51e06bee-0cc2-4082-9098-a13a3b3008e5,Lasagna,33.89,198,,Layered pasta with beef ragù and béchamel
+cd4bcda8-be82-45d3-bb64-d7e834dd01cf,51e06bee-0cc2-4082-9098-a13a3b3008e5,Pepperoni Pizza,39.12,123,,Spicy pepperoni with mozzarella cheese
+b008ef76-9023-4c81-a16a-8936bf6a1632,ea55aefe-b49d-4c57-8367-70086b59be22,Chocolate Cake,22.86,215,,Rich chocolate cake with ganache
+14e23f5b-b5a6-47e1-a555-f653e17bffb6,ea55aefe-b49d-4c57-8367-70086b59be22,Lasagna,12.51,93,,Layered pasta with beef ragù and béchamel
+71cb84cb-1ef1-4fdf-8a48-69237064f51f,ea55aefe-b49d-4c57-8367-70086b59be22,Chicken Noodle Soup,13.53,244,,Hearty chicken broth with noodles
+bd07524f-b017-42b5-b853-9407594c5165,ea55aefe-b49d-4c57-8367-70086b59be22,Greek Salad,4.67,174,,"Feta, olives, cucumber, and oregano vinaigrette"
+ad2b797e-6180-40a1-88a8-bc43b2e538b2,ea55aefe-b49d-4c57-8367-70086b59be22,French Fries,25.88,244,,Golden fries with sea salt
+d52d153f-7e3b-4870-89dd-8d890e4321a9,ea55aefe-b49d-4c57-8367-70086b59be22,Pepperoni Pizza,12.26,22,,Spicy pepperoni with mozzarella cheese
+9022e97e-bae8-4b7a-af39-1c3d4824b56e,ea55aefe-b49d-4c57-8367-70086b59be22,Caesar Salad,25.12,119,,"Romaine, parmesan, croutons, and Caesar dressing"
+ffc99ff2-a4a3-43ef-a740-821e435ff128,ea55aefe-b49d-4c57-8367-70086b59be22,Cheeseburger,12.41,16,,"Beef patty with cheddar, lettuce, and tomato"
+915bacc0-8911-48be-bb6d-2b6009f88a81,ea55aefe-b49d-4c57-8367-70086b59be22,Mozzarella Sticks,19.48,143,,Fried mozzarella with marinara
+1bf81fcc-1ca3-4229-94ea-a7a3543be282,ea55aefe-b49d-4c57-8367-70086b59be22,Spaghetti Carbonara,30.96,203,,Creamy pasta with pancetta and parmesan
+3a2d553d-d791-4c94-8234-3e64f7f5b96d,ea55aefe-b49d-4c57-8367-70086b59be22,Cheeseburger,8.60,79,,"Beef patty with cheddar, lettuce, and tomato"
+3a576a61-a422-4eb3-b52d-ce11972518e6,a95f8934-2119-4609-b487-34e9fdf7dc5b,Fish Tacos,24.52,202,,Grilled fish with slaw and lime
+10b1545a-527b-444a-abab-7ce40f7d72df,a95f8934-2119-4609-b487-34e9fdf7dc5b,Fish Tacos,12.12,229,,Grilled fish with slaw and lime
+8c733ef2-c014-4278-82f6-2abc4b0c44ae,a95f8934-2119-4609-b487-34e9fdf7dc5b,Chicken Noodle Soup,39.38,138,,Hearty chicken broth with noodles
+09e753e7-9f30-4de9-a14f-a99446cce34e,a95f8934-2119-4609-b487-34e9fdf7dc5b,Lasagna,18.55,75,,Layered pasta with beef ragù and béchamel
+d635b04b-250c-4111-a5fb-73fbc4df0e83,824a35e3-1701-48bf-9fed-c795b5261813,Salmon Roll,26.29,114,,Fresh salmon with avocado and rice
+7bcc28c6-c8cd-4cc2-b6d0-29e3428228e5,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Iced Tea,5.21,93,,Chilled black tea with lemon
+d68c3ede-cfd3-4a6b-b47f-f96c3b2be391,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Chicken Wings,32.10,86,,Crispy wings with buffalo sauce
+db2c98b5-3029-40e0-8864-5c64bcf943c9,415eec52-43cb-4eb1-aa8e-3a15aca1c683,French Fries,18.36,81,,Golden fries with sea salt
+95d11126-5017-42ed-ad6c-45746be48c10,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Chicken Wings,10.19,142,,Crispy wings with buffalo sauce
+3639369c-0732-420c-a731-0fb81ed077c0,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Latte,12.27,62,,Smooth espresso with milk
+2b8d68fd-dc97-4fe1-ab05-6180c7358cec,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Beef Tacos,34.71,41,,Seasoned beef tacos with salsa
+0a294afb-2b68-40de-9358-7181164ae026,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Cappuccino,36.80,148,,Espresso with steamed milk foam
+a2ce4408-f23d-4c06-bd0d-405245695aea,415eec52-43cb-4eb1-aa8e-3a15aca1c683,French Fries,38.73,147,,Golden fries with sea salt
+bb74f068-760b-4c69-afd9-336340d68388,415eec52-43cb-4eb1-aa8e-3a15aca1c683,Tomato Soup,17.64,70,,Creamy tomato soup with herbs
+cc7c01e4-8e28-4293-9c73-be8182c87d83,2f030c66-34ec-4ff0-a693-c55e0c307a50,Chicken Burrito,27.04,241,,Large burrito with chicken and beans
+b6f2e57b-da72-4026-ae8c-bfd5dd3ce266,2f030c66-34ec-4ff0-a693-c55e0c307a50,Cheesecake,34.34,28,,Creamy cheesecake with berry sauce
+6db52626-9e72-4404-8f7a-3377c90dc84f,2f030c66-34ec-4ff0-a693-c55e0c307a50,Tuna Roll,5.38,101,,Tuna roll with sesame and nori
+2218f587-4218-48d8-9c4f-407c3a8457de,2f030c66-34ec-4ff0-a693-c55e0c307a50,BBQ Chicken Pizza,35.30,53,,"Smoky BBQ sauce, grilled chicken, and red onion"
+bd9a59d2-fa70-42c5-acd4-0b3bbb9222da,a9f55102-40aa-4867-a82f-6b1df80c238b,Spaghetti Carbonara,20.95,227,,Creamy pasta with pancetta and parmesan
+583dc4c9-b647-4efe-918c-124dc4148ba8,a9f55102-40aa-4867-a82f-6b1df80c238b,Chicken Burrito,14.54,237,,Large burrito with chicken and beans
+f730c956-7f6f-4866-9edc-8d31f1f3c2d3,a9f55102-40aa-4867-a82f-6b1df80c238b,Margherita Pizza,11.21,53,,"Classic pizza with tomato, mozzarella, and basil"
+cbe32e9a-7efb-4770-9069-28dc46bb6ca8,a9f55102-40aa-4867-a82f-6b1df80c238b,Greek Salad,30.69,198,,"Feta, olives, cucumber, and oregano vinaigrette"
+ca7a461b-2ba9-4ac7-8f52-7acb7105a3ef,a9f55102-40aa-4867-a82f-6b1df80c238b,Latte,36.79,183,,Smooth espresso with milk
+e6a673ac-410f-4f6d-b8d7-2fe71f0ed0ca,a9f55102-40aa-4867-a82f-6b1df80c238b,Spaghetti Carbonara,17.94,66,,Creamy pasta with pancetta and parmesan
+58aabb94-48a5-4904-a01d-4edbf7809475,a9f55102-40aa-4867-a82f-6b1df80c238b,Fish Tacos,31.73,102,,Grilled fish with slaw and lime
+663c6a2d-fc0d-4832-b4f2-9e551f39bb07,a9f55102-40aa-4867-a82f-6b1df80c238b,Cappuccino,22.92,96,,Espresso with steamed milk foam
+eb3cc3b4-db00-4e07-b354-0b99721a0ca0,a9f55102-40aa-4867-a82f-6b1df80c238b,Beef Tacos,13.02,136,,Seasoned beef tacos with salsa
+e242a53f-afb2-4939-a4d0-5c4d325d9272,a9f55102-40aa-4867-a82f-6b1df80c238b,Iced Tea,20.46,210,,Chilled black tea with lemon
+22650a53-8888-43e5-acec-e84187e37e48,a9f55102-40aa-4867-a82f-6b1df80c238b,Latte,31.22,86,,Smooth espresso with milk
+9323cc1f-e078-4739-96eb-b370c51acdc3,a9f55102-40aa-4867-a82f-6b1df80c238b,Spaghetti Carbonara,16.99,110,,Creamy pasta with pancetta and parmesan
+c0ffe953-8103-40c1-81db-76f3a059b2e5,a9f55102-40aa-4867-a82f-6b1df80c238b,BBQ Chicken Pizza,23.98,61,,"Smoky BBQ sauce, grilled chicken, and red onion"
+54e5caba-e9ba-4659-9cc0-f40230ececd4,8137e2f5-613b-4591-8554-ac71fa928a5e,Chicken Noodle Soup,4.09,146,,Hearty chicken broth with noodles
+b120f21a-e5b3-4fbf-8f7d-59a4dcbaf027,8137e2f5-613b-4591-8554-ac71fa928a5e,French Fries,14.24,55,,Golden fries with sea salt
+6ed787e2-86ef-4370-aa6c-d1276a06ac07,8137e2f5-613b-4591-8554-ac71fa928a5e,Chicken Burrito,11.87,150,,Large burrito with chicken and beans
+68c9a7d5-f87b-4541-a45e-783b67060ad0,8137e2f5-613b-4591-8554-ac71fa928a5e,Penne Arrabiata,21.67,172,,Penne pasta with spicy tomato sauce
+abbad29a-a085-443c-87b3-20ea8f6202cd,8137e2f5-613b-4591-8554-ac71fa928a5e,Chicken Burrito,12.87,215,,Large burrito with chicken and beans
+55b2f843-ed6d-48ea-8dee-4aac368a30c9,8137e2f5-613b-4591-8554-ac71fa928a5e,Iced Tea,38.68,169,,Chilled black tea with lemon
+ba1ea888-9849-4c69-a341-7e6a7d5c8a97,8137e2f5-613b-4591-8554-ac71fa928a5e,Iced Tea,20.27,192,,Chilled black tea with lemon
+ea1d7792-4fcc-4287-8682-eb862b37b351,8137e2f5-613b-4591-8554-ac71fa928a5e,Ribeye Steak,9.66,189,,Grilled ribeye with herb butter
+9ea89e2e-2fd2-4b50-bb0a-aa85cb6077e1,8137e2f5-613b-4591-8554-ac71fa928a5e,Iced Tea,10.20,232,,Chilled black tea with lemon
+fc9a54bf-52ef-4628-953a-f395b30e51dc,8137e2f5-613b-4591-8554-ac71fa928a5e,Cheeseburger,22.57,219,,"Beef patty with cheddar, lettuce, and tomato"
+a2a7db32-44d1-4e2f-a4a4-020249bff823,8137e2f5-613b-4591-8554-ac71fa928a5e,Bacon Burger,37.90,176,,"Crispy bacon, cheddar, and house sauce"
+7c8b222f-cee3-4ad1-8cc6-88b17c914294,8137e2f5-613b-4591-8554-ac71fa928a5e,Cheeseburger,31.32,110,,"Beef patty with cheddar, lettuce, and tomato"
+5999e7db-460b-4169-85c7-faf7df77f04d,1c3b0182-039d-4f84-8868-ac116bd57ca2,Lasagna,5.97,43,,Layered pasta with beef ragù and béchamel
+92773aa8-6f5b-4957-9a4f-cdcbfab985c0,1c3b0182-039d-4f84-8868-ac116bd57ca2,Margherita Pizza,11.46,121,,"Classic pizza with tomato, mozzarella, and basil"
+a985385e-3544-42ad-842b-7e4c30a5df11,1c3b0182-039d-4f84-8868-ac116bd57ca2,Grilled Salmon,5.70,168,,Salmon fillet with lemon butter

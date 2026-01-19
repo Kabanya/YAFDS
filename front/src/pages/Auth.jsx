@@ -27,6 +27,7 @@ export default function Auth() {
   const [address, setAddress] = useState('')
   const [password, setPassword] = useState('')
   const [transportType, setTransportType] = useState('bicycle')
+  const [isActive, setIsActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -64,6 +65,7 @@ export default function Auth() {
       wallet_address: data.wallet_address || wallet,
       address: data.address || wallet,
       transport_type: data.transport_type,
+      is_active: data.is_active,
       status: data.status,
       token: data.token,
       expiration: Number(data.expiration) || 0,
@@ -89,7 +91,7 @@ export default function Auth() {
         }
 
         if (role === 'restaurant') {
-          body.status = true
+          body.is_active = isActive
         }
 
         if (role === 'courier') {
@@ -150,19 +152,31 @@ export default function Auth() {
             <>
               <input
                 type="text"
-                placeholder={role === 'restaurant' ? 'Restaurant Name' : 'Name (optional)'}
+                placeholder={role === 'restaurant' ? 'Restaurant Name' : 'Name'}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="auth-input"
+                required={role === 'customer' || role === 'restaurant'}
               />
               {(role === 'customer' || role === 'restaurant') && (
                 <input
                   type="text"
-                  placeholder="Address (optional)"
+                  placeholder="Address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="auth-input"
+                  required={role === 'customer' || role === 'restaurant'}
                 />
+              )}
+              {role === 'restaurant' && (
+                <label className="auth-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                  />
+                  <span>Restaurant is active</span>
+                </label>
               )}
               {role === 'courier' && (
                 <select

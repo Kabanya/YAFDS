@@ -16,12 +16,14 @@ const TransportType = "HTTP"
 type Handler struct {
 	userUseCase                usecase.UserUseCase
 	restaurantMenuItemsUseCase usecase.RestaurantMenuItemsUseCase
+	ordersUseCase              usecase.OrdersUseCase
 }
 
-func NewHandler(userUC usecase.UserUseCase, menuItemsUC usecase.RestaurantMenuItemsUseCase) *Handler {
+func NewHandler(userUC usecase.UserUseCase, menuItemsUC usecase.RestaurantMenuItemsUseCase, ordersUC usecase.OrdersUseCase) *Handler {
 	return &Handler{
 		userUseCase:                userUC,
 		restaurantMenuItemsUseCase: menuItemsUC,
+		ordersUseCase:              ordersUC,
 	}
 }
 
@@ -243,4 +245,49 @@ func (h *Handler) UploadMenuItem(w http.ResponseWriter, r *http.Request) {
 		"order_item_id": menuItem.OrderItemID,
 	}, http.StatusCreated)
 	logger.Printf("Menu item %s uploaded successfully for restaurant %s", menuItem.Name, menuItem.RestaurantID)
+}
+
+// ListOrders returns orders for a specific restaurant
+func (h *Handler) ListOrders(w http.ResponseWriter, r *http.Request) {
+	logger, _ := utils.Logger()
+	logger.Println("ListOrders called")
+
+	// CORS headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	restaurantIDStr := r.URL.Query().Get("restaurant_id")
+	if restaurantIDStr == "" {
+		utils.WriteError(w, "restaurant_id is required", http.StatusBadRequest)
+		return
+	}
+
+	restaurantID, err := utils.ParseUUID(restaurantIDStr)
+	if err != nil {
+		utils.WriteError(w, "invalid restaurant_id format", http.StatusBadRequest)
+		return
+	}
+
+	status := r.URL.Query().Get("status")
+
+	orders, err := h.ordersUseCase.ListOrdersByRestaurantID(r.Context(), restaurantID, status)
+	if err != nil {
+		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+		logger.Printf("Failed to list orders for restaurant %s: %v", restaurantID, err)
+		return
+	}
+
+	utils.WriteJSON(w, orders, http.StatusOK)
+	logger.Printf("Successfully retrieved %d orders for restaurant %s", len(orders), restaurantID)
 }

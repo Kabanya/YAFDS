@@ -13,8 +13,6 @@ import (
 	"strconv"
 	"time"
 
-	"customer/pkg/app"
-	pkg_repository "customer/pkg/repository"
 	"customer/pkg/utils"
 	"restaurant/internal/repository"
 	"restaurant/internal/service"
@@ -85,7 +83,7 @@ func Run() {
 	restaurantMenuItemsRepo := repository.NewRestaurantMenuItemsRepo(db)
 	logger.Println("Initialized restaurant menu items repository")
 
-	ordersRepository := pkg_repository.NewPostgresRepository(ordersDB, nil, nil)
+	ordersRepository := repository.NewOrdersRepo(ordersDB, db)
 	logger.Println("Initialized orders repository")
 
 	redisDB := 0
@@ -135,19 +133,25 @@ func Run() {
 	restaurantMenuItemsService := service.NewRestaurantMenuItemsService(restaurantMenuItemsRepo)
 	logger.Println("Initialized restaurant menu items service")
 
+	ordersService := service.NewOrdersService(ordersRepository)
+	logger.Println("Initialized orders service")
+
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
 	restaurantMenuItemsUseCase := usecase.NewRestaurantMenuItemsUseCase(restaurantMenuItemsService)
 	logger.Println("Initialized restaurant menu items usecase")
 
-	handler := NewHandler(userUseCase, restaurantMenuItemsUseCase)
+	ordersUseCase := usecase.NewOrdersUseCase(ordersService)
+	logger.Println("Initialized orders usecase")
+
+	handler := NewHandler(userUseCase, restaurantMenuItemsUseCase, ordersUseCase)
 	logger.Println("Initialized handler")
 
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))
+	http.HandleFunc("/orders", handler.ListOrders)
 	http.HandleFunc("/menu/show", handler.ShowMenuItems)
 	http.HandleFunc("/menu/upload", handler.UploadMenuItem)
 
@@ -159,7 +163,7 @@ func Run() {
 	logger.Println("Endpoints registered:")
 	logger.Printf("  POST http://localhost:%s/register - Register user with password", port)
 	logger.Printf("  POST http://localhost:%s/login - Login user with password", port)
-	logger.Printf("  GET  http://localhost:%s/orders - List orders", port)
+	logger.Printf("  GET  http://localhost:%s/orders?restaurant_id=<uuid> - List restaurant orders", port)
 	logger.Printf("  GET  http://localhost:%s/menu/show?restaurant_id=<uuid> - Show menu items", port)
 	logger.Printf("  POST http://localhost:%s/menu/upload - Upload menu item", port)
 	logger.Printf("Starting HTTP server on %s", addr)
