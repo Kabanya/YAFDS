@@ -18,6 +18,9 @@ export default function Dashboard() {
   const [couriers, setCouriers] = useState([])
   const [couriersLoading, setCouriersLoading] = useState(false)
   const [couriersError, setCouriersError] = useState('')
+  const [restaurants, setRestaurants] = useState([])
+  const [restaurantsLoading, setRestaurantsLoading] = useState(false)
+  const [restaurantsError, setRestaurantsError] = useState('')
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [createOrderError, setCreateOrderError] = useState('')
   const [selectedRestaurant, setSelectedRestaurant] = useState('')
@@ -37,6 +40,16 @@ export default function Dashboard() {
   const [menuSaving, setMenuSaving] = useState(false)
   const [menuSaveError, setMenuSaveError] = useState('')
   const [menuSaveSuccess, setMenuSaveSuccess] = useState('')
+  const [addItemModal, setAddItemModal] = useState(false)
+  const [addItemOrder, setAddItemOrder] = useState(null)
+  const [addItemRestaurantId, setAddItemRestaurantId] = useState('')
+  const [addItemMenu, setAddItemMenu] = useState([])
+  const [addItemMenuLoading, setAddItemMenuLoading] = useState(false)
+  const [addItemMenuError, setAddItemMenuError] = useState('')
+  const [addItemQuantities, setAddItemQuantities] = useState({})
+  const [addItemSaving, setAddItemSaving] = useState(false)
+  const [addItemError, setAddItemError] = useState('')
+  const [addItemSuccess, setAddItemSuccess] = useState('')
 
   const apiBaseByRole = useMemo(
     () => ({
@@ -147,6 +160,35 @@ export default function Dashboard() {
     return () => controller.abort()
   }, [apiBase, role])
 
+  useEffect(() => {
+    if (role !== 'customer') return
+
+    const controller = new AbortController()
+    const fetchRestaurants = async () => {
+      setRestaurantsLoading(true)
+      setRestaurantsError('')
+      try {
+        const response = await fetch(`${apiBase}/restaurants`, { signal: controller.signal })
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Не удалось получить рестораны')
+        }
+
+        setRestaurants(Array.isArray(data) ? data : [])
+      } catch (error) {
+        if (error.name === 'AbortError') return
+        setRestaurantsError(error.message)
+        setRestaurants([])
+      } finally {
+        setRestaurantsLoading(false)
+      }
+    }
+
+    fetchRestaurants()
+    return () => controller.abort()
+  }, [apiBase, role])
+
   const fetchMenuItems = async (signal) => {
     if (role !== 'restaurant') return
     const restaurantId = user?.id || user?.Id
@@ -250,6 +292,100 @@ export default function Dashboard() {
     }
   }
 
+  const openAddItemModal = (order) => {
+    setAddItemOrder(order)
+    setAddItemRestaurantId('')
+    setAddItemMenu([])
+    setAddItemQuantities({})
+    setAddItemMenuError('')
+    setAddItemError('')
+    setAddItemSuccess('')
+    setAddItemModal(true)
+  }
+
+  const fetchMenuForAddItem = async () => {
+    if (!addItemRestaurantId) {
+      setAddItemMenuError('Restaurant id is required')
+      return
+    }
+    setAddItemMenuLoading(true)
+    setAddItemMenuError('')
+    try {
+      const response = await fetch(
+        `${apiBase}/menu?restaurant_id=${addItemRestaurantId}`
+      )
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Не удалось получить меню ресторана')
+      }
+
+      setAddItemMenu(Array.isArray(data) ? data : [])
+      setAddItemQuantities({})
+    } catch (error) {
+      setAddItemMenuError(error.message)
+      setAddItemMenu([])
+    } finally {
+      setAddItemMenuLoading(false)
+    }
+  }
+
+  const handleAddItem = async () => {
+    if (!addItemOrder?.id) {
+      setAddItemError('Order id is missing')
+      return
+    }
+    if (!addItemRestaurantId) {
+      setAddItemError('Restaurant id is required')
+      return
+    }
+
+    const selected = addItemMenu
+      .map((item) => {
+        const id = item.order_item_id || item.orderItemID || item.id
+        const quantity = Number(addItemQuantities[id] || 0)
+        return { restaurant_item_id: id, quantity }
+      })
+      .filter((item) => item.quantity > 0)
+
+    if (selected.length === 0) {
+      setAddItemError('Please select one menu item')
+      return
+    }
+    if (selected.length > 1) {
+      setAddItemError('Please select only one item at a time')
+      return
+    }
+
+    setAddItemSaving(true)
+    setAddItemError('')
+    setAddItemSuccess('')
+
+    try {
+      const response = await fetch(`${apiBase}/orders/${addItemOrder.id}/items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          restaurant_id: addItemRestaurantId,
+          restaurant_item_id: selected[0].restaurant_item_id,
+          quantity: selected[0].quantity
+        })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to add item')
+      }
+
+      setAddItemSuccess('Item added to order')
+      setAddItemMenu([])
+      setAddItemQuantities({})
+    } catch (error) {
+      setAddItemError(error.message)
+    } finally {
+      setAddItemSaving(false)
+    }
+  }
+
   const fetchRestaurantMenuForOrder = async () => {
     if (!selectedRestaurant) {
       setRestaurantMenuError('Restaurant id is required')
@@ -259,7 +395,7 @@ export default function Dashboard() {
     setRestaurantMenuError('')
     try {
       const response = await fetch(
-        `${apiBase}/menu?restaurant_id=${selectedRestaurant}`
+        `${apiBase}/menu?restaurant_id=${selectedRestaurant.trim()}`
       )
       const data = await response.json()
 
@@ -267,7 +403,11 @@ export default function Dashboard() {
         throw new Error(data?.error || 'Не удалось получить меню ресторана')
       }
 
-      setRestaurantMenu(Array.isArray(data) ? data : [])
+      const menu = Array.isArray(data) ? data : []
+      if (menu.length === 0) {
+        setRestaurantMenuError('В этом ресторане пока нет доступных блюд')
+      }
+      setRestaurantMenu(menu)
       setOrderItems({})
     } catch (error) {
       setRestaurantMenuError(error.message)
@@ -416,6 +556,12 @@ export default function Dashboard() {
             </div>
           </header>
           <dl className="profile-list">
+            {role === 'restaurant' && (
+              <div>
+                <dt>Restaurant ID</dt>
+                <dd className="mono">{user?.id || user?.Id || '—'}</dd>
+              </div>
+            )}
             <div>
               <dt>Name</dt>
               <dd>{user?.name || '—'}</dd>
@@ -522,6 +668,15 @@ export default function Dashboard() {
                   <div className="order-status">
                     <p className="label">Status</p>
                     <span className="pill pill-ghost">{formatStatus(order.status)}</span>
+                    {role === 'customer' && (
+                      <button
+                        onClick={() => openAddItemModal(order)}
+                        className="dashboard-ghost"
+                        style={{ marginTop: '0.75rem' }}
+                      >
+                        Add item
+                      </button>
+                    )}
                   </div>
                   <div className="order-dates">
                     <p className="label">Created</p>
@@ -686,12 +841,10 @@ export default function Dashboard() {
                 </select>
               </div>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Restaurant id:</label>
-                <input
-                  type="text"
+                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Select Restaurant:</label>
+                <select
                   value={selectedRestaurant}
                   onChange={(e) => setSelectedRestaurant(e.target.value)}
-                  placeholder="Enter restaurant UUID"
                   style={{
                     width: '100%',
                     padding: '0.5rem',
@@ -700,7 +853,18 @@ export default function Dashboard() {
                     background: 'var(--bg)',
                     color: 'var(--text-main)'
                   }}
-                />
+                  disabled={restaurantsLoading || restaurants.length === 0}
+                >
+                  <option value="">Choose a restaurant...</option>
+                  {restaurantsLoading && <option disabled>Loading...</option>}
+                  {!restaurantsLoading && restaurantsError && <option disabled>{restaurantsError}</option>}
+                  {!restaurantsLoading && !restaurantsError && restaurants.length === 0 && <option disabled>No restaurants found</option>}
+                  {!restaurantsLoading && !restaurantsError && restaurants.map((restaurant) => (
+                    <option key={restaurant.id} value={restaurant.id}>
+                      {restaurant.name || restaurant.id}
+                    </option>
+                  ))}
+                </select>
                 <button
                   onClick={fetchRestaurantMenuForOrder}
                   className="dashboard-ghost"
@@ -789,6 +953,150 @@ export default function Dashboard() {
                   }}
                 >
                   {creatingOrder ? 'Creating...' : 'Create Order'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {addItemModal && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000
+            }}
+            onClick={() => setAddItemModal(false)}
+          >
+            <div
+              style={{
+                background: 'var(--card-bg)',
+                padding: '2rem',
+                borderRadius: '8px',
+                maxWidth: '420px',
+                width: '90%',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 style={{ marginTop: 0 }}>Add item to order</h3>
+              <p style={{ marginBottom: '1rem', opacity: 0.75 }}>
+                Order #{String(addItemOrder?.id || '').slice(0, 8)}
+              </p>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Restaurant id:</label>
+                <input
+                  type="text"
+                  value={addItemRestaurantId}
+                  onChange={(e) => setAddItemRestaurantId(e.target.value)}
+                  placeholder="Enter restaurant UUID"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg)',
+                    color: 'var(--text-main)'
+                  }}
+                />
+                <button
+                  onClick={fetchMenuForAddItem}
+                  className="dashboard-ghost"
+                  disabled={addItemMenuLoading || !addItemRestaurantId}
+                  style={{ marginTop: '0.5rem' }}
+                >
+                  {addItemMenuLoading ? 'Loading menu...' : 'Load menu'}
+                </button>
+                {addItemMenuError && (
+                  <div style={{ color: 'red', marginTop: '0.5rem' }}>{addItemMenuError}</div>
+                )}
+              </div>
+              {addItemMenu.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <p style={{ marginBottom: '0.5rem' }}>Menu items</p>
+                  <div style={{ display: 'grid', gap: '0.75rem' }}>
+                    {addItemMenu.map((item) => {
+                      const id = item.order_item_id || item.orderItemID || item.id
+                      return (
+                        <div
+                          key={id}
+                          style={{
+                            border: '1px solid var(--border)',
+                            borderRadius: '6px',
+                            padding: '0.75rem'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                            <div>
+                              <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
+                              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{item.description || '—'}</div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={addItemQuantities[id] || ''}
+                                onChange={(e) =>
+                                  setAddItemQuantities((prev) => ({
+                                    ...prev,
+                                    [id]: e.target.value
+                                  }))
+                                }
+                                placeholder="Qty"
+                                style={{
+                                  width: '72px',
+                                  marginTop: '0.4rem',
+                                  padding: '0.35rem',
+                                  borderRadius: '4px',
+                                  border: '1px solid var(--border)',
+                                  background: 'var(--bg)',
+                                  color: 'var(--text-main)'
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              {addItemError && (
+                <div style={{ color: 'red', marginBottom: '0.75rem' }}>{addItemError}</div>
+              )}
+              {addItemSuccess && (
+                <div style={{ color: 'green', marginBottom: '0.75rem' }}>{addItemSuccess}</div>
+              )}
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setAddItemModal(false)}
+                  className="dashboard-ghost"
+                  disabled={addItemSaving}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddItem}
+                  disabled={addItemSaving || !addItemRestaurantId}
+                  style={{
+                    background: 'var(--accent)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    cursor: addItemSaving ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {addItemSaving ? 'Adding...' : 'Add item'}
                 </button>
               </div>
             </div>

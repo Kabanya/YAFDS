@@ -53,11 +53,13 @@ type Repository interface {
 	CreateWithItems(ctx context.Context, order Order, items []OrderItemInput) (Order, error)
 	List(ctx context.Context, filter Filter) ([]Order, error)
 	Accept(ctx context.Context, input AcceptInput) (AcceptResult, error)
+	AddItem(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error
 }
 
 var (
 	ErrCustomerNotFound = errors.New("customer not found")
 	ErrCourierNotFound  = errors.New("courier not found")
+	ErrOrderNotFound    = errors.New("order not found")
 )
 
 type postgresRepository struct {
@@ -286,6 +288,51 @@ func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (Acc
 	}
 
 	return AcceptResult{OrderID: input.OrderID, Status: string(models.OrderStatusKitchenAccepted)}, nil
+}
+
+func (r *postgresRepository) AddItem(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error {
+	if r.ordersDB == nil {
+		return errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return errors.New("order_id must be a valid UUID")
+	}
+
+	tx, err := r.ordersDB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	var exists int
+	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE emp_id = $1", orderID).Scan(&exists); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrOrderNotFound
+		}
+		return err
+	}
+
+	const insertItemQuery = `
+		INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
+		VALUES ($1, $2, $3, $4, $5)
+	`
+	if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), orderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
+		return err
+	}
+
+	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE emp_id = $2", time.Now().UTC(), orderID); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *postgresRepository) ensureExists(ctx context.Context, db *sql.DB, query string, id uuid.UUID) (bool, error) {

@@ -36,6 +36,11 @@ type courierResponse struct {
 	Name string    `json:"name"`
 }
 
+type restaurantResponse struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 type createRequest struct {
 	CustomerID   string                   `json:"customer_id"`
 	CourierID    string                   `json:"courier_id"`
@@ -61,6 +66,12 @@ type acceptOrderRequest struct {
 	Items      []acceptOrderItemRequest `json:"items"`
 }
 
+type addOrderItemRequest struct {
+	RestaurantID     string `json:"restaurant_id"`
+	RestaurantItemID string `json:"restaurant_item_id"`
+	Quantity         int    `json:"quantity"`
+}
+
 type menuItemResponse struct {
 	OrderItemID  uuid.UUID `json:"order_item_id"`
 	RestaurantID uuid.UUID `json:"restaurant_id"`
@@ -72,6 +83,8 @@ type menuItemResponse struct {
 type RestaurantMenuClient interface {
 	GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]clients.RestaurantMenuItem, error)
 }
+
+const itemNotAvailableError = "ITEM_NOT_AVAILABLE"
 
 func NewHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
 	create := NewCreateHandler(repo, menuClient)
@@ -163,11 +176,15 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 			}
 			menuItem, ok := menuByID[itemID]
 			if !ok {
-				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id not found in restaurant menu", http.StatusBadRequest)
+				writeError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
 			if item.Quantity <= 0 {
 				writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+				return
+			}
+			if menuItem.Quantity <= 0 || item.Quantity > menuItem.Quantity {
+				writeError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
 			items = append(items, repository.OrderItemInput{
@@ -399,6 +416,180 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 	}
 }
 
+func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger, _ := utils.Logger()
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		path := strings.TrimPrefix(r.URL.Path, "/orders/")
+		path = strings.Trim(path, "/")
+		parts := strings.Split(path, "/")
+		if len(parts) != 2 {
+			writeError(w, "not found", http.StatusNotFound)
+			return
+		}
+
+		orderID, err := uuid.Parse(parts[0])
+		if err != nil {
+			writeError(w, "order_id must be UUID", http.StatusBadRequest)
+			return
+		}
+
+		switch parts[1] {
+		case "accept":
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+			if r.Method != http.MethodPost {
+				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+
+			var req acceptOrderRequest
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				writeError(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
+
+			customerID, err := uuid.Parse(req.CustomerID)
+			if err != nil {
+				writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			courierID, err := uuid.Parse(req.CourierID)
+			if err != nil {
+				writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			if len(req.Items) == 0 {
+				writeError(w, "items must not be empty", http.StatusBadRequest)
+				return
+			}
+
+			items := make([]repository.OrderItemInput, 0, len(req.Items))
+			for i, item := range req.Items {
+				restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
+				if err != nil {
+					writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+					return
+				}
+				if item.Quantity <= 0 {
+					writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+					return
+				}
+				if item.Price <= 0 {
+					writeError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
+					return
+				}
+				items = append(items, repository.OrderItemInput{
+					RestaurantItemID: restaurantItemID,
+					Price:            item.Price,
+					Quantity:         item.Quantity,
+				})
+			}
+
+			accepted, err := repo.Accept(r.Context(), repository.AcceptInput{
+				OrderID:    orderID,
+				CustomerID: customerID,
+				CourierID:  courierID,
+				Items:      items,
+			})
+			if err != nil {
+				logger.Printf("orders: accept failed: %v", err)
+				switch {
+				case errors.Is(err, ErrCustomerNotFound):
+					writeError(w, "customer_id not found", http.StatusBadRequest)
+				case errors.Is(err, ErrCourierNotFound):
+					writeError(w, "courier_id not found", http.StatusBadRequest)
+				default:
+					writeError(w, "failed to accept order", http.StatusInternalServerError)
+				}
+				return
+			}
+
+			writeJSON(w, accepted, http.StatusOK)
+		case "items":
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+			if r.Method != http.MethodPost {
+				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			if menuClient == nil {
+				writeError(w, "menu service unavailable", http.StatusInternalServerError)
+				return
+			}
+
+			var req addOrderItemRequest
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				writeError(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
+			restaurantID, err := uuid.Parse(req.RestaurantID)
+			if err != nil {
+				writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			restaurantItemID, err := uuid.Parse(req.RestaurantItemID)
+			if err != nil {
+				writeError(w, "restaurant_item_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			if req.Quantity <= 0 {
+				writeError(w, "quantity must be positive", http.StatusBadRequest)
+				return
+			}
+
+			menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
+			if err != nil {
+				logger.Printf("orders: fetch menu items failed: %v", err)
+				writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+				return
+			}
+			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+			for _, item := range menuItems {
+				menuByID[item.OrderItemID] = item
+			}
+			menuItem, ok := menuByID[restaurantItemID]
+			if !ok || menuItem.Quantity <= 0 || req.Quantity > menuItem.Quantity {
+				writeError(w, itemNotAvailableError, http.StatusConflict)
+				return
+			}
+
+			if err := repo.AddItem(r.Context(), orderID, repository.OrderItemInput{
+				RestaurantItemID: menuItem.OrderItemID,
+				Price:            menuItem.Price,
+				Quantity:         req.Quantity,
+			}); err != nil {
+				logger.Printf("orders: add item failed: %v", err)
+				switch {
+				case errors.Is(err, repository.ErrOrderNotFound):
+					writeError(w, "order_id not found", http.StatusNotFound)
+				default:
+					writeError(w, "failed to add order item", http.StatusInternalServerError)
+				}
+				return
+			}
+
+			writeJSON(w, map[string]any{
+				"order_id":           orderID,
+				"restaurant_item_id": menuItem.OrderItemID,
+				"quantity":           req.Quantity,
+				"price":              menuItem.Price,
+			}, http.StatusCreated)
+		default:
+			writeError(w, "not found", http.StatusNotFound)
+		}
+	}
+}
+
 func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger, _ := utils.Logger()
@@ -443,6 +634,53 @@ func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		writeJSON(w, couriers, http.StatusOK)
+	}
+}
+
+func NewRestaurantsHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger, _ := utils.Logger()
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method != http.MethodGet {
+			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		rows, err := db.QueryContext(r.Context(), "SELECT emp_id, name FROM RESTAURANTS WHERE status = TRUE")
+		if err != nil {
+			logger.Printf("orders: list restaurants failed: %v", err)
+			writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var restaurants []restaurantResponse
+		for rows.Next() {
+			var res restaurantResponse
+			if err := rows.Scan(&res.ID, &res.Name); err != nil {
+				logger.Printf("orders: scan restaurants failed: %v", err)
+				writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+				return
+			}
+			restaurants = append(restaurants, res)
+		}
+
+		if err := rows.Err(); err != nil {
+			logger.Printf("orders: iterate restaurants failed: %v", err)
+			writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+			return
+		}
+
+		writeJSON(w, restaurants, http.StatusOK)
 	}
 }
 

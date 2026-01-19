@@ -167,8 +167,9 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository, restaurantClient))
-	http.HandleFunc("/orders/", orderapp.NewAcceptHandler(ordersRepository))
+	http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient))
 	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
+	http.HandleFunc("/restaurants", orderapp.NewRestaurantsHandler(db))
 	http.HandleFunc("/menu", orderapp.NewRestaurantMenuHandler(restaurantClient))
 
 	logger.Println("Endpoints registered:")
@@ -176,7 +177,9 @@ func Run() {
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
 	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
 	logger.Println("  POST http://localhost:8091/orders/{order_id}/accept - Accept order")
+	logger.Println("  POST http://localhost:8091/orders/{order_id}/items - Add order item")
 	logger.Println("  GET http://localhost:8091/couriers - List active couriers")
+	logger.Println("  GET http://localhost:8091/restaurants - List active restaurants")
 	logger.Println("  GET http://localhost:8091/menu?restaurant_id=<uuid> - Show restaurant menu items")
 	logger.Println("Starting HTTP server on :8091")
 
