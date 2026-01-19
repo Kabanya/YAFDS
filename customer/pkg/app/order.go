@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -8,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"customer/pkg/clients"
 	"customer/pkg/repository"
 	"customer/pkg/utils"
 
@@ -35,9 +37,16 @@ type courierResponse struct {
 }
 
 type createRequest struct {
-	CustomerID string `json:"customer_id"`
-	CourierID  string `json:"courier_id"`
-	Status     string `json:"status"`
+	CustomerID   string                   `json:"customer_id"`
+	CourierID    string                   `json:"courier_id"`
+	RestaurantID string                   `json:"restaurant_id"`
+	Status       string                   `json:"status"`
+	Items        []createOrderItemRequest `json:"items"`
+}
+
+type createOrderItemRequest struct {
+	RestaurantItemID string `json:"restaurant_item_id"`
+	Quantity         int    `json:"quantity"`
 }
 
 type acceptOrderItemRequest struct {
@@ -52,8 +61,20 @@ type acceptOrderRequest struct {
 	Items      []acceptOrderItemRequest `json:"items"`
 }
 
-func NewHandler(repo Repository) http.HandlerFunc {
-	create := NewCreateHandler(repo)
+type menuItemResponse struct {
+	OrderItemID  uuid.UUID `json:"order_item_id"`
+	RestaurantID uuid.UUID `json:"restaurant_id"`
+	Name         string    `json:"name"`
+	Price        float64   `json:"price"`
+	Description  string    `json:"description"`
+}
+
+type RestaurantMenuClient interface {
+	GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]clients.RestaurantMenuItem, error)
+}
+
+func NewHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
+	create := NewCreateHandler(repo, menuClient)
 	list := NewListHandler(repo)
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +96,7 @@ func NewHandler(repo Repository) http.HandlerFunc {
 	}
 }
 
-func NewCreateHandler(repo Repository) http.HandlerFunc {
+func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger, _ := utils.Logger()
 		w.Header().Set("Content-Type", "application/json")
@@ -97,6 +118,10 @@ func NewCreateHandler(repo Repository) http.HandlerFunc {
 			writeError(w, "invalid request body", http.StatusBadRequest)
 			return
 		}
+		if menuClient == nil {
+			writeError(w, "menu service unavailable", http.StatusInternalServerError)
+			return
+		}
 
 		customerID, err := uuid.Parse(req.CustomerID)
 		if err != nil {
@@ -108,12 +133,55 @@ func NewCreateHandler(repo Repository) http.HandlerFunc {
 			writeError(w, "courier_id must be UUID", http.StatusBadRequest)
 			return
 		}
+		restaurantID, err := uuid.Parse(req.RestaurantID)
+		if err != nil {
+			writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+			return
+		}
+		if len(req.Items) == 0 {
+			writeError(w, "items must not be empty", http.StatusBadRequest)
+			return
+		}
 
-		created, err := repo.Create(r.Context(), Order{
+		menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
+		if err != nil {
+			logger.Printf("orders: fetch menu items failed: %v", err)
+			writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+			return
+		}
+		menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+		for _, item := range menuItems {
+			menuByID[item.OrderItemID] = item
+		}
+
+		items := make([]repository.OrderItemInput, 0, len(req.Items))
+		for i, item := range req.Items {
+			itemID, err := uuid.Parse(item.RestaurantItemID)
+			if err != nil {
+				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+				return
+			}
+			menuItem, ok := menuByID[itemID]
+			if !ok {
+				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id not found in restaurant menu", http.StatusBadRequest)
+				return
+			}
+			if item.Quantity <= 0 {
+				writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+				return
+			}
+			items = append(items, repository.OrderItemInput{
+				RestaurantItemID: menuItem.OrderItemID,
+				Price:            menuItem.Price,
+				Quantity:         item.Quantity,
+			})
+		}
+
+		created, err := repo.CreateWithItems(r.Context(), Order{
 			CustomerID: customerID,
 			CourierID:  courierID,
 			Status:     req.Status,
-		})
+		}, items)
 		if err != nil {
 			logger.Printf("orders: create failed: %v", err)
 			switch {
@@ -128,6 +196,60 @@ func NewCreateHandler(repo Repository) http.HandlerFunc {
 		}
 
 		writeJSON(w, created, http.StatusCreated)
+	}
+}
+
+func NewRestaurantMenuHandler(menuClient RestaurantMenuClient) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logger, _ := utils.Logger()
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if r.Method != http.MethodGet {
+			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		if menuClient == nil {
+			writeError(w, "menu service unavailable", http.StatusInternalServerError)
+			return
+		}
+
+		restaurantIDStr := r.URL.Query().Get("restaurant_id")
+		if restaurantIDStr == "" {
+			writeError(w, "restaurant_id is required", http.StatusBadRequest)
+			return
+		}
+		restaurantID, err := uuid.Parse(restaurantIDStr)
+		if err != nil {
+			writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+			return
+		}
+
+		items, err := menuClient.GetMenuItems(r.Context(), restaurantID)
+		if err != nil {
+			logger.Printf("menu: fetch restaurant items failed: %v", err)
+			writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+			return
+		}
+
+		response := make([]menuItemResponse, 0, len(items))
+		for _, item := range items {
+			response = append(response, menuItemResponse{
+				OrderItemID:  item.OrderItemID,
+				RestaurantID: item.RestaurantID,
+				Name:         item.Name,
+				Price:        item.Price,
+				Description:  item.Description,
+			})
+		}
+
+		writeJSON(w, response, http.StatusOK)
 	}
 }
 

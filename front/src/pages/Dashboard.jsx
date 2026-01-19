@@ -20,6 +20,11 @@ export default function Dashboard() {
   const [couriersError, setCouriersError] = useState('')
   const [creatingOrder, setCreatingOrder] = useState(false)
   const [createOrderError, setCreateOrderError] = useState('')
+  const [selectedRestaurant, setSelectedRestaurant] = useState('')
+  const [restaurantMenu, setRestaurantMenu] = useState([])
+  const [restaurantMenuLoading, setRestaurantMenuLoading] = useState(false)
+  const [restaurantMenuError, setRestaurantMenuError] = useState('')
+  const [orderItems, setOrderItems] = useState({})
   const [menuItems, setMenuItems] = useState([])
   const [menuItemsLoading, setMenuItemsLoading] = useState(false)
   const [menuItemsError, setMenuItemsError] = useState('')
@@ -195,6 +200,23 @@ export default function Dashboard() {
       setCreateOrderError('Please select a courier')
       return
     }
+    if (!selectedRestaurant) {
+      setCreateOrderError('Please provide a restaurant id')
+      return
+    }
+
+    const itemsPayload = restaurantMenu
+      .map((item) => {
+        const id = item.order_item_id || item.orderItemID || item.id
+        const quantity = Number(orderItems[id] || 0)
+        return { restaurant_item_id: id, quantity }
+      })
+      .filter((item) => item.quantity > 0)
+
+    if (itemsPayload.length === 0) {
+      setCreateOrderError('Please select at least one menu item')
+      return
+    }
     setCreatingOrder(true)
     setCreateOrderError('')
     try {
@@ -204,7 +226,9 @@ export default function Dashboard() {
         body: JSON.stringify({
           customer_id: user.id || user.Id,
           courier_id: selectedCourier,
-          status: 'created'
+          restaurant_id: selectedRestaurant,
+          status: 'created',
+          items: itemsPayload
         })
       })
       const data = await response.json()
@@ -213,6 +237,9 @@ export default function Dashboard() {
       }
       setCreateOrderModal(false)
       setSelectedCourier('')
+      setSelectedRestaurant('')
+      setRestaurantMenu([])
+      setOrderItems({})
       // Refresh orders
       setStatusFilter('')
       // Orders will refresh automatically due to useEffect
@@ -220,6 +247,33 @@ export default function Dashboard() {
       setCreateOrderError(error.message)
     } finally {
       setCreatingOrder(false)
+    }
+  }
+
+  const fetchRestaurantMenuForOrder = async () => {
+    if (!selectedRestaurant) {
+      setRestaurantMenuError('Restaurant id is required')
+      return
+    }
+    setRestaurantMenuLoading(true)
+    setRestaurantMenuError('')
+    try {
+      const response = await fetch(
+        `${apiBase}/menu?restaurant_id=${selectedRestaurant}`
+      )
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.error || 'Не удалось получить меню ресторана')
+      }
+
+      setRestaurantMenu(Array.isArray(data) ? data : [])
+      setOrderItems({})
+    } catch (error) {
+      setRestaurantMenuError(error.message)
+      setRestaurantMenu([])
+    } finally {
+      setRestaurantMenuLoading(false)
     }
   }
 
@@ -631,6 +685,86 @@ export default function Dashboard() {
                   ))}
                 </select>
               </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Restaurant id:</label>
+                <input
+                  type="text"
+                  value={selectedRestaurant}
+                  onChange={(e) => setSelectedRestaurant(e.target.value)}
+                  placeholder="Enter restaurant UUID"
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg)',
+                    color: 'var(--text-main)'
+                  }}
+                />
+                <button
+                  onClick={fetchRestaurantMenuForOrder}
+                  className="dashboard-ghost"
+                  disabled={restaurantMenuLoading || !selectedRestaurant}
+                  style={{ marginTop: '0.5rem' }}
+                >
+                  {restaurantMenuLoading ? 'Loading menu...' : 'Load menu'}
+                </button>
+                {restaurantMenuError && (
+                  <div style={{ color: 'red', marginTop: '0.5rem' }}>{restaurantMenuError}</div>
+                )}
+              </div>
+              {restaurantMenu.length > 0 && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <p style={{ marginBottom: '0.5rem' }}>Menu items</p>
+                  <div style={{ display: 'grid', gap: '0.75rem' }}>
+                    {restaurantMenu.map((item) => {
+                      const id = item.order_item_id || item.orderItemID || item.id
+                      return (
+                        <div
+                          key={id}
+                          style={{
+                            border: '1px solid var(--border)',
+                            borderRadius: '6px',
+                            padding: '0.75rem'
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                            <div>
+                              <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
+                              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{item.description || '—'}</div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={orderItems[id] || ''}
+                                onChange={(e) =>
+                                  setOrderItems((prev) => ({
+                                    ...prev,
+                                    [id]: e.target.value
+                                  }))
+                                }
+                                placeholder="Qty"
+                                style={{
+                                  width: '72px',
+                                  marginTop: '0.4rem',
+                                  padding: '0.35rem',
+                                  borderRadius: '4px',
+                                  border: '1px solid var(--border)',
+                                  background: 'var(--bg)',
+                                  color: 'var(--text-main)'
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
               {createOrderError && (
                 <div style={{ color: 'red', marginBottom: '1rem' }}>{createOrderError}</div>
               )}

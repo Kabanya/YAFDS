@@ -122,7 +122,7 @@ build-all: launch-db build-restaurant
 
 launch-all: launch-docker launch-redis launch-db launch-restaurant
 
-clear-all: clear-redis clear-db clear-restaurant
+clear-all: clear-redis clear-restaurant
 	@echo "All containers removed!"
 
 stop-all:

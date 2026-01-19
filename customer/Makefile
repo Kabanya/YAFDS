@@ -124,6 +124,7 @@ launch-customer:
 		docker run --name $(CUSTOMER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
+			-e RESTAURANT_API_URL=http://host.docker.internal:8092 \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
 			-e REDIS_DB=$(REDIS_DB) \
 			-e SESSION_TTL=$(SESSION_TTL) \

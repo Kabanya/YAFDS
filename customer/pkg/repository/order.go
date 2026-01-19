@@ -50,6 +50,7 @@ type AcceptResult struct {
 
 type Repository interface {
 	Create(ctx context.Context, order Order) (Order, error)
+	CreateWithItems(ctx context.Context, order Order, items []OrderItemInput) (Order, error)
 	List(ctx context.Context, filter Filter) ([]Order, error)
 	Accept(ctx context.Context, input AcceptInput) (AcceptResult, error)
 }
@@ -98,6 +99,65 @@ func (r *postgresRepository) Create(ctx context.Context, order Order) (Order, er
 
 	_, err := r.ordersDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status)
 	if err != nil {
+		return Order{}, err
+	}
+	return order, nil
+}
+
+func (r *postgresRepository) CreateWithItems(ctx context.Context, order Order, items []OrderItemInput) (Order, error) {
+	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
+		return Order{}, errors.New("orders repository not fully initialized")
+	}
+	if len(items) == 0 {
+		return Order{}, errors.New("items must not be empty")
+	}
+
+	now := time.Now().UTC()
+	if order.ID == uuid.Nil {
+		order.ID = uuid.New()
+	}
+	order.CreatedAt = now
+	order.UpdatedAt = now
+	if strings.TrimSpace(order.Status) == "" {
+		order.Status = "created"
+	}
+
+	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", order.CustomerID); err != nil {
+		return Order{}, err
+	}
+	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", order.CourierID); err != nil {
+		return Order{}, err
+	}
+
+	tx, err := r.ordersDB.BeginTx(ctx, nil)
+	if err != nil {
+		return Order{}, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	const insertOrderQuery = `
+		INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
+		VALUES ($1, $2, $3, $4, $5, $6)
+	`
+	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status); err != nil {
+		return Order{}, err
+	}
+
+	const insertItemQuery = `
+		INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
+		VALUES ($1, $2, $3, $4, $5)
+	`
+	for _, item := range items {
+		if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), order.ID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
+			return Order{}, err
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
 		return Order{}, err
 	}
 	return order, nil

@@ -17,6 +17,7 @@ import (
 	"customer/internal/service"
 	"customer/internal/usecase"
 	orderapp "customer/pkg/app"
+	"customer/pkg/clients"
 	orderrepo "customer/pkg/repository"
 	"customer/pkg/utils"
 
@@ -105,6 +106,13 @@ func Run() {
 	ordersRepository := orderrepo.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
+	restaurantAPIURL := os.Getenv("RESTAURANT_API_URL")
+	if restaurantAPIURL == "" {
+		restaurantAPIURL = "http://localhost:8092"
+	}
+	restaurantClient := clients.NewHTTPRestaurantClient(restaurantAPIURL)
+	logger.Printf("Initialized restaurant client with base URL: %s", restaurantAPIURL)
+
 	redisDB := 0
 	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
 		if parsed, err := strconv.Atoi(redisDBStr); err == nil {
@@ -158,9 +166,10 @@ func Run() {
 	// registry endpoints
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository))
+	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository, restaurantClient))
 	http.HandleFunc("/orders/", orderapp.NewAcceptHandler(ordersRepository))
 	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
+	http.HandleFunc("/menu", orderapp.NewRestaurantMenuHandler(restaurantClient))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
@@ -168,6 +177,7 @@ func Run() {
 	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
 	logger.Println("  POST http://localhost:8091/orders/{order_id}/accept - Accept order")
 	logger.Println("  GET http://localhost:8091/couriers - List active couriers")
+	logger.Println("  GET http://localhost:8091/menu?restaurant_id=<uuid> - Show restaurant menu items")
 	logger.Println("Starting HTTP server on :8091")
 
 	err = http.ListenAndServe(":8091", nil)

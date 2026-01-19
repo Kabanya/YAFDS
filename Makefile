@@ -95,20 +95,14 @@ setup-python-env:
 	@. .venv-yafds/bin/activate && pip install --upgrade pip setuptools wheel > /dev/null 2>&1
 	@. .venv-yafds/bin/activate && pip install tqdm colorama pandas psycopg2-binary requests > /dev/null 2>&1
 	@echo "$(GREEN)✅ Зависимости установлены: tqdm, colorama, pandas, psycopg2, requests$(RESET)"
-	@echo "$(GREEN)🚀 Запуск всех сервисов YAFDS...$(RESET)"
-	@echo "$(CYAN)Step 1/4: Запуск Customer сервиса$(RESET)"
+
+start: check-docker
+	@echo "$(GREEN)🚀 Запуск всех сервисов (полный деплой)...$(RESET)"
 	@cd customer && $(MAKE) run
-	@echo ""
-	@echo "$(CYAN)Step 2/4: Запуск Courier сервиса$(RESET)"
 	@cd courier && $(MAKE) run
-	@echo ""
-	@echo "$(CYAN)Step 3/4: Запуск Restaurant сервиса$(RESET)"
 	@cd restaurant && $(MAKE) run
-	@echo ""
-	@echo "$(CYAN)Step 4/4: Запуск Frontend$(RESET)"
 	@cd front && $(MAKE) run
-	@echo ""
-	@echo "$(GREEN)✅ Все сервисы успешно запущены!$(RESET)"
+	@echo "$(GREEN)✅ Все сервисы запущены!$(RESET)"
 	@$(MAKE) status
 
 start-dev: check-docker setup-python-env
@@ -129,7 +123,7 @@ start-dev: check-docker setup-python-env
 		echo "$(YELLOW)⚠️  send_requests.py не найден, пропускаем загрузку тестовых данных$(RESET)"; \
 	fi
 
-run: start-dev
+run: db-clean clean-all start-dev
 
 stop:
 	@echo "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"

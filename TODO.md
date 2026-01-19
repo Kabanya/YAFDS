@@ -1,3 +1,17 @@
+##### courier
+0x5647445a3e564b189fc35a75079fc924 aad9D6C7e9R7
+0xc56289d4aabb42149853763cfa77262d cdS8ZrCsdp6Q
+
+##### customer
+0x742d35Cc6634C0532925a3b844Bc454e4438f44e StrongPass001
+0x1f9840a85d5af5bf1d1762f925bdaddc4201f984 MySecret003
+
+##### restaurant
+0xbd2f054c1faa44b2a561c47dd1a0a367 JO88M0Rtf0BG   ee4ef0d3-7ee3-4cdc-9adb-cd36a8971c8a
+0x851db72d3ba64acab39cd825ed82dea6 MqFhwJG8N6NO
+
+
+
 в нашем корпоративном? мире в pkg тоже самое что и в основном (структура)
 
 запросить доку репозитория
