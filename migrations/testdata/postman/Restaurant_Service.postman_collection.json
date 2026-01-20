@@ -1,0 +1,622 @@
+{
+	"info": {
+		"_postman_id": "restaurant-service-collection",
+		"name": "Restaurant Service",
+		"description": "Complete API testing collection for Restaurant Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{restaurant_base_url}}/health",
+					"host": [
+						"{{restaurant_base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the restaurant service is running"
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has status UP\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql(\"UP\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Authentication",
+			"item": [
+				{
+					"name": "Register Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{restaurant_name}}\",\n    \"wallet_address\": \"{{restaurant_wallet_address}}\",\n    \"address\": \"{{restaurant_address}}\",\n    \"is_active\": true,\n    \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/register",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "Register a new restaurant account"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"restaurant_id\", jsonData.id);",
+									"    pm.environment.set(\"restaurant_id\", jsonData.id);",
+									"    console.log(\"Restaurant ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Login Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"wallet_address\": \"{{restaurant_wallet_address}}\",\n    \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/login",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Login and get authentication token"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"restaurant_token\", jsonData.token);",
+									"    pm.collectionVariables.set(\"restaurant_id\", jsonData.id);",
+									"    pm.environment.set(\"restaurant_token\", jsonData.token);",
+									"    pm.environment.set(\"restaurant_id\", jsonData.id);",
+									"    console.log(\"Token saved:\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "3. Menu Management",
+			"item": [
+				{
+					"name": "Upload Menu Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant_id\": \"{{restaurant_id}}\",\n    \"name\": \"{{menu_item_name}}\",\n    \"price\": {{menu_item_price}},\n    \"quantity\": {{menu_item_quantity}},\n    \"description\": \"{{menu_item_description}}\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/menu-items",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"menu-items"
+							]
+						},
+						"description": "Upload a new menu item to the restaurant menu"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"order_item_id\", jsonData.order_item_id);",
+									"    pm.environment.set(\"order_item_id\", jsonData.order_item_id);",
+									"    console.log(\"Menu item ID saved:\", jsonData.order_item_id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Upload Multiple Menu Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant_id\": \"{{restaurant_id}}\",\n    \"name\": \"Gourmet Burger\",\n    \"price\": 12.99,\n    \"quantity\": 50,\n    \"description\": \"Premium beef burger with secret sauce\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/menu-items",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"menu-items"
+							]
+						},
+						"description": "Upload a second menu item"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Show Menu Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{restaurant_base_url}}/menu-items?restaurant_id={{restaurant_id}}",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"menu-items"
+							],
+							"query": [
+								{
+									"key": "restaurant_id",
+									"value": "{{restaurant_id}}"
+								}
+							]
+						},
+						"description": "Get all menu items for a specific restaurant"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(\"Menu items count:\", jsonData.length);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "4. Order Management",
+			"item": [
+				{
+					"name": "List All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{restaurant_base_url}}/orders?restaurant_id={{restaurant_id}}",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "restaurant_id",
+									"value": "{{restaurant_id}}"
+								}
+							]
+						},
+						"description": "Get all orders for the restaurant"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "List Orders by Status (Created)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{restaurant_base_url}}/orders?restaurant_id={{restaurant_id}}&status=created",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "restaurant_id",
+									"value": "{{restaurant_id}}"
+								},
+								{
+									"key": "status",
+									"value": "created"
+								}
+							]
+						},
+						"description": "Get orders filtered by status"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an(\"array\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "List Orders by Status (Completed)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{restaurant_base_url}}/orders?restaurant_id={{restaurant_id}}&status=completed",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "restaurant_id",
+									"value": "{{restaurant_id}}"
+								},
+								{
+									"key": "status",
+									"value": "completed"
+								}
+							]
+						},
+						"description": "Get completed orders"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "5. Test Scenarios",
+			"item": [
+				{
+					"name": "Complete Workflow Test",
+					"request": null,
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This is a folder for running the complete workflow",
+									"// Run requests in order:",
+									"// 1. Health Check",
+									"// 2. Register Restaurant",
+									"// 3. Login Restaurant",
+									"// 4. Upload Menu Item",
+									"// 5. Show Menu Items",
+									"// 6. List Orders"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Negative Test - Invalid Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"wallet_address\": \"invalid_wallet\",\n    \"password\": \"wrong_password\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/login",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Test with invalid credentials - should fail with 401"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Error message is present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Negative Test - Missing Required Fields",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Restaurant\"\n    // Missing wallet_address, address, password"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/register",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "Test registration without required fields - should fail with 400"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Negative Test - Invalid Menu Item Price",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant_id\": \"{{restaurant_id}}\",\n    \"name\": \"Test Item\",\n    \"price\": -10,\n    \"quantity\": 5,\n    \"description\": \"Invalid negative price\"\n}"
+						},
+						"url": {
+							"raw": "{{restaurant_base_url}}/menu-items",
+							"host": [
+								"{{restaurant_base_url}}"
+							],
+							"path": [
+								"menu-items"
+							]
+						},
+						"description": "Test menu item with negative price - should fail with 400"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "restaurant_base_url",
+			"value": "http://localhost:8092",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_name",
+			"value": "Gourmet Bistro",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_wallet_address",
+			"value": "0xRestaurantWallet123",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_address",
+			"value": "123 Food Street, Cuisine City",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "restaurant_password123",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "menu_item_name",
+			"value": "Delicious Burger",
+			"type": "string"
+		},
+		{
+			"key": "menu_item_price",
+			"value": "9.99",
+			"type": "string"
+		},
+		{
+			"key": "menu_item_quantity",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"key": "menu_item_description",
+			"value": "Fresh and tasty burger with special sauce",
+			"type": "string"
+		},
+		{
+			"key": "order_item_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

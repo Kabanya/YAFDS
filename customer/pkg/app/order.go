@@ -12,15 +12,16 @@ import (
 	"customer/models"
 	"customer/pkg/clients"
 	"customer/pkg/repository"
+	"customer/pkg/usecase"
 	"customer/pkg/utils"
 
 	"github.com/google/uuid"
 )
 
 // Type aliases from repository
-type Repository = repository.Repository
-type Filter = repository.Filter
-type Order = repository.Order
+// type Repository = repository.Repository
+// type Filter = repository.Filter
+// type Order = repository.Order
 
 // Error aliases from repository
 var (
@@ -72,6 +73,10 @@ type addOrderItemRequest struct {
 	RestaurantID     string `json:"restaurant_id"`
 	RestaurantItemID string `json:"restaurant_item_id"`
 	Quantity         int    `json:"quantity"`
+}
+
+type payOrderRequest struct {
+	CustomerID string `json:"customer_id"`
 }
 
 type menuItemResponse struct {
@@ -418,12 +423,18 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 	}
 }
 
-func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
+func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, orderUC usecase.OrderUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		logger, _ := utils.Logger()
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 
 		path := strings.TrimPrefix(r.URL.Path, "/orders/")
 		path = strings.Trim(path, "/")
@@ -440,6 +451,49 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient) htt
 		}
 
 		switch parts[1] {
+		case "pay":
+			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+			if r.Method != http.MethodPost {
+				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+			if orderUC == nil {
+				writeError(w, "order usecase unavailable", http.StatusInternalServerError)
+				return
+			}
+
+			var req payOrderRequest
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				writeError(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
+
+			customerID, err := uuid.Parse(req.CustomerID)
+			if err != nil {
+				writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+				return
+			}
+
+			newStatus, err := orderUC.Pay(r.Context(), orderID, customerID)
+			if err != nil {
+				logger.Printf("orders: pay failed: %v", err)
+				if errors.Is(err, usecase.ErrInsufficientFunds) {
+					writeJSON(w, map[string]string{
+						"order_id": orderID.String(),
+						"status":   string(newStatus),
+						"error":    err.Error(),
+					}, http.StatusPaymentRequired)
+					return
+				}
+				writeError(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			writeJSON(w, map[string]string{
+				"order_id": orderID.String(),
+				"status":   string(newStatus),
+			}, http.StatusOK)
+
 		case "accept":
 			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 			if r.Method == http.MethodOptions {

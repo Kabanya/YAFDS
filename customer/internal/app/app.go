@@ -19,6 +19,7 @@ import (
 	orderapp "customer/pkg/app"
 	"customer/pkg/clients"
 	orderrepo "customer/pkg/repository"
+	orderusecase "customer/pkg/usecase"
 	"customer/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -160,6 +161,10 @@ func Run() {
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
+	walletClient := clients.NewStubWalletClient()
+	orderUseCase := orderusecase.NewOrderUseCase(ordersRepository, walletClient)
+	logger.Println("Initialized order usecase")
+
 	handler := NewHandler(userUseCase, db)
 	logger.Println("Initialized handler")
 
@@ -168,7 +173,7 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository, restaurantClient))
-	http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient))
+	http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
 	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
 	http.HandleFunc("/restaurants", orderapp.NewRestaurantsHandler(db))
 	http.HandleFunc("/menu", orderapp.NewRestaurantMenuHandler(restaurantClient))
@@ -177,6 +182,7 @@ func Run() {
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
 	logger.Println("  POST http://localhost:8091/login - Login user with password")
 	logger.Println("  POST/GET http://localhost:8091/orders - Create/List orders")
+	logger.Println("  POST http://localhost:8091/orders/{order_id}/pay - Pay for order")
 	logger.Println("  POST http://localhost:8091/orders/{order_id}/accept - Accept order")
 	logger.Println("  POST http://localhost:8091/orders/{order_id}/items - Add order item")
 	logger.Println("  GET http://localhost:8091/couriers - List active couriers")

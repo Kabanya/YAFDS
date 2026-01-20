@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "yafds-pipeline-check",
+		"name": "YAFDS Pipeline Check",
+		"description": "This collection is used to verify that the CI/CD pipeline has successfully deployed the services and they are healthy.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Customer Service Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Status is UP\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{customerURL}}/health",
+							"host": [
+								"{{customerURL}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				},
+				{
+					"name": "Restaurant Service Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Status is UP\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{restaurantURL}}/health",
+							"host": [
+								"{{restaurantURL}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				},
+				{
+					"name": "Courier Service Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Status is UP\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{courierURL}}/health",
+							"host": [
+								"{{courierURL}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Sanity Tests",
+			"item": [
+				{
+					"name": "Customer Registration Sanity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful registration or already exists\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 500]); // 500 might be 'already exists' in this simple app",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Pipeline Tester\",\n    \"wallet_address\": \"0xPipelineTester\",\n    \"address\": \"CI/CD Street\",\n    \"password\": \"pipeline-secret\"\n}"
+						},
+						"url": {
+							"raw": "{{customerURL}}/register",
+							"host": [
+								"{{customerURL}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "customerURL",
+			"value": "http://localhost:8091"
+		},
+		{
+			"key": "restaurantURL",
+			"value": "http://localhost:8092"
+		},
+		{
+			"key": "courierURL",
+			"value": "http://localhost:8090"
+		}
+	]
+}

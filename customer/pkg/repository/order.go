@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"customer/models"
+	"customer/pkg/repository/models"
 
 	"github.com/google/uuid"
 )
@@ -48,19 +48,6 @@ type AcceptResult struct {
 }
 
 // update status (id, new status)
-
-type Repository interface {
-	Create(ctx context.Context, order Order) (Order, error)
-	CreateWithItems(ctx context.Context, order Order, items []OrderItemInput) (Order, error)
-	List(ctx context.Context, filter Filter) ([]Order, error)
-	Get(ctx context.Context, orderID uuid.UUID) (Order, error)
-	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
-	UpdateStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
-	GetOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
-	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
-	Accept(ctx context.Context, input AcceptInput) (AcceptResult, error)
-	AddItem(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error
-}
 
 var (
 	ErrCustomerNotFound = errors.New("customer not found")

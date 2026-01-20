@@ -2,7 +2,7 @@ package service
 
 import (
 	"restaurant/internal/repository"
-	"restaurant/models"
+	"restaurant/pkg/models"
 
 	"github.com/google/uuid"
 )

@@ -3,7 +3,7 @@ package repository
 import (
 	"customer/pkg/utils"
 	"database/sql"
-	"restaurant/models"
+	"restaurant/pkg/models"
 
 	"github.com/google/uuid"
 )

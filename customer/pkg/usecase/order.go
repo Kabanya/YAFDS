@@ -6,16 +6,17 @@ import (
 	"fmt"
 	"strings"
 
-	"customer/models"
+	"customer/pkg/models"
 	"customer/pkg/repository"
 
 	"github.com/google/uuid"
 )
 
+// НА УРОВНЕ USECASE ходим за продуктовыми логикой
 var (
 	ErrInvalidStatusTransition = errors.New("invalid order status transition")
 	ErrWalletUnavailable       = errors.New("wallet service unavailable")
-	ErrInsufficientFunds        = errors.New("insufficient funds")
+	ErrInsufficientFunds       = errors.New("insufficient funds")
 )
 
 type WalletClient interface {
@@ -32,7 +33,7 @@ type orderUseCase struct {
 	wallet WalletClient
 }
 
-func NewOrderUseCase(repo repository.Repository, wallet WalletClient) OrderUseCase {
+func NewOrderUseCase(repo OrderService, wallet WalletClient) OrderUseCase {
 	return &orderUseCase{repo: repo, wallet: wallet}
 }
 
@@ -109,17 +110,17 @@ func (u *orderUseCase) ChangeStatus(ctx context.Context, orderID uuid.UUID, newS
 
 func isTransitionAllowed(from models.OrderStatus, to models.OrderStatus) bool {
 	allowed := map[models.OrderStatus][]models.OrderStatus{
-		models.OrderStatusCustomerCreated:   {models.OrderStatusCustomerPaid, models.OrderStatusCustomerCancelled},
-		models.OrderStatusCustomerPaid:      {models.OrderStatusKitchenAccepted, models.OrderStatusKitchenDenied},
-		models.OrderStatusKitchenAccepted:   {models.OrderStatusKitchenPreparing},
-		models.OrderStatusKitchenDenied:     {models.OrderStatusCourierRefunded},
-		models.OrderStatusKitchenPreparing:  {models.OrderStatusDeliveryPending},
-		models.OrderStatusDeliveryPending:   {models.OrderStatusDeliveryPicking, models.OrderStatusDeliveryDenied},
-		models.OrderStatusDeliveryPicking:   {models.OrderStatusDeliveryDelivering, models.OrderStatusDeliveryDenied},
-		models.OrderStatusDeliveryDelivering:{models.OrderStatusOrderCompleted, models.OrderStatusDeliveryRefunded},
-		models.OrderStatusDeliveryDenied:    {models.OrderStatusDeliveryRefunded},
-		models.OrderStatusCourierRefunded:   {models.OrderStatusOrderCompleted},
-		models.OrderStatusDeliveryRefunded:  {models.OrderStatusOrderCompleted},
+		models.OrderStatusCustomerCreated:    {models.OrderStatusCustomerPaid, models.OrderStatusCustomerCancelled},
+		models.OrderStatusCustomerPaid:       {models.OrderStatusKitchenAccepted, models.OrderStatusKitchenDenied},
+		models.OrderStatusKitchenAccepted:    {models.OrderStatusKitchenPreparing},
+		models.OrderStatusKitchenDenied:      {models.OrderStatusCourierRefunded},
+		models.OrderStatusKitchenPreparing:   {models.OrderStatusDeliveryPending},
+		models.OrderStatusDeliveryPending:    {models.OrderStatusDeliveryPicking, models.OrderStatusDeliveryDenied},
+		models.OrderStatusDeliveryPicking:    {models.OrderStatusDeliveryDelivering, models.OrderStatusDeliveryDenied},
+		models.OrderStatusDeliveryDelivering: {models.OrderStatusOrderCompleted, models.OrderStatusDeliveryRefunded},
+		models.OrderStatusDeliveryDenied:     {models.OrderStatusDeliveryRefunded},
+		models.OrderStatusCourierRefunded:    {models.OrderStatusOrderCompleted},
+		models.OrderStatusDeliveryRefunded:   {models.OrderStatusOrderCompleted},
 	}
 
 	next, ok := allowed[from]
@@ -143,7 +144,7 @@ func normalizeStatus(status models.OrderStatus) models.OrderStatus {
 }
 
 var statusNormalizationMap = map[string]models.OrderStatus{
-	"CREATED":                               models.OrderStatusCustomerCreated,
+	"CREATED": models.OrderStatusCustomerCreated,
 	string(models.OrderStatusCustomerCreated):    models.OrderStatusCustomerCreated,
 	string(models.OrderStatusCustomerPaid):       models.OrderStatusCustomerPaid,
 	string(models.OrderStatusCustomerCancelled):  models.OrderStatusCustomerCancelled,

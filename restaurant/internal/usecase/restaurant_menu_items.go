@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"restaurant/internal/service"
-	"restaurant/models"
+	"restaurant/pkg/models"
 
 	"github.com/google/uuid"
 )

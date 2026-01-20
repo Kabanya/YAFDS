@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"restaurant/internal/usecase"
 	"restaurant/models"
+	pkgmodels "restaurant/pkg/models"
 )
 
 const TransportType = "HTTP"
@@ -211,7 +212,7 @@ func (h *Handler) UploadMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var menuItem models.MenuItem
+	var menuItem pkgmodels.MenuItem
 	if err := json.NewDecoder(r.Body).Decode(&menuItem); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return

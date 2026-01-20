@@ -10,20 +10,13 @@ import (
 	"sync"
 	"time"
 
+	"restaurant/pkg/models"
+
 	"github.com/google/uuid"
 )
 
-type RestaurantMenuItem struct {
-	OrderItemID  uuid.UUID `json:"order_item_id"`
-	RestaurantID uuid.UUID `json:"restaurant_id"`
-	Name         string    `json:"name"`
-	Price        float64   `json:"price"`
-	Quantity     int       `json:"quantity"`
-	Description  string    `json:"description"`
-}
-
 type RestaurantMenuClient interface {
-	GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]RestaurantMenuItem, error)
+	GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]models.MenuItem, error)
 }
 
 type HTTPRestaurantClient struct {
@@ -34,7 +27,7 @@ type HTTPRestaurantClient struct {
 }
 
 type cachedMenu struct {
-	items     []RestaurantMenuItem
+	items     []models.MenuItem
 	fetchedAt time.Time
 }
 
@@ -54,7 +47,7 @@ func NewHTTPRestaurantClient(baseURL string) *HTTPRestaurantClient {
 	}
 }
 
-func (c *HTTPRestaurantClient) GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]RestaurantMenuItem, error) {
+func (c *HTTPRestaurantClient) GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]models.MenuItem, error) {
 	now := time.Now().UTC()
 	if items, ok := c.getCachedMenu(restaurantID, now); ok {
 		return items, nil
@@ -69,7 +62,7 @@ func (c *HTTPRestaurantClient) GetMenuItems(ctx context.Context, restaurantID uu
 	return items, nil
 }
 
-func (c *HTTPRestaurantClient) getCachedMenu(restaurantID uuid.UUID, now time.Time) ([]RestaurantMenuItem, bool) {
+func (c *HTTPRestaurantClient) getCachedMenu(restaurantID uuid.UUID, now time.Time) ([]models.MenuItem, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -83,7 +76,7 @@ func (c *HTTPRestaurantClient) getCachedMenu(restaurantID uuid.UUID, now time.Ti
 	return entry.items, true
 }
 
-func (c *HTTPRestaurantClient) setCachedMenu(restaurantID uuid.UUID, items []RestaurantMenuItem, fetchedAt time.Time) {
+func (c *HTTPRestaurantClient) setCachedMenu(restaurantID uuid.UUID, items []models.MenuItem, fetchedAt time.Time) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.cache == nil {
@@ -92,7 +85,7 @@ func (c *HTTPRestaurantClient) setCachedMenu(restaurantID uuid.UUID, items []Res
 	c.cache[restaurantID] = cachedMenu{items: items, fetchedAt: fetchedAt}
 }
 
-func (c *HTTPRestaurantClient) fetchMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]RestaurantMenuItem, error) {
+func (c *HTTPRestaurantClient) fetchMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]models.MenuItem, error) {
 	endpoint, err := url.Parse(c.baseURL + "/menu/show")
 	if err != nil {
 		return nil, err
@@ -123,7 +116,7 @@ func (c *HTTPRestaurantClient) fetchMenuItems(ctx context.Context, restaurantID 
 		return nil, fmt.Errorf("restaurant menu request failed: %s", errBody.Error)
 	}
 
-	var items []RestaurantMenuItem
+	var items []models.MenuItem
 	if err := json.NewDecoder(resp.Body).Decode(&items); err != nil {
 		return nil, err
 	}

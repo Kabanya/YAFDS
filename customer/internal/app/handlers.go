@@ -25,29 +25,17 @@ func NewHandler(userUC usecase.UserUseCase, db *sql.DB) *Handler {
 	}
 }
 
-func (h *Handler) writeJSON(w http.ResponseWriter, data interface{}, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(data)
-}
-
-func (h *Handler) writeError(w http.ResponseWriter, message string, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(models.ErrorResponce{ErrorMessage: message})
-}
-
 // Health check endpoint
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	status := "UP"
 	if h.db != nil {
 		if err := h.db.Ping(); err != nil {
 			status = "DOWN (DB connection failed)"
-			h.writeJSON(w, map[string]string{"status": status}, http.StatusServiceUnavailable)
+			utils.WriteJSON(w, map[string]string{"status": status}, http.StatusServiceUnavailable)
 			return
 		}
 	}
-	h.writeJSON(w, map[string]string{"status": status}, http.StatusOK)
+	utils.WriteJSON(w, map[string]string{"status": status}, http.StatusOK)
 }
 
 // Register user with password
@@ -66,34 +54,34 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
-		h.writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var req models.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.writeError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	// Validate required fields
 	if req.WalletAddress == "" {
-		h.writeError(w, "wallet_address is required", http.StatusBadRequest)
+		utils.WriteError(w, "wallet_address is required", http.StatusBadRequest)
 		return
 	}
 
 	if req.Password == "" {
-		h.writeError(w, "password is required", http.StatusBadRequest)
+		utils.WriteError(w, "password is required", http.StatusBadRequest)
 		return
 	}
 
 	if req.Name == "" {
-		h.writeError(w, "name is required", http.StatusBadRequest)
+		utils.WriteError(w, "name is required", http.StatusBadRequest)
 		return
 	}
 
 	if req.Address == "" {
-		h.writeError(w, "address is required", http.StatusBadRequest)
+		utils.WriteError(w, "address is required", http.StatusBadRequest)
 		return
 	}
 
@@ -105,11 +93,11 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	// Register user with password
 	err := h.userUseCase.Register(userID, req.Name, req.WalletAddress, req.Address, req.Password)
 	if err != nil {
-		h.writeError(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	h.writeJSON(w, models.RegisterResponce{Id: userID}, http.StatusCreated)
+	utils.WriteJSON(w, models.RegisterResponce{Id: userID}, http.StatusCreated)
 	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 
@@ -129,23 +117,23 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
-		h.writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var req models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.writeError(w, "invalid request body", http.StatusBadRequest)
+		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	if req.WalletAddress == "" {
-		h.writeError(w, "wallet_address is required", http.StatusBadRequest)
+		utils.WriteError(w, "wallet_address is required", http.StatusBadRequest)
 		return
 	}
 
 	if req.Password == "" {
-		h.writeError(w, "password is required", http.StatusBadRequest)
+		utils.WriteError(w, "password is required", http.StatusBadRequest)
 		return
 	}
 
@@ -158,11 +146,11 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 			statusCode = http.StatusUnauthorized
 			message = "invalid wallet address or password"
 		}
-		h.writeError(w, message, statusCode)
+		utils.WriteError(w, message, statusCode)
 		logger.Printf("Login failed for user: %s, error: %v", req.WalletAddress, err)
 		return
 	}
 
-	h.writeJSON(w, loginResp, http.StatusOK)
+	utils.WriteJSON(w, loginResp, http.StatusOK)
 	logger.Printf("User %s logged in successfully", req.WalletAddress)
 }
