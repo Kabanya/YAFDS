@@ -16,9 +16,9 @@ import (
 	"courier/internal/repository"
 	"courier/internal/service"
 	"courier/internal/usecase"
-	"customer/pkg/app"
 	pkg_repository "customer/pkg/repository"
 	"customer/pkg/utils"
+	"pkg/app"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

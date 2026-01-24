@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"customer/pkg/models"
-	"customer/pkg/repository"
+	"github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/repository"
 
 	"github.com/google/uuid"
 )

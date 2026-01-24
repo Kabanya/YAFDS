@@ -4,11 +4,11 @@ package service
 // Создается, есть репу, логеры.
 // есть func create order
 import (
-	order "customer/pkg/repository"
+	"github.com/Kabanya/YAFDS/pkg/repository"
 )
 
-type Repository = order.Repository
-type Filter = order.Filter
+type Repository = repository.Repository
+type Filter = repository.Filter
 
 type createOrderRequest struct {
 	CustomerID string `json:"customer_id"`

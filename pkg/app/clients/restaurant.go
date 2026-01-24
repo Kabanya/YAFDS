@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"restaurant/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/models"
 
 	"github.com/google/uuid"
 )

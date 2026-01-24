@@ -3,9 +3,10 @@ package auth
 import (
 	"crypto/rand"
 	"crypto/subtle"
-	"customer/pkg/utils"
 	"encoding/base64"
 	"errors"
+
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"golang.org/x/crypto/argon2"
 )

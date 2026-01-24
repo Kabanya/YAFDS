@@ -3,9 +3,8 @@ package app
 import (
 	"context"
 
-	"customer/pkg/repository"
-
-	"restaurant/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/repository"
 
 	"github.com/google/uuid"
 )

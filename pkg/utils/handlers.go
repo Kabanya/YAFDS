@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"customer/models"
 	"encoding/json"
 	"net/http"
+
+	"github.com/Kabanya/YAFDS/pkg/models"
 
 	"github.com/google/uuid"
 )

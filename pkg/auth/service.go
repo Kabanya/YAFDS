@@ -2,11 +2,12 @@ package auth
 
 import (
 	"context"
-	"customer/pkg/utils"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 // Service coordinates hashing, persistence and sessions.

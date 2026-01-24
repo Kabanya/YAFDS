@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"customer/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 type WalletClient interface {

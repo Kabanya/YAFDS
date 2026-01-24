@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"customer/pkg/repository/models"
+	"github.com/Kabanya/YAFDS/pkg/models"
 
 	"github.com/google/uuid"
 )
@@ -61,7 +61,7 @@ type postgresRepository struct {
 	couriersDB  *sql.DB
 }
 
-func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) Repository {
+func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) Order {
 	return &postgresRepository{ordersDB: ordersDB, customersDB: customersDB, couriersDB: couriersDB}
 }
 

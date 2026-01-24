@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	"customer/models"
-	"customer/pkg/clients"
-	"customer/pkg/repository"
-	"customer/pkg/usecase"
-	"customer/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/app/clients"
+	"github.com/Kabanya/YAFDS/pkg/repository"
+	"github.com/Kabanya/YAFDS/pkg/usecase"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )
@@ -93,7 +93,9 @@ type RestaurantMenuClient interface {
 
 const itemNotAvailableError = "ITEM_NOT_AVAILABLE"
 
-func NewHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
+Looking at the suggested code, I can see it's a complete handler implementation for an orders service. However, I notice the suggested code is incomplete at the end (cut off at `utils.WriteJSON(w, map[string]string{`).
+
+Based on the function signature you provided and the suggested code, here's the complete implementation:
 	create := NewCreateHandler(repo, menuClient)
 	list := NewListHandler(repo)
 
@@ -129,44 +131,44 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 			return
 		}
 		if r.Method != http.MethodPost {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		var req createRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			writeError(w, "invalid request body", http.StatusBadRequest)
+			utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 			return
 		}
 		if menuClient == nil {
-			writeError(w, "menu service unavailable", http.StatusInternalServerError)
+			utils.WriteError(w, "menu service unavailable", http.StatusInternalServerError)
 			return
 		}
 
 		customerID, err := uuid.Parse(req.CustomerID)
 		if err != nil {
-			writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "customer_id must be UUID", http.StatusBadRequest)
 			return
 		}
 		courierID, err := uuid.Parse(req.CourierID)
 		if err != nil {
-			writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "courier_id must be UUID", http.StatusBadRequest)
 			return
 		}
 		restaurantID, err := uuid.Parse(req.RestaurantID)
 		if err != nil {
-			writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "restaurant_id must be UUID", http.StatusBadRequest)
 			return
 		}
 		if len(req.Items) == 0 {
-			writeError(w, "items must not be empty", http.StatusBadRequest)
+			utils.WriteError(w, "items must not be empty", http.StatusBadRequest)
 			return
 		}
 
 		menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
 		if err != nil {
 			logger.Printf("orders: fetch menu items failed: %v", err)
-			writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+			utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 			return
 		}
 		menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
@@ -178,20 +180,20 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 		for i, item := range req.Items {
 			itemID, err := uuid.Parse(item.RestaurantItemID)
 			if err != nil {
-				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			menuItem, ok := menuByID[itemID]
 			if !ok {
-				writeError(w, itemNotAvailableError, http.StatusConflict)
+				utils.WriteError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
 			if item.Quantity <= 0 {
-				writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+				utils.WriteError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
 				return
 			}
 			if menuItem.Quantity <= 0 || item.Quantity > menuItem.Quantity {
-				writeError(w, itemNotAvailableError, http.StatusConflict)
+				utils.WriteError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
 			items = append(items, repository.OrderItemInput{
@@ -210,16 +212,16 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 			logger.Printf("orders: create failed: %v", err)
 			switch {
 			case errors.Is(err, ErrCustomerNotFound):
-				writeError(w, "customer_id not found", http.StatusBadRequest)
+				utils.WriteError(w, "customer_id not found", http.StatusBadRequest)
 			case errors.Is(err, ErrCourierNotFound):
-				writeError(w, "courier_id not found", http.StatusBadRequest)
+				utils.WriteError(w, "courier_id not found", http.StatusBadRequest)
 			default:
-				writeError(w, "failed to create order", http.StatusInternalServerError)
+				utils.WriteError(w, "failed to create order", http.StatusInternalServerError)
 			}
 			return
 		}
 
-		writeJSON(w, created, http.StatusCreated)
+		utils.WriteJSON(w, created, http.StatusCreated)
 	}
 }
 
@@ -236,29 +238,29 @@ func NewRestaurantMenuHandler(menuClient RestaurantMenuClient) http.HandlerFunc 
 			return
 		}
 		if r.Method != http.MethodGet {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		if menuClient == nil {
-			writeError(w, "menu service unavailable", http.StatusInternalServerError)
+			utils.WriteError(w, "menu service unavailable", http.StatusInternalServerError)
 			return
 		}
 
 		restaurantIDStr := r.URL.Query().Get("restaurant_id")
 		if restaurantIDStr == "" {
-			writeError(w, "restaurant_id is required", http.StatusBadRequest)
+			utils.WriteError(w, "restaurant_id is required", http.StatusBadRequest)
 			return
 		}
 		restaurantID, err := uuid.Parse(restaurantIDStr)
 		if err != nil {
-			writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "restaurant_id must be UUID", http.StatusBadRequest)
 			return
 		}
 
 		items, err := menuClient.GetMenuItems(r.Context(), restaurantID)
 		if err != nil {
 			logger.Printf("menu: fetch restaurant items failed: %v", err)
-			writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+			utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 			return
 		}
 
@@ -273,7 +275,7 @@ func NewRestaurantMenuHandler(menuClient RestaurantMenuClient) http.HandlerFunc 
 			})
 		}
 
-		writeJSON(w, response, http.StatusOK)
+		utils.WriteJSON(w, response, http.StatusOK)
 	}
 }
 
@@ -290,7 +292,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 			return
 		}
 		if r.Method != http.MethodGet {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
@@ -298,7 +300,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		if v := r.URL.Query().Get("customer_id"); v != "" {
 			id, err := uuid.Parse(v)
 			if err != nil {
-				writeError(w, "problem with customer_id (UUID)", http.StatusBadRequest)
+				utils.WriteError(w, "problem with customer_id (UUID)", http.StatusBadRequest)
 				return
 			}
 			filter.CustomerID = &id
@@ -306,7 +308,7 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		if v := r.URL.Query().Get("courier_id"); v != "" {
 			id, err := uuid.Parse(v)
 			if err != nil {
-				writeError(w, "problem with courier_id (UUID)", http.StatusBadRequest)
+				utils.WriteError(w, "problem with courier_id (UUID)", http.StatusBadRequest)
 				return
 			}
 			filter.CourierID = &id
@@ -318,11 +320,11 @@ func NewListHandler(repo Repository) http.HandlerFunc {
 		orders, err := repo.List(r.Context(), filter)
 		if err != nil {
 			logger.Printf("orders: list failed: %v", err)
-			writeError(w, "failed to fetch orders", http.StatusInternalServerError)
+			utils.WriteError(w, "failed to fetch orders", http.StatusInternalServerError)
 			return
 		}
 
-		writeJSON(w, orders, http.StatusOK)
+		utils.WriteJSON(w, orders, http.StatusOK)
 	}
 }
 
@@ -339,7 +341,7 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 			return
 		}
 		if r.Method != http.MethodPost {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
@@ -347,34 +349,34 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 		path = strings.Trim(path, "/")
 		parts := strings.Split(path, "/")
 		if len(parts) != 2 || parts[1] != "accept" {
-			writeError(w, "not found", http.StatusNotFound)
+			utils.WriteError(w, "not found", http.StatusNotFound)
 			return
 		}
 
 		orderID, err := uuid.Parse(parts[0])
 		if err != nil {
-			writeError(w, "order_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "order_id must be UUID", http.StatusBadRequest)
 			return
 		}
 
 		var req acceptOrderRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			writeError(w, "invalid request body", http.StatusBadRequest)
+			utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 			return
 		}
 
 		customerID, err := uuid.Parse(req.CustomerID)
 		if err != nil {
-			writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "customer_id must be UUID", http.StatusBadRequest)
 			return
 		}
 		courierID, err := uuid.Parse(req.CourierID)
 		if err != nil {
-			writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "courier_id must be UUID", http.StatusBadRequest)
 			return
 		}
 		if len(req.Items) == 0 {
-			writeError(w, "items must not be empty", http.StatusBadRequest)
+			utils.WriteError(w, "items must not be empty", http.StatusBadRequest)
 			return
 		}
 
@@ -382,15 +384,15 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 		for i, item := range req.Items {
 			restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
 			if err != nil {
-				writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			if item.Quantity <= 0 {
-				writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+				utils.WriteError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
 				return
 			}
 			if item.Price <= 0 {
-				writeError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
+				utils.WriteError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
 				return
 			}
 			items = append(items, repository.OrderItemInput{
@@ -410,16 +412,16 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 			logger.Printf("orders: accept failed: %v", err)
 			switch {
 			case errors.Is(err, ErrCustomerNotFound):
-				writeError(w, "customer_id not found", http.StatusBadRequest)
+				utils.WriteError(w, "customer_id not found", http.StatusBadRequest)
 			case errors.Is(err, ErrCourierNotFound):
-				writeError(w, "courier_id not found", http.StatusBadRequest)
+				utils.WriteError(w, "courier_id not found", http.StatusBadRequest)
 			default:
-				writeError(w, "failed to accept order", http.StatusInternalServerError)
+				utils.WriteError(w, "failed to accept order", http.StatusInternalServerError)
 			}
 			return
 		}
 
-		writeJSON(w, accepted, http.StatusOK)
+		utils.WriteJSON(w, accepted, http.StatusOK)
 	}
 }
 
@@ -440,13 +442,13 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 		path = strings.Trim(path, "/")
 		parts := strings.Split(path, "/")
 		if len(parts) != 2 {
-			writeError(w, "not found", http.StatusNotFound)
+			utils.WriteError(w, "not found", http.StatusNotFound)
 			return
 		}
 
 		orderID, err := uuid.Parse(parts[0])
 		if err != nil {
-			writeError(w, "order_id must be UUID", http.StatusBadRequest)
+			utils.WriteError(w, "order_id must be UUID", http.StatusBadRequest)
 			return
 		}
 
@@ -454,23 +456,23 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 		case "pay":
 			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 			if r.Method != http.MethodPost {
-				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 				return
 			}
 			if orderUC == nil {
-				writeError(w, "order usecase unavailable", http.StatusInternalServerError)
+				utils.WriteError(w, "order usecase unavailable", http.StatusInternalServerError)
 				return
 			}
 
 			var req payOrderRequest
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				writeError(w, "invalid request body", http.StatusBadRequest)
+				utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 				return
 			}
 
 			customerID, err := uuid.Parse(req.CustomerID)
 			if err != nil {
-				writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "customer_id must be UUID", http.StatusBadRequest)
 				return
 			}
 
@@ -478,18 +480,18 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 			if err != nil {
 				logger.Printf("orders: pay failed: %v", err)
 				if errors.Is(err, usecase.ErrInsufficientFunds) {
-					writeJSON(w, map[string]string{
+					utils.WriteJSON(w, map[string]string{
 						"order_id": orderID.String(),
 						"status":   string(newStatus),
 						"error":    err.Error(),
 					}, http.StatusPaymentRequired)
 					return
 				}
-				writeError(w, err.Error(), http.StatusInternalServerError)
+				utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			writeJSON(w, map[string]string{
+			utils.WriteJSON(w, map[string]string{
 				"order_id": orderID.String(),
 				"status":   string(newStatus),
 			}, http.StatusOK)
@@ -501,44 +503,44 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				return
 			}
 			if r.Method != http.MethodPost {
-				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 				return
 			}
 			if menuClient == nil {
-				writeError(w, "menu service unavailable", http.StatusInternalServerError)
+				utils.WriteError(w, "menu service unavailable", http.StatusInternalServerError)
 				return
 			}
 
 			var req acceptOrderRequest
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				writeError(w, "invalid request body", http.StatusBadRequest)
+				utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 				return
 			}
 
 			customerID, err := uuid.Parse(req.CustomerID)
 			if err != nil {
-				writeError(w, "customer_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "customer_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			courierID, err := uuid.Parse(req.CourierID)
 			if err != nil {
-				writeError(w, "courier_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "courier_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			restaurantID, err := uuid.Parse(req.RestaurantID)
 			if err != nil {
-				writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "restaurant_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			if len(req.Items) == 0 {
-				writeError(w, "items must not be empty", http.StatusBadRequest)
+				utils.WriteError(w, "items must not be empty", http.StatusBadRequest)
 				return
 			}
 
 			menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
 			if err != nil {
 				logger.Printf("orders: fetch menu items failed: %v", err)
-				writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+				utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 				return
 			}
 			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
@@ -551,15 +553,15 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 			for i, item := range req.Items {
 				restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
 				if err != nil {
-					writeError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
+					utils.WriteError(w, "items["+strconv.Itoa(i)+"].restaurant_item_id must be UUID", http.StatusBadRequest)
 					return
 				}
 				if item.Quantity <= 0 {
-					writeError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
+					utils.WriteError(w, "items["+strconv.Itoa(i)+"].quantity must be positive", http.StatusBadRequest)
 					return
 				}
 				if item.Price <= 0 {
-					writeError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
+					utils.WriteError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
 					return
 				}
 				menuItem, ok := menuByID[restaurantItemID]
@@ -584,16 +586,16 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				logger.Printf("orders: accept failed: %v", err)
 				switch {
 				case errors.Is(err, ErrCustomerNotFound):
-					writeError(w, "customer_id not found", http.StatusBadRequest)
+					utils.WriteError(w, "customer_id not found", http.StatusBadRequest)
 				case errors.Is(err, ErrCourierNotFound):
-					writeError(w, "courier_id not found", http.StatusBadRequest)
+					utils.WriteError(w, "courier_id not found", http.StatusBadRequest)
 				default:
-					writeError(w, "failed to accept order", http.StatusInternalServerError)
+					utils.WriteError(w, "failed to accept order", http.StatusInternalServerError)
 				}
 				return
 			}
 
-			writeJSON(w, accepted, http.StatusOK)
+			utils.WriteJSON(w, accepted, http.StatusOK)
 		case "items":
 			w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 			if r.Method == http.MethodOptions {
@@ -601,38 +603,38 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				return
 			}
 			if r.Method != http.MethodPost {
-				writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+				utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 				return
 			}
 			if menuClient == nil {
-				writeError(w, "menu service unavailable", http.StatusInternalServerError)
+				utils.WriteError(w, "menu service unavailable", http.StatusInternalServerError)
 				return
 			}
 
 			var req addOrderItemRequest
 			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-				writeError(w, "invalid request body", http.StatusBadRequest)
+				utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 				return
 			}
 			restaurantID, err := uuid.Parse(req.RestaurantID)
 			if err != nil {
-				writeError(w, "restaurant_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "restaurant_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			restaurantItemID, err := uuid.Parse(req.RestaurantItemID)
 			if err != nil {
-				writeError(w, "restaurant_item_id must be UUID", http.StatusBadRequest)
+				utils.WriteError(w, "restaurant_item_id must be UUID", http.StatusBadRequest)
 				return
 			}
 			if req.Quantity <= 0 {
-				writeError(w, "quantity must be positive", http.StatusBadRequest)
+				utils.WriteError(w, "quantity must be positive", http.StatusBadRequest)
 				return
 			}
 
 			menuItems, err := menuClient.GetMenuItems(r.Context(), restaurantID)
 			if err != nil {
 				logger.Printf("orders: fetch menu items failed: %v", err)
-				writeError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
+				utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 				return
 			}
 			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
@@ -641,7 +643,7 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 			}
 			menuItem, ok := menuByID[restaurantItemID]
 			if !ok || menuItem.Quantity <= 0 || req.Quantity > menuItem.Quantity {
-				writeError(w, itemNotAvailableError, http.StatusConflict)
+				utils.WriteError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
 
@@ -653,21 +655,21 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				logger.Printf("orders: add item failed: %v", err)
 				switch {
 				case errors.Is(err, repository.ErrOrderNotFound):
-					writeError(w, "order_id not found", http.StatusNotFound)
+					utils.WriteError(w, "order_id not found", http.StatusNotFound)
 				default:
-					writeError(w, "failed to add order item", http.StatusInternalServerError)
+					utils.WriteError(w, "failed to add order item", http.StatusInternalServerError)
 				}
 				return
 			}
 
-			writeJSON(w, map[string]any{
+			utils.WriteJSON(w, map[string]any{
 				"order_id":           orderID,
 				"restaurant_item_id": menuItem.OrderItemID,
 				"quantity":           req.Quantity,
 				"price":              menuItem.Price,
 			}, http.StatusCreated)
 		default:
-			writeError(w, "not found", http.StatusNotFound)
+			utils.WriteError(w, "not found", http.StatusNotFound)
 		}
 	}
 }
@@ -686,14 +688,14 @@ func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		if r.Method != http.MethodGet {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		rows, err := db.QueryContext(r.Context(), "SELECT emp_id, name FROM COURIERS WHERE is_active = TRUE")
 		if err != nil {
 			logger.Printf("orders: list couriers failed: %v", err)
-			writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+			utils.WriteError(w, "failed to fetch couriers", http.StatusInternalServerError)
 			return
 		}
 		defer rows.Close()
@@ -703,7 +705,7 @@ func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 			var c courierResponse
 			if err := rows.Scan(&c.ID, &c.Name); err != nil {
 				logger.Printf("orders: scan couriers failed: %v", err)
-				writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+				utils.WriteError(w, "failed to fetch couriers", http.StatusInternalServerError)
 				return
 			}
 			couriers = append(couriers, c)
@@ -711,11 +713,11 @@ func NewCouriersHandler(db *sql.DB) http.HandlerFunc {
 
 		if err := rows.Err(); err != nil {
 			logger.Printf("orders: iterate couriers failed: %v", err)
-			writeError(w, "failed to fetch couriers", http.StatusInternalServerError)
+			utils.WriteError(w, "failed to fetch couriers", http.StatusInternalServerError)
 			return
 		}
 
-		writeJSON(w, couriers, http.StatusOK)
+		utils.WriteJSON(w, couriers, http.StatusOK)
 	}
 }
 
@@ -733,14 +735,14 @@ func NewRestaurantsHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		if r.Method != http.MethodGet {
-			writeError(w, "method not allowed", http.StatusMethodNotAllowed)
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		rows, err := db.QueryContext(r.Context(), "SELECT emp_id, name FROM RESTAURANTS WHERE status = TRUE")
 		if err != nil {
 			logger.Printf("orders: list restaurants failed: %v", err)
-			writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+			utils.WriteError(w, "failed to fetch restaurants", http.StatusInternalServerError)
 			return
 		}
 		defer rows.Close()
@@ -750,7 +752,7 @@ func NewRestaurantsHandler(db *sql.DB) http.HandlerFunc {
 			var res restaurantResponse
 			if err := rows.Scan(&res.ID, &res.Name); err != nil {
 				logger.Printf("orders: scan restaurants failed: %v", err)
-				writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+				utils.WriteError(w, "failed to fetch restaurants", http.StatusInternalServerError)
 				return
 			}
 			restaurants = append(restaurants, res)
@@ -758,19 +760,10 @@ func NewRestaurantsHandler(db *sql.DB) http.HandlerFunc {
 
 		if err := rows.Err(); err != nil {
 			logger.Printf("orders: iterate restaurants failed: %v", err)
-			writeError(w, "failed to fetch restaurants", http.StatusInternalServerError)
+			utils.WriteError(w, "failed to fetch restaurants", http.StatusInternalServerError)
 			return
 		}
 
-		writeJSON(w, restaurants, http.StatusOK)
+		utils.WriteJSON(w, restaurants, http.StatusOK)
 	}
-}
-
-func writeJSON(w http.ResponseWriter, data any, status int) {
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(data)
-}
-
-func writeError(w http.ResponseWriter, message string, status int) {
-	writeJSON(w, errorResponse{Error: message}, status)
 }

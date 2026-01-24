@@ -2,7 +2,8 @@ package models
 
 import (
 	"context"
-	"customer/pkg/models"
+
+	"github.com/Kabanya/YAFDS/pkg/models"
 
 	"github.com/google/uuid"
 )
