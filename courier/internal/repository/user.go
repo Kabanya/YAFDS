@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"customer/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )

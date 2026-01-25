@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -10,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/app/clients"
 	"github.com/Kabanya/YAFDS/pkg/repository"
+	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	"github.com/Kabanya/YAFDS/pkg/usecase"
 	"github.com/Kabanya/YAFDS/pkg/utils"
 
@@ -19,83 +18,12 @@ import (
 )
 
 // Type aliases from repository
-// type Repository = repository.Repository
+type Repository = repositoryModels.Order
+
 // type Filter = repository.Filter
 // type Order = repository.Order
 
-// Error aliases from repository
-var (
-	ErrCustomerNotFound = repository.ErrCustomerNotFound
-	ErrCourierNotFound  = repository.ErrCourierNotFound
-)
-
-type errorResponse struct {
-	Error string `json:"error"`
-}
-
-type courierResponse struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-}
-
-type restaurantResponse struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-}
-
-type createRequest struct {
-	CustomerID   string                   `json:"customer_id"`
-	CourierID    string                   `json:"courier_id"`
-	RestaurantID string                   `json:"restaurant_id"`
-	Status       string                   `json:"status"`
-	Items        []createOrderItemRequest `json:"items"`
-}
-
-type createOrderItemRequest struct {
-	RestaurantItemID string `json:"restaurant_item_id"`
-	Quantity         int    `json:"quantity"`
-}
-
-type acceptOrderItemRequest struct {
-	RestaurantItemID string  `json:"restaurant_item_id"`
-	Price            float64 `json:"price"`
-	Quantity         int     `json:"quantity"`
-}
-
-type acceptOrderRequest struct {
-	CustomerID   string                   `json:"customer_id"`
-	CourierID    string                   `json:"courier_id"`
-	RestaurantID string                   `json:"restaurant_id"`
-	Items        []acceptOrderItemRequest `json:"items"`
-}
-
-type addOrderItemRequest struct {
-	RestaurantID     string `json:"restaurant_id"`
-	RestaurantItemID string `json:"restaurant_item_id"`
-	Quantity         int    `json:"quantity"`
-}
-
-type payOrderRequest struct {
-	CustomerID string `json:"customer_id"`
-}
-
-type menuItemResponse struct {
-	OrderItemID  uuid.UUID `json:"order_item_id"`
-	RestaurantID uuid.UUID `json:"restaurant_id"`
-	Name         string    `json:"name"`
-	Price        float64   `json:"price"`
-	Description  string    `json:"description"`
-}
-
-type RestaurantMenuClient interface {
-	GetMenuItems(ctx context.Context, restaurantID uuid.UUID) ([]clients.RestaurantMenuItem, error)
-}
-
-const itemNotAvailableError = "ITEM_NOT_AVAILABLE"
-
-Looking at the suggested code, I can see it's a complete handler implementation for an orders service. However, I notice the suggested code is incomplete at the end (cut off at `utils.WriteJSON(w, map[string]string{`).
-
-Based on the function signature you provided and the suggested code, here's the complete implementation:
+func NewOrderHandler(repo Repository, menuClient RestaurantMenuClient) http.HandlerFunc {
 	create := NewCreateHandler(repo, menuClient)
 	list := NewListHandler(repo)
 
@@ -171,12 +99,12 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 			utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 			return
 		}
-		menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+		menuByID := make(map[uuid.UUID]models.MenuItem, len(menuItems))
 		for _, item := range menuItems {
 			menuByID[item.OrderItemID] = item
 		}
 
-		items := make([]repository.OrderItemInput, 0, len(req.Items))
+		items := make([]repositoryModels.OrderItemInput, 0, len(req.Items))
 		for i, item := range req.Items {
 			itemID, err := uuid.Parse(item.RestaurantItemID)
 			if err != nil {
@@ -196,14 +124,14 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 				utils.WriteError(w, itemNotAvailableError, http.StatusConflict)
 				return
 			}
-			items = append(items, repository.OrderItemInput{
+			items = append(items, repositoryModels.OrderItemInput{
 				RestaurantItemID: menuItem.OrderItemID,
 				Price:            menuItem.Price,
 				Quantity:         item.Quantity,
 			})
 		}
 
-		created, err := repo.CreateWithItems(r.Context(), Order{
+		created, err := repo.CreateWithItems(r.Context(), models.Order{
 			CustomerID: customerID,
 			CourierID:  courierID,
 			Status:     req.Status,
@@ -380,7 +308,7 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 			return
 		}
 
-		items := make([]repository.OrderItemInput, 0, len(req.Items))
+		items := make([]repositoryModels.OrderItemInput, 0, len(req.Items))
 		for i, item := range req.Items {
 			restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
 			if err != nil {
@@ -395,14 +323,14 @@ func NewAcceptHandler(repo Repository) http.HandlerFunc {
 				utils.WriteError(w, "items["+strconv.Itoa(i)+"].price must be positive", http.StatusBadRequest)
 				return
 			}
-			items = append(items, repository.OrderItemInput{
+			items = append(items, repositoryModels.OrderItemInput{
 				RestaurantItemID: restaurantItemID,
 				Price:            item.Price,
 				Quantity:         item.Quantity,
 			})
 		}
 
-		accepted, err := repo.Accept(r.Context(), repository.AcceptInput{
+		accepted, err := repo.Accept(r.Context(), repositoryModels.AcceptInput{
 			OrderID:    orderID,
 			CustomerID: customerID,
 			CourierID:  courierID,
@@ -543,12 +471,12 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 				return
 			}
-			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+			menuByID := make(map[uuid.UUID]models.MenuItem, len(menuItems))
 			for _, item := range menuItems {
 				menuByID[item.OrderItemID] = item
 			}
 
-			items := make([]repository.OrderItemInput, 0, len(req.Items))
+			items := make([]repositoryModels.OrderItemInput, 0, len(req.Items))
 			status := models.OrderStatusKitchenAccepted
 			for i, item := range req.Items {
 				restaurantItemID, err := uuid.Parse(item.RestaurantItemID)
@@ -568,14 +496,14 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				if !ok || menuItem.Quantity <= 0 || item.Quantity > menuItem.Quantity {
 					status = models.OrderStatusKitchenDenied
 				}
-				items = append(items, repository.OrderItemInput{
+				items = append(items, repositoryModels.OrderItemInput{
 					RestaurantItemID: restaurantItemID,
 					Price:            item.Price,
 					Quantity:         item.Quantity,
 				})
 			}
 
-			accepted, err := repo.Accept(r.Context(), repository.AcceptInput{
+			accepted, err := repo.Accept(r.Context(), repositoryModels.AcceptInput{
 				OrderID:    orderID,
 				CustomerID: customerID,
 				CourierID:  courierID,
@@ -637,7 +565,7 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				utils.WriteError(w, "failed to fetch restaurant menu", http.StatusBadGateway)
 				return
 			}
-			menuByID := make(map[uuid.UUID]clients.RestaurantMenuItem, len(menuItems))
+			menuByID := make(map[uuid.UUID]models.MenuItem, len(menuItems))
 			for _, item := range menuItems {
 				menuByID[item.OrderItemID] = item
 			}
@@ -647,7 +575,7 @@ func NewOrderActionHandler(repo Repository, menuClient RestaurantMenuClient, ord
 				return
 			}
 
-			if err := repo.AddItem(r.Context(), orderID, repository.OrderItemInput{
+			if err := repo.AddItem(r.Context(), orderID, repositoryModels.OrderItemInput{
 				RestaurantItemID: menuItem.OrderItemID,
 				Price:            menuItem.Price,
 				Quantity:         req.Quantity,

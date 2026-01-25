@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"strings"
 
-	pkg_repository "customer/pkg/repository"
+	"github.com/Kabanya/YAFDS/pkg/models"
 
 	"github.com/google/uuid"
 )
 
 type OrdersRepo interface {
-	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]pkg_repository.Order, error)
+	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error)
 }
 
 type ordersRepo struct {
@@ -25,7 +25,7 @@ func NewOrdersRepo(ordersDB, restaurantDB *sql.DB) OrdersRepo {
 	return &ordersRepo{ordersDB: ordersDB, restaurantDB: restaurantDB}
 }
 
-func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]pkg_repository.Order, error) {
+func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error) {
 	if r.ordersDB == nil || r.restaurantDB == nil {
 		return nil, errors.New("orders repository not fully initialized")
 	}
@@ -53,7 +53,7 @@ func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID 
 	}
 
 	if len(itemIDs) == 0 {
-		return []pkg_repository.Order{}, nil
+		return []models.Order{}, nil
 	}
 
 	placeholders := make([]string, len(itemIDs))
@@ -83,9 +83,9 @@ func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID 
 	}
 	defer orderRows.Close()
 
-	var result []pkg_repository.Order
+	var result []models.Order
 	for orderRows.Next() {
-		var order pkg_repository.Order
+		var order models.Order
 		if err := orderRows.Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status); err != nil {
 			return nil, err
 		}

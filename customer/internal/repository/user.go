@@ -2,9 +2,10 @@ package repository
 
 import (
 	"customer/models"
-	"customer/pkg/utils"
 	"database/sql"
 	"errors"
+
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )

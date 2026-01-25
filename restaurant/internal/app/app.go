@@ -13,10 +13,11 @@ import (
 	"strconv"
 	"time"
 
-	"customer/pkg/utils"
 	"restaurant/internal/repository"
 	"restaurant/internal/service"
 	"restaurant/internal/usecase"
+
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

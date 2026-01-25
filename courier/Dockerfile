@@ -5,7 +5,9 @@ FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-COPY customer /customer
+COPY pkg ./pkg
+COPY customer /app/customer
+WORKDIR /app/courier
 COPY courier/go.mod ./
 
 RUN go mod download
@@ -13,7 +15,6 @@ RUN go mod download
 COPY courier/cmd ./cmd
 COPY courier/internal ./internal
 COPY courier/models ./models
-COPY customer/pkg ./pkg
 COPY courier/config ./config
 
 RUN go mod tidy

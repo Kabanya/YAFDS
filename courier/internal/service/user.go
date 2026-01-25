@@ -4,9 +4,10 @@ import (
 	"context"
 	"courier/internal/repository"
 	"courier/models"
-	"customer/pkg/auth"
 	"errors"
 	"time"
+
+	"github.com/Kabanya/YAFDS/pkg/auth"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"

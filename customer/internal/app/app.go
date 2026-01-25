@@ -16,11 +16,12 @@ import (
 	"customer/internal/repository"
 	"customer/internal/service"
 	"customer/internal/usecase"
-	orderapp "customer/pkg/app"
-	"customer/pkg/clients"
-	orderrepo "customer/pkg/repository"
-	orderusecase "customer/pkg/usecase"
-	"customer/pkg/utils"
+
+	orderapp "github.com/Kabanya/YAFDS/pkg/app"
+	"github.com/Kabanya/YAFDS/pkg/app/clients"
+	orderrepo "github.com/Kabanya/YAFDS/pkg/repository"
+	orderusecase "github.com/Kabanya/YAFDS/pkg/usecase"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -172,7 +173,7 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orderapp.NewHandler(ordersRepository, restaurantClient))
+	http.HandleFunc("/orders", orderapp.NewOrderHandler(ordersRepository, restaurantClient))
 	http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
 	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
 	http.HandleFunc("/restaurants", orderapp.NewRestaurantsHandler(db))

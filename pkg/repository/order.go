@@ -9,50 +9,9 @@ import (
 	"time"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
+	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 
 	"github.com/google/uuid"
-)
-
-type Order struct {
-	ID         uuid.UUID `json:"id"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	CourierID  uuid.UUID `json:"courier_id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	Status     string    `json:"status"`
-}
-
-type Filter struct {
-	CustomerID *uuid.UUID
-	CourierID  *uuid.UUID
-	Status     string
-}
-
-type OrderItemInput struct {
-	RestaurantItemID uuid.UUID
-	Price            float64
-	Quantity         int
-}
-
-type AcceptInput struct {
-	OrderID    uuid.UUID
-	CustomerID uuid.UUID
-	CourierID  uuid.UUID
-	Items      []OrderItemInput
-	Status     models.OrderStatus
-}
-
-type AcceptResult struct {
-	OrderID uuid.UUID `json:"order_id"`
-	Status  string    `json:"status"`
-}
-
-// update status (id, new status)
-
-var (
-	ErrCustomerNotFound = errors.New("customer not found")
-	ErrCourierNotFound  = errors.New("courier not found")
-	ErrOrderNotFound    = errors.New("order not found")
 )
 
 type postgresRepository struct {
@@ -61,13 +20,19 @@ type postgresRepository struct {
 	couriersDB  *sql.DB
 }
 
-func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) Order {
+func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) repositoryModels.Order {
 	return &postgresRepository{ordersDB: ordersDB, customersDB: customersDB, couriersDB: couriersDB}
 }
 
-func (r *postgresRepository) Create(ctx context.Context, order Order) (Order, error) {
+var (
+	ErrCustomerNotFound = errors.New("customer not found")
+	ErrCourierNotFound  = errors.New("courier not found")
+	ErrOrderNotFound    = errors.New("order not found")
+)
+
+func (r *postgresRepository) Create(ctx context.Context, order models.Order) (models.Order, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
-		return Order{}, errors.New("orders repository not fully initialized")
+		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
 
 	now := time.Now().UTC()
@@ -81,10 +46,10 @@ func (r *postgresRepository) Create(ctx context.Context, order Order) (Order, er
 	}
 
 	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", order.CustomerID); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", order.CourierID); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 
 	const insertQuery = `
@@ -94,17 +59,17 @@ func (r *postgresRepository) Create(ctx context.Context, order Order) (Order, er
 
 	_, err := r.ordersDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status)
 	if err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 	return order, nil
 }
 
-func (r *postgresRepository) CreateWithItems(ctx context.Context, order Order, items []OrderItemInput) (Order, error) {
+func (r *postgresRepository) CreateWithItems(ctx context.Context, order models.Order, items []repositoryModels.OrderItemInput) (models.Order, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
-		return Order{}, errors.New("orders repository not fully initialized")
+		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
 	if len(items) == 0 {
-		return Order{}, errors.New("items must not be empty")
+		return models.Order{}, errors.New("items must not be empty")
 	}
 
 	now := time.Now().UTC()
@@ -118,15 +83,15 @@ func (r *postgresRepository) CreateWithItems(ctx context.Context, order Order, i
 	}
 
 	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", order.CustomerID); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", order.CourierID); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 
 	tx, err := r.ordersDB.BeginTx(ctx, nil)
 	if err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 	defer func() {
 		if err != nil {
@@ -139,7 +104,7 @@ func (r *postgresRepository) CreateWithItems(ctx context.Context, order Order, i
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 
 	const insertItemQuery = `
@@ -148,17 +113,17 @@ func (r *postgresRepository) CreateWithItems(ctx context.Context, order Order, i
 	`
 	for _, item := range items {
 		if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), order.ID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
-			return Order{}, err
+			return models.Order{}, err
 		}
 	}
 
 	if err = tx.Commit(); err != nil {
-		return Order{}, err
+		return models.Order{}, err
 	}
 	return order, nil
 }
 
-func (r *postgresRepository) List(ctx context.Context, filter Filter) ([]Order, error) {
+func (r *postgresRepository) List(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
 	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
 	var args []any
 	var where []string
@@ -187,9 +152,9 @@ func (r *postgresRepository) List(ctx context.Context, filter Filter) ([]Order, 
 	}
 	defer rows.Close()
 
-	var result []Order
+	var result []models.Order
 	for rows.Next() {
-		var order Order
+		var order models.Order
 		if err := rows.Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status); err != nil {
 			return nil, err
 		}
@@ -202,22 +167,22 @@ func (r *postgresRepository) List(ctx context.Context, filter Filter) ([]Order, 
 	return result, nil
 }
 
-func (r *postgresRepository) Get(ctx context.Context, orderID uuid.UUID) (Order, error) {
+func (r *postgresRepository) Get(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	if r.ordersDB == nil {
-		return Order{}, errors.New("orders repository not fully initialized")
+		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
 	if orderID == uuid.Nil {
-		return Order{}, errors.New("order_id must be a valid UUID")
+		return models.Order{}, errors.New("order_id must be a valid UUID")
 	}
 
-	var order Order
+	var order models.Order
 	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = $1`
 	err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return Order{}, ErrOrderNotFound
+			return models.Order{}, ErrOrderNotFound
 		}
-		return Order{}, err
+		return models.Order{}, err
 	}
 	return order, nil
 }
@@ -301,30 +266,30 @@ func (r *postgresRepository) GetCustomerWalletAddress(ctx context.Context, custo
 	return wallet, nil
 }
 
-func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (AcceptResult, error) {
+func (r *postgresRepository) Accept(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
-		return AcceptResult{}, errors.New("orders repository not fully initialized")
+		return repositoryModels.AcceptResult{}, errors.New("orders repository not fully initialized")
 	}
 	if input.OrderID == uuid.Nil {
-		return AcceptResult{}, errors.New("order_id must be a valid UUID")
+		return repositoryModels.AcceptResult{}, errors.New("order_id must be a valid UUID")
 	}
 	if input.CustomerID == uuid.Nil {
-		return AcceptResult{}, errors.New("customer_id must be a valid UUID")
+		return repositoryModels.AcceptResult{}, errors.New("customer_id must be a valid UUID")
 	}
 	if input.CourierID == uuid.Nil {
-		return AcceptResult{}, errors.New("courier_id must be a valid UUID")
+		return repositoryModels.AcceptResult{}, errors.New("courier_id must be a valid UUID")
 	}
 
 	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", input.CustomerID); err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", input.CourierID); err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 
 	tx, err := r.ordersDB.BeginTx(ctx, nil)
 	if err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 	defer func() {
 		if err != nil {
@@ -337,13 +302,13 @@ func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (Acc
 	scanErr := tx.QueryRowContext(ctx, statusQuery, input.OrderID).Scan(&existingStatus)
 	if scanErr == nil && (strings.EqualFold(existingStatus, string(models.OrderStatusKitchenAccepted)) || strings.EqualFold(existingStatus, string(models.OrderStatusKitchenDenied))) {
 		if err = tx.Commit(); err != nil {
-			return AcceptResult{}, err
+			return repositoryModels.AcceptResult{}, err
 		}
-		return AcceptResult{OrderID: input.OrderID, Status: existingStatus}, nil
+		return repositoryModels.AcceptResult{OrderID: input.OrderID, Status: existingStatus}, nil
 	}
 	if scanErr != nil && !errors.Is(scanErr, sql.ErrNoRows) {
 		err = scanErr
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 
 	now := time.Now().UTC()
@@ -359,13 +324,13 @@ func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (Acc
 			updated_at = EXCLUDED.updated_at
 	`
 	if _, err = tx.ExecContext(ctx, insertOrderQuery, input.OrderID, input.CustomerID, input.CourierID, now, now, string(status)); err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 
 	var itemsCount int
 	countQuery := "SELECT COUNT(1) FROM ORDERS_ITEMS WHERE order_id = $1"
 	if err = tx.QueryRowContext(ctx, countQuery, input.OrderID).Scan(&itemsCount); err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 	if itemsCount == 0 && len(input.Items) > 0 {
 		const insertItemQuery = `
@@ -374,19 +339,19 @@ func (r *postgresRepository) Accept(ctx context.Context, input AcceptInput) (Acc
 		`
 		for _, item := range input.Items {
 			if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), input.OrderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
-				return AcceptResult{}, err
+				return repositoryModels.AcceptResult{}, err
 			}
 		}
 	}
 
 	if err = tx.Commit(); err != nil {
-		return AcceptResult{}, err
+		return repositoryModels.AcceptResult{}, err
 	}
 
-	return AcceptResult{OrderID: input.OrderID, Status: string(status)}, nil
+	return repositoryModels.AcceptResult{OrderID: input.OrderID, Status: string(status)}, nil
 }
 
-func (r *postgresRepository) AddItem(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error {
+func (r *postgresRepository) AddItem(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
 	if r.ordersDB == nil {
 		return errors.New("orders repository not fully initialized")
 	}

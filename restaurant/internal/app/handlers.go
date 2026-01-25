@@ -1,15 +1,16 @@
 package app
 
 import (
-	"customer/pkg/id"
-	"customer/pkg/utils"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"restaurant/internal/usecase"
 	"restaurant/models"
-	pkgmodels "restaurant/pkg/models"
+
+	"github.com/Kabanya/YAFDS/pkg/id"
+	pkgmodels "github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 const TransportType = "HTTP"

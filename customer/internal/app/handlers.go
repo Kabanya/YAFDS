@@ -3,12 +3,13 @@ package app
 import (
 	"customer/internal/usecase"
 	"customer/models"
-	"customer/pkg/id"
-	"customer/pkg/utils"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/Kabanya/YAFDS/pkg/id"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 const TransportType = "HTTP"

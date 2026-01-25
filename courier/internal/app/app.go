@@ -16,9 +16,10 @@ import (
 	"courier/internal/repository"
 	"courier/internal/service"
 	"courier/internal/usecase"
-	pkg_repository "customer/pkg/repository"
-	"customer/pkg/utils"
-	"pkg/app"
+
+	"github.com/Kabanya/YAFDS/pkg/app"
+	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

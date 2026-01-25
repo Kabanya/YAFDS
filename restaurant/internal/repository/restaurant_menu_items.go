@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"customer/pkg/utils"
 	"database/sql"
-	"restaurant/pkg/models"
+
+	"github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )

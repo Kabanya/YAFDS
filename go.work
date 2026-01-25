@@ -3,6 +3,6 @@ go 1.25.5
 use (
 	./courier
 	./customer
-	./restaurant
 	./pkg
+	./restaurant
 )

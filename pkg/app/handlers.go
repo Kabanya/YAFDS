@@ -5,6 +5,7 @@ import (
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 	"github.com/Kabanya/YAFDS/pkg/repository"
+	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 
 	"github.com/google/uuid"
 )
@@ -22,8 +23,8 @@ import (
 
 // usecase -- сетка зависимостей
 
-type Filter = repository.Filter
-type Order = repository.Order
+type Filter = repositoryModels.Filter
+type Order = repositoryModels.Order
 
 // Error aliases from repository
 var (

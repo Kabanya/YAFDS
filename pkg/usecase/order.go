@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/repository"
+	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 
 	"github.com/google/uuid"
 )
@@ -29,11 +29,11 @@ type OrderUseCase interface {
 }
 
 type orderUseCase struct {
-	repo   repository.Repository
+	repo   repositoryModels.Order
 	wallet WalletClient
 }
 
-func NewOrderUseCase(repo OrderService, wallet WalletClient) OrderUseCase {
+func NewOrderUseCase(repo repositoryModels.Order, wallet WalletClient) OrderUseCase {
 	return &orderUseCase{repo: repo, wallet: wallet}
 }
 

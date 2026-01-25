@@ -5,7 +5,7 @@ import (
 	"errors"
 	"restaurant/models"
 
-	"customer/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )
