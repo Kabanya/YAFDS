@@ -20,7 +20,6 @@ import (
 	orderapp "github.com/Kabanya/YAFDS/pkg/app"
 	"github.com/Kabanya/YAFDS/pkg/app/clients"
 	orderrepo "github.com/Kabanya/YAFDS/pkg/repository"
-	orderusecase "github.com/Kabanya/YAFDS/pkg/usecase"
 	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
@@ -163,7 +162,8 @@ func Run() {
 	logger.Println("Initialized user usecase")
 
 	walletClient := clients.NewStubWalletClient()
-	orderUseCase := orderusecase.NewOrderUseCase(ordersRepository, walletClient)
+	_ = walletClient //[[maybe_unused]]
+	// orderUseCase := orderusecase.NewOrderUseCase(ordersRepository, walletClient)
 	logger.Println("Initialized order usecase")
 
 	handler := NewHandler(userUseCase, db)
@@ -174,7 +174,7 @@ func Run() {
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
 	http.HandleFunc("/orders", orderapp.NewOrderHandler(ordersRepository, restaurantClient))
-	http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
+	// http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
 	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
 	http.HandleFunc("/restaurants", orderapp.NewRestaurantsHandler(db))
 	http.HandleFunc("/menu", orderapp.NewRestaurantMenuHandler(restaurantClient))
