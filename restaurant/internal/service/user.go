@@ -7,7 +7,7 @@ import (
 	"restaurant/models"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/auth"
+	"github.com/Kabanya/YAFDS/pkg/common/auth"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"

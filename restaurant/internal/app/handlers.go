@@ -8,9 +8,9 @@ import (
 	"restaurant/internal/usecase"
 	"restaurant/models"
 
-	"github.com/Kabanya/YAFDS/pkg/id"
+	"github.com/Kabanya/YAFDS/pkg/common/id"
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkgmodels "github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 const TransportType = "HTTP"

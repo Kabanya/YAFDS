@@ -19,8 +19,8 @@ import (
 
 	orderapp "github.com/Kabanya/YAFDS/pkg/app"
 	"github.com/Kabanya/YAFDS/pkg/app/clients"
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	orderrepo "github.com/Kabanya/YAFDS/pkg/repository"
-	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

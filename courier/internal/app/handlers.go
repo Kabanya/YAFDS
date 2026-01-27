@@ -8,8 +8,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Kabanya/YAFDS/pkg/id"
-	"github.com/Kabanya/YAFDS/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/common/id"
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 )
 
 const TransportType = "HTTP"

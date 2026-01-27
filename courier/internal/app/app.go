@@ -18,8 +18,8 @@ import (
 	"courier/internal/usecase"
 
 	"github.com/Kabanya/YAFDS/pkg/app"
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository"
-	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
