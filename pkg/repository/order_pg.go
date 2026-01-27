@@ -20,7 +20,7 @@ type postgresRepository struct {
 	couriersDB  *sql.DB
 }
 
-func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) repositoryModels.Order {
+func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) repositoryModels.OrderRepo {
 	return &postgresRepository{ordersDB: ordersDB, customersDB: customersDB, couriersDB: couriersDB}
 }
 
@@ -187,85 +187,6 @@ func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (m
 	return order, nil
 }
 
-func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
-	if r.ordersDB == nil {
-		return "", errors.New("orders repository not fully initialized")
-	}
-	if orderID == uuid.Nil {
-		return "", errors.New("order_id must be a valid UUID")
-	}
-
-	var status string
-	query := "SELECT status FROM ORDERS WHERE emp_id = $1"
-	if err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&status); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return "", ErrOrderNotFound
-		}
-		return "", err
-	}
-	return models.OrderStatus(status), nil
-}
-
-func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
-	if r.ordersDB == nil {
-		return errors.New("orders repository not fully initialized")
-	}
-	if orderID == uuid.Nil {
-		return errors.New("order_id must be a valid UUID")
-	}
-
-	res, err := r.ordersDB.ExecContext(ctx, "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE emp_id = $3", string(status), time.Now().UTC(), orderID)
-	if err != nil {
-		return err
-	}
-	rows, err := res.RowsAffected()
-	if err == nil && rows == 0 {
-		return ErrOrderNotFound
-	}
-	return err
-}
-
-func (r *postgresRepository) GetOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
-	if r.ordersDB == nil {
-		return 0, errors.New("orders repository not fully initialized")
-	}
-	if orderID == uuid.Nil {
-		return 0, errors.New("order_id must be a valid UUID")
-	}
-
-	var total sql.NullFloat64
-	query := "SELECT SUM(price * quantity) FROM ORDERS_ITEMS WHERE order_id = $1"
-	if err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&total); err != nil {
-		return 0, err
-	}
-	if !total.Valid {
-		return 0, nil
-	}
-	return total.Float64, nil
-}
-
-func (r *postgresRepository) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
-	if r.customersDB == nil {
-		return "", errors.New("customers repository not fully initialized")
-	}
-	if customerID == uuid.Nil {
-		return "", errors.New("customer_id must be a valid UUID")
-	}
-
-	var wallet string
-	query := "SELECT wallet_address FROM CUSTOMERS WHERE emp_id = $1"
-	if err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&wallet); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return "", ErrCustomerNotFound
-		}
-		return "", err
-	}
-	if strings.TrimSpace(wallet) == "" {
-		return "", errors.New("wallet_address is empty")
-	}
-	return wallet, nil
-}
-
 func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
 		return repositoryModels.AcceptResult{}, errors.New("orders repository not fully initialized")
@@ -349,6 +270,85 @@ func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryMo
 	}
 
 	return repositoryModels.AcceptResult{OrderID: input.OrderID, Status: string(status)}, nil
+}
+
+func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
+	if r.ordersDB == nil {
+		return "", errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return "", errors.New("order_id must be a valid UUID")
+	}
+
+	var status string
+	query := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	if err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&status); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", ErrOrderNotFound
+		}
+		return "", err
+	}
+	return models.OrderStatus(status), nil
+}
+
+func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
+	if r.ordersDB == nil {
+		return errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return errors.New("order_id must be a valid UUID")
+	}
+
+	res, err := r.ordersDB.ExecContext(ctx, "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE emp_id = $3", string(status), time.Now().UTC(), orderID)
+	if err != nil {
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err == nil && rows == 0 {
+		return ErrOrderNotFound
+	}
+	return err
+}
+
+func (r *postgresRepository) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
+	if r.ordersDB == nil {
+		return 0, errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return 0, errors.New("order_id must be a valid UUID")
+	}
+
+	var total sql.NullFloat64
+	query := "SELECT SUM(price * quantity) FROM ORDERS_ITEMS WHERE order_id = $1"
+	if err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&total); err != nil {
+		return 0, err
+	}
+	if !total.Valid {
+		return 0, nil
+	}
+	return total.Float64, nil
+}
+
+func (r *postgresRepository) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
+	if r.customersDB == nil {
+		return "", errors.New("customers repository not fully initialized")
+	}
+	if customerID == uuid.Nil {
+		return "", errors.New("customer_id must be a valid UUID")
+	}
+
+	var wallet string
+	query := "SELECT wallet_address FROM CUSTOMERS WHERE emp_id = $1"
+	if err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&wallet); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", ErrCustomerNotFound
+		}
+		return "", err
+	}
+	if strings.TrimSpace(wallet) == "" {
+		return "", errors.New("wallet_address is empty")
+	}
+	return wallet, nil
 }
 
 func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {

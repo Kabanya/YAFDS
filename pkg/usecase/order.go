@@ -27,6 +27,6 @@ type OrderUseCase interface {
 }
 
 type orderUseCase struct {
-	repo   repositoryModels.Order
+	repo   repositoryModels.OrderRepo
 	wallet WalletClient
 }

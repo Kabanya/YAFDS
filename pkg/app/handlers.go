@@ -24,7 +24,7 @@ import (
 // usecase -- сетка зависимостей
 
 type Filter = repositoryModels.Filter
-type Order = repositoryModels.Order
+type Order = repositoryModels.OrderRepo
 
 // Error aliases from repository
 var (

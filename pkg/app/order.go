@@ -18,7 +18,7 @@ import (
 )
 
 // Type aliases from repository
-type Repository = repositoryModels.Order
+type Repository = repositoryModels.OrderRepo
 
 // type Filter = repository.Filter
 // type Order = repository.Order
@@ -131,7 +131,7 @@ func NewCreateHandler(repo Repository, menuClient RestaurantMenuClient) http.Han
 			})
 		}
 
-		created, err := repo.CreateWithItems(r.Context(), models.Order{
+		created, err := repo.CreateOrderWithItems(r.Context(), models.Order{
 			CustomerID: customerID,
 			CourierID:  courierID,
 			Status:     req.Status,
