@@ -41,8 +41,8 @@ func (r *postgresRepository) CreateOrder(ctx context.Context, order models.Order
 	}
 	order.CreatedAt = now
 	order.UpdatedAt = now
-	if strings.TrimSpace(order.Status) == "" {
-		order.Status = "created"
+	if strings.TrimSpace(string(order.Status)) == "" {
+		order.Status = models.OrderStatusCustomerCreated
 	}
 
 	if err := r.ensureCustomerExists(ctx, order.CustomerID); err != nil {
@@ -57,7 +57,7 @@ func (r *postgresRepository) CreateOrder(ctx context.Context, order models.Order
         VALUES ($1, $2, $3, $4, $5, $6)
     `
 
-	_, err := r.ordersDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status)
+	_, err := r.ordersDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, string(order.Status))
 	if err != nil {
 		return models.Order{}, err
 	}
@@ -78,8 +78,8 @@ func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order mod
 	}
 	order.CreatedAt = now
 	order.UpdatedAt = now
-	if strings.TrimSpace(order.Status) == "" {
-		order.Status = "created"
+	if strings.TrimSpace(string(order.Status)) == "" {
+		order.Status = models.OrderStatusCustomerCreated
 	}
 
 	if err := r.ensureCustomerExists(ctx, order.CustomerID); err != nil {
@@ -103,7 +103,7 @@ func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order mod
 		INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status); err != nil {
+	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, string(order.Status)); err != nil {
 		return models.Order{}, err
 	}
 

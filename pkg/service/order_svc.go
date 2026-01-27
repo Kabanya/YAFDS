@@ -22,58 +22,58 @@ type acceptOrderRequest struct {
 	Status  string `json:"status"`
 }
 
-type createOrderResponce struct {
+type createOrderResponse struct {
 	OrderID string `json:"order_id"`
 }
 
-func CreateOrder(ctx context.Context, repo pkgRepoModels.OrderRepo, req createOrderRequest) (createOrderResponce, error) {
+func CreateOrder(ctx context.Context, repo pkgRepoModels.OrderRepo, req createOrderRequest) (createOrderResponse, error) {
 	customerID, err := uuid.Parse(req.CustomerID)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 	courierID, err := uuid.Parse(req.CourierID)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 
 	order := models.Order{
 		CustomerID: customerID,
 		CourierID:  courierID,
-		Status:     req.Status,
+		Status:     models.OrderStatusCustomerCreated,
 	}
 
 	createdOrder, err := repo.CreateOrder(ctx, order)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 
-	return createOrderResponce{
+	return createOrderResponse{
 		OrderID: createdOrder.ID.String(),
 	}, nil
 }
 
-func CreateOrderWithItems(ctx context.Context, repo pkgRepoModels.OrderRepo, req createOrderRequest, items []pkgRepoModels.OrderItemInput) (createOrderResponce, error) {
+func CreateOrderWithItems(ctx context.Context, repo pkgRepoModels.OrderRepo, req createOrderRequest, items []pkgRepoModels.OrderItemInput) (createOrderResponse, error) {
 	customerID, err := uuid.Parse(req.CustomerID)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 	courierID, err := uuid.Parse(req.CourierID)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 
 	order := models.Order{
 		CustomerID: customerID,
 		CourierID:  courierID,
-		Status:     req.Status,
+		Status:     models.OrderStatusCustomerCreated,
 	}
 
 	createdOrder, err := repo.CreateOrderWithItems(ctx, order, items)
 	if err != nil {
-		return createOrderResponce{}, err
+		return createOrderResponse{}, err
 	}
 
-	return createOrderResponce{
+	return createOrderResponse{
 		OrderID: createdOrder.ID.String(),
 	}, nil
 }
@@ -116,7 +116,7 @@ func AcceptOrder(ctx context.Context, repo pkgRepoModels.OrderRepo, req acceptOr
 func GetOrderStatus(ctx context.Context, repo pkgRepoModels.OrderRepo, orderID uuid.UUID) (models.OrderStatus, error) {
 	status, err := repo.GetOrderStatus(ctx, orderID)
 	if err != nil {
-		return models.OrderStatus("UNDEFINED"), err
+		return models.OrderStatusOrderFailed, err
 	}
 	return status, nil
 }
