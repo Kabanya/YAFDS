@@ -30,7 +30,7 @@ var (
 	ErrOrderNotFound    = errors.New("order not found")
 )
 
-func (r *postgresRepository) Create(ctx context.Context, order models.Order) (models.Order, error) {
+func (r *postgresRepository) CreateOrder(ctx context.Context, order models.Order) (models.Order, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
 		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
@@ -45,10 +45,10 @@ func (r *postgresRepository) Create(ctx context.Context, order models.Order) (mo
 		order.Status = "created"
 	}
 
-	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", order.CustomerID); err != nil {
+	if err := r.ensureCustomerExists(ctx, order.CustomerID); err != nil {
 		return models.Order{}, err
 	}
-	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", order.CourierID); err != nil {
+	if err := r.ensureCourierExists(ctx, order.CourierID); err != nil {
 		return models.Order{}, err
 	}
 
@@ -64,7 +64,7 @@ func (r *postgresRepository) Create(ctx context.Context, order models.Order) (mo
 	return order, nil
 }
 
-func (r *postgresRepository) CreateWithItems(ctx context.Context, order models.Order, items []repositoryModels.OrderItemInput) (models.Order, error) {
+func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order models.Order, items []repositoryModels.OrderItemInput) (models.Order, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
 		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
@@ -82,10 +82,10 @@ func (r *postgresRepository) CreateWithItems(ctx context.Context, order models.O
 		order.Status = "created"
 	}
 
-	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", order.CustomerID); err != nil {
+	if err := r.ensureCustomerExists(ctx, order.CustomerID); err != nil {
 		return models.Order{}, err
 	}
-	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", order.CourierID); err != nil {
+	if err := r.ensureCourierExists(ctx, order.CourierID); err != nil {
 		return models.Order{}, err
 	}
 
@@ -123,7 +123,7 @@ func (r *postgresRepository) CreateWithItems(ctx context.Context, order models.O
 	return order, nil
 }
 
-func (r *postgresRepository) List(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
+func (r *postgresRepository) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
 	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
 	var args []any
 	var where []string
@@ -167,7 +167,7 @@ func (r *postgresRepository) List(ctx context.Context, filter repositoryModels.F
 	return result, nil
 }
 
-func (r *postgresRepository) Get(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
+func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	if r.ordersDB == nil {
 		return models.Order{}, errors.New("orders repository not fully initialized")
 	}
@@ -206,7 +206,7 @@ func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UU
 	return models.OrderStatus(status), nil
 }
 
-func (r *postgresRepository) UpdateStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
+func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
 	if r.ordersDB == nil {
 		return errors.New("orders repository not fully initialized")
 	}
@@ -266,7 +266,7 @@ func (r *postgresRepository) GetCustomerWalletAddress(ctx context.Context, custo
 	return wallet, nil
 }
 
-func (r *postgresRepository) Accept(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
+func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
 	if r.ordersDB == nil || r.customersDB == nil || r.couriersDB == nil {
 		return repositoryModels.AcceptResult{}, errors.New("orders repository not fully initialized")
 	}
@@ -280,10 +280,10 @@ func (r *postgresRepository) Accept(ctx context.Context, input repositoryModels.
 		return repositoryModels.AcceptResult{}, errors.New("courier_id must be a valid UUID")
 	}
 
-	if _, err := r.ensureExists(ctx, r.customersDB, "SELECT 1 FROM customers WHERE emp_id = $1", input.CustomerID); err != nil {
+	if err := r.ensureCustomerExists(ctx, input.CustomerID); err != nil {
 		return repositoryModels.AcceptResult{}, err
 	}
-	if _, err := r.ensureExists(ctx, r.couriersDB, "SELECT 1 FROM couriers WHERE emp_id = $1", input.CourierID); err != nil {
+	if err := r.ensureCourierExists(ctx, input.CourierID); err != nil {
 		return repositoryModels.AcceptResult{}, err
 	}
 
@@ -351,7 +351,7 @@ func (r *postgresRepository) Accept(ctx context.Context, input repositoryModels.
 	return repositoryModels.AcceptResult{OrderID: input.OrderID, Status: string(status)}, nil
 }
 
-func (r *postgresRepository) AddItem(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
+func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
 	if r.ordersDB == nil {
 		return errors.New("orders repository not fully initialized")
 	}
@@ -396,17 +396,81 @@ func (r *postgresRepository) AddItem(ctx context.Context, orderID uuid.UUID, ite
 	return nil
 }
 
-func (r *postgresRepository) ensureExists(ctx context.Context, db *sql.DB, query string, id uuid.UUID) (bool, error) {
+func (r *postgresRepository) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
+	if r.ordersDB == nil {
+		return errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return errors.New("order_id must be a valid UUID")
+	}
+	if restaurantItemID == uuid.Nil {
+		return errors.New("restaurant_item_id must be a valid UUID")
+	}
+
+	tx, err := r.ordersDB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	var exists int
+	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE emp_id = $1", orderID).Scan(&exists); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrOrderNotFound
+		}
+		return err
+	}
+
+	res, err := tx.ExecContext(ctx, "DELETE FROM ORDERS_ITEMS WHERE order_id = $1 AND restaurant_item_id = $2", orderID, restaurantItemID)
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("item not found in order")
+	}
+
+	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE emp_id = $2", time.Now().UTC(), orderID); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *postgresRepository) ensureCustomerExists(ctx context.Context, customerID uuid.UUID) error {
 	var dummy int
-	err := db.QueryRowContext(ctx, query, id).Scan(&dummy)
+	query := "SELECT 1 FROM customers WHERE emp_id = $1"
+	err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&dummy)
 	if err == nil {
-		return true, nil
+		return nil
 	}
 	if errors.Is(err, sql.ErrNoRows) {
-		if strings.Contains(strings.ToLower(query), "customers") {
-			return false, ErrCustomerNotFound
-		}
-		return false, ErrCourierNotFound
+		return ErrCustomerNotFound
 	}
-	return false, err
+	return err
+}
+
+func (r *postgresRepository) ensureCourierExists(ctx context.Context, courierID uuid.UUID) error {
+	var dummy int
+	query := "SELECT 1 FROM couriers WHERE emp_id = $1"
+	err := r.couriersDB.QueryRowContext(ctx, query, courierID).Scan(&dummy)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrCourierNotFound
+	}
+	return err
 }

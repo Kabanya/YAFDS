@@ -27,6 +27,7 @@ send_requests**
 requirements.txt
 **/nul
 windows/
+scripts/
 
 make_nice_sql_html.py
 
