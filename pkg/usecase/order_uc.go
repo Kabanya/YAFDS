@@ -39,23 +39,58 @@ func NewOrderUseCase(serviceOrder service.OrderService) OrderUseCase {
 	return &orderUseCase{serviceOrder: serviceOrder}
 }
 
-// type UserUseCase interface {
-// 	Register(uuid.UUID, string, string, string, string) error
-// 	Login(walletAddress string, password string) (models.LoginResponse, error)
-// }
+func (u *orderUseCase) CreateOrder(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID) (models.Order, error) {
+	resp, err := u.serviceOrder.CreateOrder(ctx, customerID.String(), courierID.String(), models.OrderStatusCustomerCreated)
+	if err != nil {
+		return models.Order{}, err
+	}
+	orderID, err := uuid.Parse(resp.OrderID)
+	if err != nil {
+		return models.Order{}, err
+	}
+	return u.serviceOrder.GetOrder(ctx, orderID)
+}
 
-// type userUseCase struct {
-// 	service service.UserService
-// }
+func (u *orderUseCase) CreateOrderWithItems(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput) (models.Order, error) {
+	resp, err := u.serviceOrder.CreateOrderWithItems(ctx, customerID.String(), courierID.String(), models.OrderStatusCustomerCreated, items)
+	if err != nil {
+		return models.Order{}, err
+	}
+	orderID, err := uuid.Parse(resp.OrderID)
+	if err != nil {
+		return models.Order{}, err
+	}
+	return u.serviceOrder.GetOrder(ctx, orderID)
+}
 
-// func NewUserUseCase(service service.UserService) UserUseCase {
-// 	return &userUseCase{service: service}
-// }
+func (u *orderUseCase) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
+	return u.serviceOrder.GetOrder(ctx, orderID)
+}
 
-// func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, address string, password string) error {
-// 	return u.service.Register(id, name, walletAddress, address, password)
-// }
+func (u *orderUseCase) AcceptOrder(ctx context.Context, orderID uuid.UUID, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput, status models.OrderStatus) (repositoryModels.AcceptResult, error) {
+	return u.serviceOrder.AcceptOrder(ctx, orderID.String(), customerID.String(), courierID.String(), items, status)
+}
 
-// func (u *userUseCase) Login(walletAddress string, password string) (models.LoginResponse, error) {
-// 	return u.service.Login(walletAddress, password)
-// }
+func (u *orderUseCase) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
+	return u.serviceOrder.GetOrderStatus(ctx, orderID)
+}
+
+func (u *orderUseCase) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
+	return u.serviceOrder.UpdateOrderStatus(ctx, orderID, status)
+}
+
+func (u *orderUseCase) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
+	return u.serviceOrder.CalculateOrderTotal(ctx, orderID)
+}
+
+func (u *orderUseCase) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
+	return u.serviceOrder.GetCustomerWalletAddress(ctx, customerID)
+}
+
+func (u *orderUseCase) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
+	return u.serviceOrder.AddItemIntoOrder(ctx, orderID, item)
+}
+
+func (u *orderUseCase) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
+	return u.serviceOrder.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
+}
