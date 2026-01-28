@@ -5,7 +5,7 @@ import (
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 	"github.com/Kabanya/YAFDS/pkg/repository"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	pkgRepoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 
 	"github.com/google/uuid"
 )
@@ -23,9 +23,6 @@ import (
 
 // usecase -- сетка зависимостей
 
-type Filter = repositoryModels.Filter
-type Order = repositoryModels.OrderRepo
-
 // Error aliases from repository
 var (
 	ErrCustomerNotFound = repository.ErrCustomerNotFound
@@ -33,7 +30,7 @@ var (
 )
 
 type App struct {
-	repo Repository
+	repo pkgRepoModels.OrderRepo
 }
 
 type errorResponse struct {
