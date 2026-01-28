@@ -123,6 +123,26 @@ func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order mod
 	return order, nil
 }
 
+func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
+	if r.ordersDB == nil {
+		return models.Order{}, errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return models.Order{}, errors.New("order_id must be a valid UUID")
+	}
+
+	var order models.Order
+	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = $1`
+	err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Order{}, ErrOrderNotFound
+		}
+		return models.Order{}, err
+	}
+	return order, nil
+}
+
 func (r *postgresRepository) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
 	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
 	var args []any
@@ -165,26 +185,6 @@ func (r *postgresRepository) ListOrders(ctx context.Context, filter repositoryMo
 		return nil, err
 	}
 	return result, nil
-}
-
-func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
-	if r.ordersDB == nil {
-		return models.Order{}, errors.New("orders repository not fully initialized")
-	}
-	if orderID == uuid.Nil {
-		return models.Order{}, errors.New("order_id must be a valid UUID")
-	}
-
-	var order models.Order
-	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = $1`
-	err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return models.Order{}, ErrOrderNotFound
-		}
-		return models.Order{}, err
-	}
-	return order, nil
 }
 
 func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
