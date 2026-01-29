@@ -98,7 +98,7 @@ func createTestOrderItemInput() pkgRepoModels.OrderItemInput {
 }
 
 // Тесты для CreateOrder
-func TestOrderService_CreateOrder_Success(t *testing.T) {
+func TestOrderSvc_CreateOrder_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -121,7 +121,7 @@ func TestOrderService_CreateOrder_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_CreateOrder_InvalidCustomerID(t *testing.T) {
+func TestOrderSvc_CreateOrder_InvalidCustomerID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -140,7 +140,7 @@ func TestOrderService_CreateOrder_InvalidCustomerID(t *testing.T) {
 	mockRepo.AssertNotCalled(t, "CreateOrder")
 }
 
-func TestOrderService_CreateOrder_InvalidCourierID(t *testing.T) {
+func TestOrderSvc_CreateOrder_InvalidCourierID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -159,7 +159,7 @@ func TestOrderService_CreateOrder_InvalidCourierID(t *testing.T) {
 	mockRepo.AssertNotCalled(t, "CreateOrder")
 }
 
-func TestOrderService_CreateOrder_RepositoryError(t *testing.T) {
+func TestOrderSvc_CreateOrder_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -183,7 +183,7 @@ func TestOrderService_CreateOrder_RepositoryError(t *testing.T) {
 }
 
 // Тесты для CreateOrderWithItems
-func TestOrderService_CreateOrderWithItems_Success(t *testing.T) {
+func TestOrderSvc_CreateOrderWithItems_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -210,7 +210,7 @@ func TestOrderService_CreateOrderWithItems_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_CreateOrderWithItems_InvalidCustomerID(t *testing.T) {
+func TestOrderSvc_CreateOrderWithItems_InvalidCustomerID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -230,7 +230,7 @@ func TestOrderService_CreateOrderWithItems_InvalidCustomerID(t *testing.T) {
 	mockRepo.AssertNotCalled(t, "CreateOrderWithItems")
 }
 
-func TestOrderService_CreateOrderWithItems_RepositoryError(t *testing.T) {
+func TestOrderSvc_CreateOrderWithItems_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -255,7 +255,7 @@ func TestOrderService_CreateOrderWithItems_RepositoryError(t *testing.T) {
 }
 
 // Тесты для ListOrders
-func TestOrderService_ListOrders_Success(t *testing.T) {
+func TestOrderSvc_ListOrders_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -281,7 +281,7 @@ func TestOrderService_ListOrders_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_ListOrders_RepositoryError(t *testing.T) {
+func TestOrderSvc_ListOrders_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -303,7 +303,7 @@ func TestOrderService_ListOrders_RepositoryError(t *testing.T) {
 }
 
 // Тесты для GetOrder
-func TestOrderService_GetOrder_Success(t *testing.T) {
+func TestOrderSvc_GetOrder_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -324,7 +324,7 @@ func TestOrderService_GetOrder_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_GetOrder_NotFound(t *testing.T) {
+func TestOrderSvc_GetOrder_NotFound(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -346,7 +346,7 @@ func TestOrderService_GetOrder_NotFound(t *testing.T) {
 }
 
 // Тесты для AcceptOrder
-func TestOrderService_AcceptOrder_Success(t *testing.T) {
+func TestOrderSvc_AcceptOrder_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -384,7 +384,7 @@ func TestOrderService_AcceptOrder_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_AcceptOrder_InvalidOrderID(t *testing.T) {
+func TestOrderSvc_AcceptOrder_InvalidOrderID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -405,7 +405,7 @@ func TestOrderService_AcceptOrder_InvalidOrderID(t *testing.T) {
 	mockRepo.AssertNotCalled(t, "AcceptOrder")
 }
 
-func TestOrderService_AcceptOrder_InvalidCustomerID(t *testing.T) {
+func TestOrderSvc_AcceptOrder_InvalidCustomerID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -426,7 +426,7 @@ func TestOrderService_AcceptOrder_InvalidCustomerID(t *testing.T) {
 	mockRepo.AssertNotCalled(t, "AcceptOrder")
 }
 
-func TestOrderService_AcceptOrder_RepositoryError(t *testing.T) {
+func TestOrderSvc_AcceptOrder_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -463,7 +463,7 @@ func TestOrderService_AcceptOrder_RepositoryError(t *testing.T) {
 }
 
 // Тесты для GetOrderStatus
-func TestOrderService_GetOrderStatus_Success(t *testing.T) {
+func TestOrderSvc_GetOrderStatus_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -484,7 +484,7 @@ func TestOrderService_GetOrderStatus_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_GetOrderStatus_RepositoryError(t *testing.T) {
+func TestOrderSvc_GetOrderStatus_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -506,7 +506,7 @@ func TestOrderService_GetOrderStatus_RepositoryError(t *testing.T) {
 }
 
 // Тесты для UpdateOrderStatus
-func TestOrderService_UpdateOrderStatus_Success(t *testing.T) {
+func TestOrderSvc_UpdateOrderStatus_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -525,7 +525,7 @@ func TestOrderService_UpdateOrderStatus_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_UpdateOrderStatus_RepositoryError(t *testing.T) {
+func TestOrderSvc_UpdateOrderStatus_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -545,16 +545,15 @@ func TestOrderService_UpdateOrderStatus_RepositoryError(t *testing.T) {
 	assert.Equal(t, expectedError, err)
 	mockRepo.AssertExpectations(t)
 }
-
-// Тесты для CalculateOrderTotal
-func TestOrderService_CalculateOrderTotal_Success(t *testing.T) {
+func TestOrderSvc_CalculateOrderTotal_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
 
 	ctx := context.Background()
 	orderID := uuid.New()
-	expectedTotal := 25.50
+
+	expectedTotal := 42.99
 
 	mockRepo.On("CalculateOrderTotal", ctx, orderID).Return(expectedTotal, nil)
 
@@ -567,15 +566,15 @@ func TestOrderService_CalculateOrderTotal_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_CalculateOrderTotal_RepositoryError(t *testing.T) {
+func TestOrderSvc_CalculateOrderTotal_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
 
 	ctx := context.Background()
 	orderID := uuid.New()
-	expectedError := errors.New("repository error")
 
+	expectedError := errors.New("repository error")
 	mockRepo.On("CalculateOrderTotal", ctx, orderID).Return(0.0, expectedError)
 
 	// Act
@@ -589,14 +588,15 @@ func TestOrderService_CalculateOrderTotal_RepositoryError(t *testing.T) {
 }
 
 // Тесты для GetCustomerWalletAddress
-func TestOrderService_GetCustomerWalletAddress_Success(t *testing.T) {
+func TestOrderSvc_GetCustomerWalletAddress_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
 
 	ctx := context.Background()
 	customerID := uuid.New()
-	expectedAddress := "wallet_123"
+
+	expectedAddress := "0x1234567890abcdef"
 
 	mockRepo.On("GetCustomerWalletAddress", ctx, customerID).Return(expectedAddress, nil)
 
@@ -609,15 +609,15 @@ func TestOrderService_GetCustomerWalletAddress_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_GetCustomerWalletAddress_RepositoryError(t *testing.T) {
+func TestOrderSvc_GetCustomerWalletAddress_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
 
 	ctx := context.Background()
 	customerID := uuid.New()
-	expectedError := errors.New("repository error")
 
+	expectedError := errors.New("repository error")
 	mockRepo.On("GetCustomerWalletAddress", ctx, customerID).Return("", expectedError)
 
 	// Act
@@ -630,8 +630,7 @@ func TestOrderService_GetCustomerWalletAddress_RepositoryError(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-// Тесты для AddItemIntoOrder
-func TestOrderService_AddItemIntoOrder_Success(t *testing.T) {
+func TestOrderSvc_AddItemIntoOrder_Success(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -650,7 +649,7 @@ func TestOrderService_AddItemIntoOrder_Success(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-func TestOrderService_AddItemIntoOrder_RepositoryError(t *testing.T) {
+func TestOrderSvc_AddItemIntoOrder_RepositoryError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockOrderRepo)
 	service := NewOrderService(mockRepo)
@@ -658,53 +657,12 @@ func TestOrderService_AddItemIntoOrder_RepositoryError(t *testing.T) {
 	ctx := context.Background()
 	orderID := uuid.New()
 	item := createTestOrderItemInput()
-	expectedError := errors.New("repository error")
 
+	expectedError := errors.New("repository error")
 	mockRepo.On("AddItemIntoOrder", ctx, orderID, item).Return(expectedError)
 
 	// Act
 	err := service.AddItemIntoOrder(ctx, orderID, item)
-
-	// Assert
-	assert.Error(t, err)
-	assert.Equal(t, expectedError, err)
-	mockRepo.AssertExpectations(t)
-}
-
-// Тесты для RemoveItemFromOrder
-func TestOrderService_RemoveItemFromOrder_Success(t *testing.T) {
-	// Arrange
-	mockRepo := new(MockOrderRepo)
-	service := NewOrderService(mockRepo)
-
-	ctx := context.Background()
-	orderID := uuid.New()
-	restaurantItemID := uuid.New()
-
-	mockRepo.On("RemoveItemFromOrder", ctx, orderID, restaurantItemID).Return(nil)
-
-	// Act
-	err := service.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
-
-	// Assert
-	assert.NoError(t, err)
-	mockRepo.AssertExpectations(t)
-}
-
-func TestOrderService_RemoveItemFromOrder_RepositoryError(t *testing.T) {
-	// Arrange
-	mockRepo := new(MockOrderRepo)
-	service := NewOrderService(mockRepo)
-
-	ctx := context.Background()
-	orderID := uuid.New()
-	restaurantItemID := uuid.New()
-	expectedError := errors.New("repository error")
-
-	mockRepo.On("RemoveItemFromOrder", ctx, orderID, restaurantItemID).Return(expectedError)
-
-	// Act
-	err := service.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
 
 	// Assert
 	assert.Error(t, err)

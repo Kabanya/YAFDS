@@ -20,11 +20,3 @@ func WriteJSON(w http.ResponseWriter, data interface{}, statusCode int) {
 func WriteError(w http.ResponseWriter, message string, statusCode int) {
 	WriteJSON(w, models.ErrorResponce{ErrorMessage: message}, statusCode)
 }
-
-func NewUUID() uuid.UUID {
-	return uuid.New()
-}
-
-func ParseUUID(idStr string) (uuid.UUID, error) {
-	return uuid.Parse(idStr)
-}
