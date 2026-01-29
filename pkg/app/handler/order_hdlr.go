@@ -1,4 +1,4 @@
-package app
+package handler
 
 import (
 	"encoding/json"
@@ -71,6 +71,24 @@ func NewOrderHandler(orderUC usecase.OrderUseCase) *OrderHandler {
 	return &OrderHandler{
 		orderUC: orderUC,
 	}
+}
+
+func (h *OrderHandler) parseOrderID(w http.ResponseWriter, r *http.Request) (uuid.UUID, bool) {
+	orderIDStr := r.PathValue("order_id")
+	if orderIDStr == "" {
+		orderIDStr = r.URL.Query().Get("order_id")
+	}
+	if orderIDStr == "" {
+		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
+		return uuid.Nil, false
+	}
+
+	orderID, err := uuid.Parse(orderIDStr)
+	if err != nil {
+		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+		return uuid.Nil, false
+	}
+	return orderID, true
 }
 
 func (h *OrderHandler) OrdersHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
@@ -159,15 +177,13 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	customerID, err := uuid.Parse(req.CustomerID)
-	if err != nil {
-		utils.WriteError(w, "invalid customer_id", http.StatusBadRequest)
+	customerID, ok := utils.ParseUUIDOrBadRequest(w, req.CustomerID, "invalid customer_id")
+	if !ok {
 		return
 	}
 
-	courierID, err := uuid.Parse(req.CourierID)
-	if err != nil {
-		utils.WriteError(w, "invalid courier_id", http.StatusBadRequest)
+	courierID, ok := utils.ParseUUIDOrBadRequest(w, req.CourierID, "invalid courier_id")
+	if !ok {
 		return
 	}
 
@@ -204,15 +220,13 @@ func (h *OrderHandler) CreateOrderWithItems(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	customerID, err := uuid.Parse(req.CustomerID)
-	if err != nil {
-		utils.WriteError(w, "invalid customer_id", http.StatusBadRequest)
+	customerID, ok := utils.ParseUUIDOrBadRequest(w, req.CustomerID, "invalid customer_id")
+	if !ok {
 		return
 	}
 
-	courierID, err := uuid.Parse(req.CourierID)
-	if err != nil {
-		utils.WriteError(w, "invalid courier_id", http.StatusBadRequest)
+	courierID, ok := utils.ParseUUIDOrBadRequest(w, req.CourierID, "invalid courier_id")
+	if !ok {
 		return
 	}
 
@@ -242,15 +256,8 @@ func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -280,15 +287,8 @@ func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -298,15 +298,13 @@ func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	customerID, err := uuid.Parse(req.CustomerID)
-	if err != nil {
-		utils.WriteError(w, "invalid customer_id", http.StatusBadRequest)
+	customerID, ok := utils.ParseUUIDOrBadRequest(w, req.CustomerID, "invalid customer_id")
+	if !ok {
 		return
 	}
 
-	courierID, err := uuid.Parse(req.CourierID)
-	if err != nil {
-		utils.WriteError(w, "invalid courier_id", http.StatusBadRequest)
+	courierID, ok := utils.ParseUUIDOrBadRequest(w, req.CourierID, "invalid courier_id")
+	if !ok {
 		return
 	}
 
@@ -336,15 +334,8 @@ func (h *OrderHandler) GetOrderStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -374,15 +365,8 @@ func (h *OrderHandler) UpdateOrderStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -392,7 +376,7 @@ func (h *OrderHandler) UpdateOrderStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = h.orderUC.UpdateOrderStatus(r.Context(), orderID, req.Status)
+	err := h.orderUC.UpdateOrderStatus(r.Context(), orderID, req.Status)
 	if err != nil {
 		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -418,15 +402,8 @@ func (h *OrderHandler) CalculateOrderTotal(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -456,15 +433,8 @@ func (h *OrderHandler) GetCustomerWalletAddress(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	customerIDStr := r.URL.Query().Get("customer_id")
-	if customerIDStr == "" {
-		utils.WriteError(w, "customer_id is required", http.StatusBadRequest)
-		return
-	}
-
-	customerID, err := uuid.Parse(customerIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid customer_id", http.StatusBadRequest)
+	customerID, ok := utils.ParseRequiredUUIDOrBadRequest(w, r.URL.Query().Get("customer_id"), "customer_id")
+	if !ok {
 		return
 	}
 
@@ -494,15 +464,8 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
-		return
-	}
-
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
@@ -512,9 +475,8 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	restaurantItemID, err := uuid.Parse(req.RestaurantItemID)
-	if err != nil {
-		utils.WriteError(w, "invalid restaurant_item_id", http.StatusBadRequest)
+	restaurantItemID, ok := utils.ParseUUIDOrBadRequest(w, req.RestaurantItemID, "invalid restaurant_item_id")
+	if !ok {
 		return
 	}
 
@@ -524,7 +486,7 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 		Quantity:         req.Quantity,
 	}
 
-	err = h.orderUC.AddItemIntoOrder(r.Context(), orderID, item)
+	err := h.orderUC.AddItemIntoOrder(r.Context(), orderID, item)
 	if err != nil {
 		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -550,31 +512,17 @@ func (h *OrderHandler) RemoveItemFromOrder(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	orderIDStr := r.URL.Query().Get("order_id")
-	if orderIDStr == "" {
-		utils.WriteError(w, "order_id is required", http.StatusBadRequest)
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
 		return
 	}
 
-	orderID, err := uuid.Parse(orderIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid order_id", http.StatusBadRequest)
+	restaurantItemID, ok := utils.ParseRequiredUUIDOrBadRequest(w, r.URL.Query().Get("restaurant_item_id"), "restaurant_item_id")
+	if !ok {
 		return
 	}
 
-	restaurantItemIDStr := r.URL.Query().Get("restaurant_item_id")
-	if restaurantItemIDStr == "" {
-		utils.WriteError(w, "restaurant_item_id is required", http.StatusBadRequest)
-		return
-	}
-
-	restaurantItemID, err := uuid.Parse(restaurantItemIDStr)
-	if err != nil {
-		utils.WriteError(w, "invalid restaurant_item_id", http.StatusBadRequest)
-		return
-	}
-
-	err = h.orderUC.RemoveItemFromOrder(r.Context(), orderID, restaurantItemID)
+	err := h.orderUC.RemoveItemFromOrder(r.Context(), orderID, restaurantItemID)
 	if err != nil {
 		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return
