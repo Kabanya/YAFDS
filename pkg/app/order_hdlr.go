@@ -30,12 +30,6 @@ type OrderHandler struct {
 	orderUC usecase.OrderUseCase
 }
 
-func NewOrderHandler(orderUC usecase.OrderUseCase) *OrderHandler {
-	return &OrderHandler{
-		orderUC: orderUC,
-	}
-}
-
 // Request/Response structs
 type CreateOrderRequest struct {
 	CustomerID string `json:"customer_id"`
@@ -71,6 +65,75 @@ type AddItemRequest struct {
 
 type RemoveItemRequest struct {
 	RestaurantItemID string `json:"restaurant_item_id"`
+}
+
+func NewOrderHandler(orderUC usecase.OrderUseCase) *OrderHandler {
+	return &OrderHandler{
+		orderUC: orderUC,
+	}
+}
+
+func (h *OrderHandler) OrdersHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
+	listHandler := NewListHandler(repo)
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			listHandler(w, r)
+		} else if r.Method == http.MethodPost {
+			h.CreateOrder(w, r)
+		} else {
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}
+}
+
+func NewListHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != http.MethodGet {
+			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		status := r.URL.Query().Get("status")
+		customerIDStr := r.URL.Query().Get("customer_id")
+		courierIDStr := r.URL.Query().Get("courier_id")
+
+		var filter repositoryModels.Filter
+		if status != "" {
+			filter.Status = status
+		}
+		if customerIDStr != "" {
+			if id, err := uuid.Parse(customerIDStr); err == nil {
+				filter.CustomerID = &id
+			}
+		}
+		if courierIDStr != "" {
+			if id, err := uuid.Parse(courierIDStr); err == nil {
+				filter.CourierID = &id
+			}
+		}
+
+		orders, err := repo.ListOrders(r.Context(), filter)
+		if err != nil {
+			utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if orders == nil {
+			orders = []models.Order{}
+		}
+
+		utils.WriteJSON(w, orders, http.StatusOK)
+	}
 }
 
 // POST /orders

@@ -17,7 +17,7 @@ import (
 	"courier/internal/service"
 	"courier/internal/usecase"
 
-	"github.com/Kabanya/YAFDS/pkg/app"
+	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository"
 
@@ -140,7 +140,7 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", app.NewListHandler(ordersRepository))
+	http.HandleFunc("/orders", pkgHandlers.NewListHandler(ordersRepository))
 
 	port := os.Getenv("COURIER_PORT")
 	if port == "" {

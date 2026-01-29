@@ -21,6 +21,8 @@ import (
 	"github.com/Kabanya/YAFDS/pkg/app/clients"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository"
+	pkgService "github.com/Kabanya/YAFDS/pkg/service"
+	pkgUseCase "github.com/Kabanya/YAFDS/pkg/usecase"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -161,23 +163,38 @@ func Run() {
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
+	restaurantRepository := pkgRepo.NewRestaurantPostgresRepository(db)
+	restaurantService := pkgService.NewRestaurantService(restaurantRepository, restaurantClient)
+	restaurantUseCase := pkgUseCase.NewRestaurantUseCase(restaurantService)
+	logger.Println("Initialized restaurant layers")
+
+	courierRepository := pkgRepo.NewCourierPostgresRepository(courierDB)
+	courierService := pkgService.NewCourierService(courierRepository)
+	courierUseCase := pkgUseCase.NewCourierUseCase(courierService)
+	logger.Println("Initialized courier layers")
+
 	walletClient := clients.NewStubWalletClient()
 	_ = walletClient //[[maybe_unused]]
-	// orderUseCase := orderusecase.NewOrderUseCase(ordersRepository, walletClient)
+
+	orderService := pkgService.NewOrderService(ordersRepository)
+	orderUseCase := pkgUseCase.NewOrderUseCase(orderService)
 	logger.Println("Initialized order usecase")
 
 	handler := NewHandler(userUseCase, db)
 	logger.Println("Initialized handler")
 
+	orderHandler := pkgHandlers.NewOrderHandler(orderUseCase)
+
 	// registry endpoints
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", pkgHandlers.NewOrderHandler(userUseCase, ordersRepository))
-	// http.HandleFunc("/orders/", pkgHandlers.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
-	http.HandleFunc("/couriers", pkgHandlers.NewCouriersHandler(courierDB))
-	http.HandleFunc("/restaurants", pkgHandlers.NewRestaurantsHandler(db))
-	http.HandleFunc("/menu", pkgHandlers.NewRestaurantMenuHandler(restaurantClient))
+	http.HandleFunc("/orders", orderHandler.OrdersHandler(ordersRepository))
+	http.HandleFunc("/orders/accept", orderHandler.AcceptOrder)
+	http.HandleFunc("/orders/items", orderHandler.AddItemIntoOrder)
+	http.HandleFunc("/couriers", pkgHandlers.NewCouriersHandler(courierUseCase))
+	http.HandleFunc("/restaurants", pkgHandlers.NewRestaurantsHandler(restaurantUseCase))
+	http.HandleFunc("/menu", pkgHandlers.NewRestaurantMenuHandler(restaurantUseCase))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")

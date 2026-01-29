@@ -17,6 +17,7 @@
 
 /front/node_modules/
 front/dist
+**/main
 
 **/generate_**.py
 YAFDS.postman**.json
