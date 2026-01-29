@@ -2,7 +2,7 @@
 **.DS_Store
 .bashrc
 .glide/
-.env.*
+**/config/.env
 
 *.exe
 *.exe~
