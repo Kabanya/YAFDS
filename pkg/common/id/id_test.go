@@ -1,8 +1,9 @@
-package id
+package id_test
 
 import (
 	"testing"
 
+	. "github.com/Kabanya/YAFDS/pkg/common/id"
 	"github.com/google/uuid"
 )
 

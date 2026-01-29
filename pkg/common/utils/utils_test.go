@@ -1,4 +1,4 @@
-package utils
+package utils_test
 
 import (
 	"encoding/json"
@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"testing"
 
+	. "github.com/Kabanya/YAFDS/pkg/common/utils"
 	"github.com/Kabanya/YAFDS/pkg/models"
 )
 
@@ -51,13 +52,13 @@ func TestNumThreads(t *testing.T) {
 
 func TestLoadEnv(t *testing.T) {
 	content := `
-DB_HOST=localhost
-DB_PORT=5432
-APP_NAME=YAFDS
-EXPANDED=$(APP_NAME)_ENV
-# Comment line
-EMPTY_VAL=
-`
+		DB_HOST=localhost
+		DB_PORT=5432
+		APP_NAME=YAFDS
+		EXPANDED=$(APP_NAME)_ENV
+		# Comment line
+		EMPTY_VAL=
+		`
 	tmpFile := filepath.Join(t.TempDir(), ".env")
 	if err := os.WriteFile(tmpFile, []byte(content), 0644); err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)

@@ -94,11 +94,12 @@ func (h *OrderHandler) parseOrderID(w http.ResponseWriter, r *http.Request) (uui
 func (h *OrderHandler) OrdersHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
 	listHandler := NewListHandler(repo)
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
+		switch r.Method {
+		case http.MethodGet:
 			listHandler(w, r)
-		} else if r.Method == http.MethodPost {
+		case http.MethodPost:
 			h.CreateOrder(w, r)
-		} else {
+		default:
 			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}

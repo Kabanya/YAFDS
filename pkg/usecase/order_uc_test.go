@@ -1,4 +1,4 @@
-package usecase
+package usecase_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	"github.com/Kabanya/YAFDS/pkg/service"
+	. "github.com/Kabanya/YAFDS/pkg/usecase"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

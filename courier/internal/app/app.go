@@ -17,7 +17,7 @@ import (
 	"courier/internal/service"
 	"courier/internal/usecase"
 
-	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app"
+	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository"
 

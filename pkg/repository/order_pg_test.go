@@ -1,4 +1,4 @@
-package repository
+package repository_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Kabanya/YAFDS/pkg/models"
+	. "github.com/Kabanya/YAFDS/pkg/repository"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	"github.com/google/uuid"
 )

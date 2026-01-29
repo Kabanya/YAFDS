@@ -17,8 +17,8 @@ import (
 	"customer/internal/service"
 	"customer/internal/usecase"
 
-	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app"
 	"github.com/Kabanya/YAFDS/pkg/app/clients"
+	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository"
 	pkgService "github.com/Kabanya/YAFDS/pkg/service"
