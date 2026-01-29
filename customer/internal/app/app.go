@@ -17,10 +17,12 @@ import (
 	"customer/internal/service"
 	"customer/internal/usecase"
 
-	orderapp "github.com/Kabanya/YAFDS/pkg/app"
+	``
+
+	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app"
 	"github.com/Kabanya/YAFDS/pkg/app/clients"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	orderrepo "github.com/Kabanya/YAFDS/pkg/repository"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -104,7 +106,7 @@ func Run() {
 	userRepository := repository.NewUserRepo(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := orderrepo.NewPostgresRepository(ordersDB, db, courierDB)
+	ordersRepository := pkgRepo.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
 	restaurantAPIURL := os.Getenv("RESTAURANT_API_URL")
@@ -173,11 +175,11 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", orderapp.NewOrderHandler(ordersRepository, restaurantClient))
-	// http.HandleFunc("/orders/", orderapp.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
-	http.HandleFunc("/couriers", orderapp.NewCouriersHandler(courierDB))
-	http.HandleFunc("/restaurants", orderapp.NewRestaurantsHandler(db))
-	http.HandleFunc("/menu", orderapp.NewRestaurantMenuHandler(restaurantClient))
+	http.HandleFunc("/orders", pkgHandlers.NewOrderHandler(userUseCase, ordersRepository))
+	// http.HandleFunc("/orders/", pkgHandlers.NewOrderActionHandler(ordersRepository, restaurantClient, orderUseCase))
+	http.HandleFunc("/couriers", pkgHandlers.NewCouriersHandler(courierDB))
+	http.HandleFunc("/restaurants", pkgHandlers.NewRestaurantsHandler(db))
+	http.HandleFunc("/menu", pkgHandlers.NewRestaurantMenuHandler(restaurantClient))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")
