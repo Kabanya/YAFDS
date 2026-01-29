@@ -196,6 +196,9 @@ func Run() {
 	http.HandleFunc("PUT /orders/{order_id}/status", orderHandler.UpdateOrderStatus)
 	http.HandleFunc("GET /orders/{order_id}/total", orderHandler.CalculateOrderTotal)
 	http.HandleFunc("POST /orders/{order_id}/accept", orderHandler.AcceptOrder)
+	http.HandleFunc("POST /orders/{order_id}/pay", func(w http.ResponseWriter, r *http.Request) {
+		orderHandler.PayOrder(w, r, walletClient)
+	})
 	http.HandleFunc("POST /orders/{order_id}/items", orderHandler.AddItemIntoOrder)
 	http.HandleFunc("/couriers", pkgHandlers.NewCouriersHandler(courierUseCase))
 	http.HandleFunc("/restaurants", pkgHandlers.NewRestaurantsHandler(restaurantUseCase))

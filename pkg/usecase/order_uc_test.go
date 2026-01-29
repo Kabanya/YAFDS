@@ -74,6 +74,11 @@ func (m *MockOrderService) RemoveItemFromOrder(ctx context.Context, orderID uuid
 	return args.Error(0)
 }
 
+func (m *MockOrderService) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+	args := m.Called(ctx, orderID)
+	return args.Error(0)
+}
+
 func createTestOrder() models.Order {
 	return models.Order{
 		ID:         uuid.New(),

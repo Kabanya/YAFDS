@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
@@ -71,8 +72,18 @@ func (m *MockOrderUseCase) RemoveItemFromOrder(ctx context.Context, orderID uuid
 	return args.Error(0)
 }
 
+func (m *MockOrderUseCase) PayOrder(ctx context.Context, orderID uuid.UUID, walletClient client.WalletClient) error {
+	args := m.Called(ctx, orderID, walletClient)
+	return args.Error(0)
+}
+
 type MockOrderRepo struct {
 	mock.Mock
+}
+
+// PayOrder implements [models.OrderRepo].
+func (m *MockOrderRepo) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+	panic("unimplemented")
 }
 
 func (m *MockOrderRepo) CreateOrder(ctx context.Context, order models.Order) (models.Order, error) {

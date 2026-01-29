@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
@@ -530,4 +531,35 @@ func (h *OrderHandler) RemoveItemFromOrder(w http.ResponseWriter, r *http.Reques
 	}
 
 	utils.WriteJSON(w, map[string]string{"message": "item removed successfully"}, http.StatusOK)
+}
+
+// POST /orders/{order_id}/pay
+func (h *OrderHandler) PayOrder(w http.ResponseWriter, r *http.Request, walletClient client.WalletClient) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
+		return
+	}
+
+	err := h.orderUC.PayOrder(r.Context(), orderID, walletClient)
+	if err != nil {
+		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.WriteJSON(w, map[string]string{"message": "order paid successfully"}, http.StatusOK)
 }

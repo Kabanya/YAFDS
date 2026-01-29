@@ -20,6 +20,7 @@ type OrderService interface {
 	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
 	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item pkgRepoModels.OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
+	PayOrder(ctx context.Context, orderID uuid.UUID) error
 }
 
 type orderService struct {
@@ -158,4 +159,8 @@ func (os *orderService) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID,
 
 func (os *orderService) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
 	return os.repo.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
+}
+
+func (os *orderService) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+	return os.repo.PayOrder(ctx, orderID)
 }

@@ -73,6 +73,11 @@ func (m *MockOrderRepo) RemoveItemFromOrder(ctx context.Context, orderID uuid.UU
 	return args.Error(0)
 }
 
+func (m *MockOrderRepo) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+	args := m.Called(ctx, orderID)
+	return args.Error(0)
+}
+
 // Вспомогательные функции для тестов
 func createTestOrder() models.Order {
 	orderID := uuid.New()

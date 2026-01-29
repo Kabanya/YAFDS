@@ -475,3 +475,33 @@ func (r *postgresRepository) ensureCourierExists(ctx context.Context, courierID 
 	}
 	return err
 }
+
+func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+	if r.ordersDB == nil {
+		return errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return errors.New("order_id must be a valid UUID")
+	}
+
+	var currentStatus string
+	statusQuery := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	err := r.ordersDB.QueryRowContext(ctx, statusQuery, orderID).Scan(&currentStatus)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrOrderNotFound
+		}
+		return err
+	}
+
+	if currentStatus != string(models.OrderStatusCustomerCreated) {
+		return errors.New("order can only be paid when in CUSTOMER_CREATED status")
+	}
+
+	updateQuery := "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE emp_id = $3"
+	_, err = r.ordersDB.ExecContext(ctx, updateQuery, string(models.OrderStatusCustomerPaid), time.Now().UTC(), orderID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

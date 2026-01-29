@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	service "github.com/Kabanya/YAFDS/pkg/service"
@@ -29,6 +30,7 @@ type OrderUseCase interface {
 	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
 	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
+	PayOrder(ctx context.Context, orderID uuid.UUID, walletClient client.WalletClient) error
 }
 
 type orderUseCase struct {
@@ -93,4 +95,44 @@ func (u *orderUseCase) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, 
 
 func (u *orderUseCase) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
 	return u.serviceOrder.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
+}
+
+func (u *orderUseCase) PayOrder(ctx context.Context, orderID uuid.UUID, walletClient client.WalletClient) error {
+	order, err := u.serviceOrder.GetOrder(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	if order.Status != models.OrderStatusCustomerCreated {
+		return ErrInvalidStatusTransition
+	}
+
+	walletAddress, err := u.serviceOrder.GetCustomerWalletAddress(ctx, order.CustomerID)
+	if err != nil {
+		return ErrWalletUnavailable
+	}
+
+	total, err := u.serviceOrder.CalculateOrderTotal(ctx, orderID)
+	if err != nil {
+		return err
+	}
+
+	if total <= 0 {
+		return errors.New("order total is invalid")
+	}
+
+	balance, err := walletClient.GetBalanceWallet(ctx, walletAddress)
+	if err != nil {
+		return ErrWalletUnavailable
+	}
+
+	if balance < total {
+		return ErrInsufficientFunds
+	}
+
+	if err := walletClient.PayToWallet(ctx, walletAddress, total); err != nil {
+		return ErrWalletUnavailable
+	}
+
+	return u.serviceOrder.PayOrder(ctx, orderID)
 }

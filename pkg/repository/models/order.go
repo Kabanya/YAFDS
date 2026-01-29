@@ -25,6 +25,7 @@ type OrderRepo interface { //   dto - data transfer object. dto похож на 
 
 	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
+	PayOrder(ctx context.Context, orderID uuid.UUID) error
 }
 
 type OrderItemInput struct {
