@@ -435,7 +435,8 @@ func (r *postgresRepository) RemoveItemFromOrder(ctx context.Context, orderID uu
 		return err
 	}
 	if rows == 0 {
-		return errors.New("item not found in order")
+		err = errors.New("item not found in order")
+		return err
 	}
 
 	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE emp_id = $2", time.Now().UTC(), orderID); err != nil {

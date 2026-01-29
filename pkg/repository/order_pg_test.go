@@ -335,6 +335,34 @@ func TestPgRepo_AcceptOrder(t *testing.T) {
 	if res.Status != string(input.Status) {
 		t.Errorf("expected status %v, got %v", input.Status, res.Status)
 	}
+
+	// 2. Accept with items if itemsCount == 0
+	inputWithItems := repositoryModels.AcceptInput{
+		OrderID:    uuid.New(),
+		CustomerID: uuid.New(),
+		CourierID:  uuid.New(),
+		Status:     models.OrderStatusKitchenAccepted,
+		Items: []repositoryModels.OrderItemInput{
+			{RestaurantItemID: uuid.New(), Price: 15.0, Quantity: 1},
+		},
+	}
+
+	customersMock.ExpectQuery("SELECT 1 FROM customers").WithArgs(inputWithItems.CustomerID).WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
+	couriersMock.ExpectQuery("SELECT 1 FROM couriers").WithArgs(inputWithItems.CourierID).WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
+	ordersMock.ExpectBegin()
+	ordersMock.ExpectQuery("SELECT status FROM ORDERS").WithArgs(inputWithItems.OrderID).WillReturnRows(sqlmock.NewRows([]string{"status"}).AddRow("CUSTOMER_CREATED"))
+	ordersMock.ExpectExec("INSERT INTO ORDERS").WithArgs(inputWithItems.OrderID, inputWithItems.CustomerID, inputWithItems.CourierID, sqlmock.AnyArg(), sqlmock.AnyArg(), string(inputWithItems.Status)).WillReturnResult(sqlmock.NewResult(1, 1))
+	ordersMock.ExpectQuery("SELECT COUNT\\(1\\) FROM ORDERS_ITEMS").WithArgs(inputWithItems.OrderID).WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
+	ordersMock.ExpectExec("INSERT INTO ORDERS_ITEMS").WithArgs(sqlmock.AnyArg(), inputWithItems.OrderID, inputWithItems.Items[0].RestaurantItemID, 15.0, 1).WillReturnResult(sqlmock.NewResult(1, 1))
+	ordersMock.ExpectCommit()
+
+	res2, err := repo.AcceptOrder(ctx, inputWithItems)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if res2.Status != string(inputWithItems.Status) {
+		t.Errorf("expected status %v, got %v", inputWithItems.Status, res2.Status)
+	}
 }
 
 func TestPgRepo_GetOrderStatus(t *testing.T) {
@@ -533,5 +561,71 @@ func TestPgRepo_GetCustomerWalletAddress(t *testing.T) {
 	_, err = repo.GetCustomerWalletAddress(ctx, customerID)
 	if err != ErrCustomerNotFound {
 		t.Errorf("expected ErrCustomerNotFound, got %v", err)
+	}
+}
+
+func TestPgRepo_RemoveItemFromOrder(t *testing.T) {
+	ordersDB, ordersMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer ordersDB.Close()
+
+	repo := NewPostgresRepository(ordersDB, nil, nil)
+	ctx := context.Background()
+	orderID := uuid.New()
+	restItemID := uuid.New()
+
+	// 1. Success
+	ordersMock.ExpectBegin()
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+		WithArgs(orderID).
+		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
+
+	ordersMock.ExpectExec("DELETE FROM ORDERS_ITEMS WHERE order_id = \\$1 AND restaurant_item_id = \\$2").
+		WithArgs(orderID, restItemID).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	ordersMock.ExpectExec("UPDATE ORDERS SET updated_at = \\$1 WHERE emp_id = \\$2").
+		WithArgs(sqlmock.AnyArg(), orderID).
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	ordersMock.ExpectCommit()
+
+	err = repo.RemoveItemFromOrder(ctx, orderID, restItemID)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+	// 2. Order not found
+	ordersMock.ExpectBegin()
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+		WithArgs(orderID).
+		WillReturnError(sql.ErrNoRows)
+	ordersMock.ExpectRollback()
+
+	err = repo.RemoveItemFromOrder(ctx, orderID, restItemID)
+	if err != ErrOrderNotFound {
+		t.Errorf("expected ErrOrderNotFound, got %v", err)
+	}
+
+	// 3. Item not found in order
+	ordersMock.ExpectBegin()
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+		WithArgs(orderID).
+		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
+
+	ordersMock.ExpectExec("DELETE FROM ORDERS_ITEMS WHERE order_id = \\$1 AND restaurant_item_id = \\$2").
+		WithArgs(orderID, restItemID).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+	ordersMock.ExpectRollback()
+
+	err = repo.RemoveItemFromOrder(ctx, orderID, restItemID)
+	if err == nil || err.Error() != "item not found in order" {
+		t.Errorf("expected 'item not found in order' error, got %v", err)
+	}
+
+	if err := ordersMock.ExpectationsWereMet(); err != nil {
+		t.Errorf("ordersdb expectations were not met: %s", err)
 	}
 }

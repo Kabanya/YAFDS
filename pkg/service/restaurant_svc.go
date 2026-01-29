@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/Kabanya/YAFDS/pkg/app/clients"
+
+	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	"github.com/google/uuid"
@@ -15,10 +16,10 @@ type RestaurantService interface {
 
 type restaurantService struct {
 	repo   repositoryModels.RestaurantRepo
-	client clients.RestaurantClient
+	client client.RestaurantClient
 }
 
-func NewRestaurantService(repo repositoryModels.RestaurantRepo, client clients.RestaurantClient) RestaurantService {
+func NewRestaurantService(repo repositoryModels.RestaurantRepo, client client.RestaurantClient) RestaurantService {
 	return &restaurantService{repo: repo, client: client}
 }
 

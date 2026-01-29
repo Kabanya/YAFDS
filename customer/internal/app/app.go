@@ -17,7 +17,7 @@ import (
 	"customer/internal/service"
 	"customer/internal/usecase"
 
-	"github.com/Kabanya/YAFDS/pkg/app/clients"
+	"github.com/Kabanya/YAFDS/pkg/app/client"
 	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository"
@@ -113,7 +113,7 @@ func Run() {
 	if restaurantAPIURL == "" {
 		restaurantAPIURL = "http://localhost:8092"
 	}
-	restaurantClient := clients.NewHTTPRestaurantClient(restaurantAPIURL)
+	restaurantClient := client.NewHTTPRestaurantClient(restaurantAPIURL)
 	logger.Printf("Initialized restaurant client with base URL: %s", restaurantAPIURL)
 
 	redisDB := 0
@@ -173,7 +173,7 @@ func Run() {
 	courierUseCase := pkgUseCase.NewCourierUseCase(courierService)
 	logger.Println("Initialized courier layers")
 
-	walletClient := clients.NewStubWalletClient()
+	walletClient := client.NewStubWalletClient()
 	_ = walletClient //[[maybe_unused]]
 
 	orderService := pkgService.NewOrderService(ordersRepository)
