@@ -3,15 +3,20 @@ package client
 import "context"
 
 type WalletClient interface {
-	GetBalance(ctx context.Context, walletAddress string) (float64, error)
+	GetBalanceWallet(ctx context.Context, walletAddress string) (float64, error)
+	PayToWallet(ctx context.Context, walletAddress string, amount float64) error
 }
 
-type stubWalletClient struct{}
+type walletClient struct{}
 
-func NewStubWalletClient() WalletClient {
-	return &stubWalletClient{}
+func NewWalletClient() WalletClient {
+	return &walletClient{}
 }
 
-func (c *stubWalletClient) GetBalance(ctx context.Context, walletAddress string) (float64, error) {
-	return 1000.0, nil // Stub balance
+func (c *walletClient) GetBalanceWallet(ctx context.Context, walletAddress string) (float64, error) {
+	return 1000.0, nil
+}
+
+func (c *walletClient) PayToWallet(ctx context.Context, walletAddress string, amount float64) error {
+	return nil
 }

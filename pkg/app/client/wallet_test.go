@@ -5,19 +5,19 @@ import (
 	"testing"
 )
 
-func TestNewStubWalletClient(t *testing.T) {
-	client := NewStubWalletClient()
+func TestNewWalletClient(t *testing.T) {
+	client := NewWalletClient()
 	if client == nil {
-		t.Fatal("expected NewStubWalletClient to return a non-nil client")
+		t.Fatal("expected NewWalletClient to return a non-nil client")
 	}
 }
 
-func TestStubWalletClient_GetBalance(t *testing.T) {
-	client := NewStubWalletClient()
+func TestWalletClient_GetBalanceWallet(t *testing.T) {
+	client := NewWalletClient()
 	ctx := context.Background()
 	address := "test-address"
 
-	balance, err := client.GetBalance(ctx, address)
+	balance, err := client.GetBalanceWallet(ctx, address)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
