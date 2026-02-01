@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import OrderStageStepper from '../components/OrderStageStepper'
 
 export default function Dashboard() {
   const { role } = useParams()
@@ -269,7 +270,7 @@ export default function Dashboard() {
           customer_id: user.id || user.Id,
           courier_id: selectedCourier,
           restaurant_id: selectedRestaurant,
-          status: 'created',
+          status: 'CUSTOMER_CREATED',
           items: itemsPayload
         })
       })
@@ -668,6 +669,12 @@ export default function Dashboard() {
                   <div className="order-status">
                     <p className="label">Status</p>
                     <span className="pill pill-ghost">{formatStatus(order.status)}</span>
+                    <OrderStageStepper
+                      order={order}
+                      role={role}
+                      compact={true}
+                      orientation="horizontal"
+                    />
                     {role === 'customer' && (
                       <button
                         onClick={() => openAddItemModal(order)}

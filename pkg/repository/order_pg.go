@@ -450,32 +450,6 @@ func (r *postgresRepository) RemoveItemFromOrder(ctx context.Context, orderID uu
 	return nil
 }
 
-func (r *postgresRepository) ensureCustomerExists(ctx context.Context, customerID uuid.UUID) error {
-	var dummy int
-	query := "SELECT 1 FROM customers WHERE emp_id = $1"
-	err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&dummy)
-	if err == nil {
-		return nil
-	}
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrCustomerNotFound
-	}
-	return err
-}
-
-func (r *postgresRepository) ensureCourierExists(ctx context.Context, courierID uuid.UUID) error {
-	var dummy int
-	query := "SELECT 1 FROM couriers WHERE emp_id = $1"
-	err := r.couriersDB.QueryRowContext(ctx, query, courierID).Scan(&dummy)
-	if err == nil {
-		return nil
-	}
-	if errors.Is(err, sql.ErrNoRows) {
-		return ErrCourierNotFound
-	}
-	return err
-}
-
 func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) error {
 	if r.ordersDB == nil {
 		return errors.New("orders repository not fully initialized")
@@ -504,4 +478,30 @@ func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) er
 		return err
 	}
 	return nil
+}
+
+func (r *postgresRepository) ensureCustomerExists(ctx context.Context, customerID uuid.UUID) error {
+	var dummy int
+	query := "SELECT 1 FROM customers WHERE emp_id = $1"
+	err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&dummy)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrCustomerNotFound
+	}
+	return err
+}
+
+func (r *postgresRepository) ensureCourierExists(ctx context.Context, courierID uuid.UUID) error {
+	var dummy int
+	query := "SELECT 1 FROM couriers WHERE emp_id = $1"
+	err := r.couriersDB.QueryRowContext(ctx, query, courierID).Scan(&dummy)
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrCourierNotFound
+	}
+	return err
 }
