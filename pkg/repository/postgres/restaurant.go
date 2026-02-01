@@ -17,7 +17,7 @@ func NewRestaurantPostgresRepository(db *sql.DB) repositoryModels.RestaurantRepo
 }
 
 func (r *restaurantPostgresRepository) ListRestaurants(ctx context.Context) ([]models.Restaurant, error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT emp_id, name, address, status FROM RESTAURANTS")
+	rows, err := r.db.QueryContext(ctx, "SELECT id, name, address, status FROM RESTAURANTS")
 	if err != nil {
 		return nil, err
 	}

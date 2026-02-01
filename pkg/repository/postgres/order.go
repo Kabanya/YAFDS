@@ -14,6 +14,27 @@ import (
 	"github.com/google/uuid"
 )
 
+type OrderRepo interface { //   dto - data transfer object. dto похож на model но другое.
+	//                          Если совпадают, то приоритет модели по возможности не плодим dto
+	CreateOrder(ctx context.Context, order repositoryModels.Filter) (models.Order, error)
+	CreateOrderWithItems(ctx context.Context, order models.Order, items []repositoryModels.OrderItemInput) (models.Order, error)
+
+	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
+	ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error)
+	// AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) // НЕ НУЖОН, ЕСТЬ UPDATE
+	// ЕСЛИ Прям нужна целостность данных (транзакции, которые можно только на уровне бд открывать) то пишем в repository слой, а так не выебываемся
+
+	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
+	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
+
+	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
+	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
+
+	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error
+	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
+	PayOrder(ctx context.Context, orderID uuid.UUID) error
+}
+
 type postgresRepository struct {
 	ordersDB    *sql.DB
 	customersDB *sql.DB
@@ -53,7 +74,7 @@ func (r *postgresRepository) CreateOrder(ctx context.Context, order models.Order
 	}
 
 	const insertQuery = `
-        INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
+        INSERT INTO ORDERS (id, customer_id, courier_id, created_at, updated_at, status)
         VALUES ($1, $2, $3, $4, $5, $6)
     `
 
@@ -100,7 +121,7 @@ func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order mod
 	}()
 
 	const insertOrderQuery = `
-		INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
+		INSERT INTO ORDERS (id, customer_id, courier_id, created_at, updated_at, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, string(order.Status)); err != nil {
@@ -108,7 +129,7 @@ func (r *postgresRepository) CreateOrderWithItems(ctx context.Context, order mod
 	}
 
 	const insertItemQuery = `
-		INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
+		INSERT INTO ORDERS_ITEMS (id, order_id, restaurant_item_id, price, quantity)
 		VALUES ($1, $2, $3, $4, $5)
 	`
 	for _, item := range items {
@@ -132,7 +153,7 @@ func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (m
 	}
 
 	var order models.Order
-	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = $1`
+	query := `SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE id = $1`
 	err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -144,7 +165,7 @@ func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (m
 }
 
 func (r *postgresRepository) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
-	query := `SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
+	query := `SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
 	var args []any
 	var where []string
 
@@ -204,32 +225,34 @@ func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryMo
 	if err := r.ensureCustomerExists(ctx, input.CustomerID); err != nil {
 		return repositoryModels.AcceptResult{}, err
 	}
-	if err := r.ensureCourierExists(ctx, input.CourierID); err != nil {
-		return repositoryModels.AcceptResult{}, err
-	}
+	// if err := r.ensureCourierExists(ctx, input.CourierID); err != nil {
+	// 	return repositoryModels.AcceptResult{}, err
+	// }
 
 	tx, err := r.ordersDB.BeginTx(ctx, nil)
 	if err != nil {
 		return repositoryModels.AcceptResult{}, err
 	}
-	defer func() {
-		if err != nil {
+
+	defer func() { // выполнится после фукнции в горутине где мы живем. выполнится даже если закончится с exception
+		if err != nil { // если что-то пошло но так => rollback
 			_ = tx.Rollback()
 		}
 	}()
 
 	var existingStatus string
-	statusQuery := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	statusQuery := "SELECT status FROM ORDERS WHERE id = $1"
 	scanErr := tx.QueryRowContext(ctx, statusQuery, input.OrderID).Scan(&existingStatus)
-	if scanErr == nil && (strings.EqualFold(existingStatus, string(models.OrderStatusKitchenAccepted)) || strings.EqualFold(existingStatus, string(models.OrderStatusKitchenDenied))) {
+
+	if scanErr != nil { //&& errors.Is(scanErr, sql.ErrNoRows) {
+		err = scanErr
+		return repositoryModels.AcceptResult{}, err
+	}
+	if strings.EqualFold(existingStatus, string(models.OrderStatusCustomerPaid)) {
 		if err = tx.Commit(); err != nil {
 			return repositoryModels.AcceptResult{}, err
 		}
 		return repositoryModels.AcceptResult{OrderID: input.OrderID, Status: existingStatus}, nil
-	}
-	if scanErr != nil && !errors.Is(scanErr, sql.ErrNoRows) {
-		err = scanErr
-		return repositoryModels.AcceptResult{}, err
 	}
 
 	now := time.Now().UTC()
@@ -237,33 +260,27 @@ func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryMo
 	if status == "" {
 		status = models.OrderStatusKitchenAccepted
 	}
-	const insertOrderQuery = `
-		INSERT INTO ORDERS (emp_id, customer_id, courier_id, created_at, updated_at, status)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		ON CONFLICT (emp_id) DO UPDATE
-		SET status = EXCLUDED.status,
-			updated_at = EXCLUDED.updated_at
-	`
+
 	if _, err = tx.ExecContext(ctx, insertOrderQuery, input.OrderID, input.CustomerID, input.CourierID, now, now, string(status)); err != nil {
 		return repositoryModels.AcceptResult{}, err
 	}
 
-	var itemsCount int
-	countQuery := "SELECT COUNT(1) FROM ORDERS_ITEMS WHERE order_id = $1"
-	if err = tx.QueryRowContext(ctx, countQuery, input.OrderID).Scan(&itemsCount); err != nil {
-		return repositoryModels.AcceptResult{}, err
-	}
-	if itemsCount == 0 && len(input.Items) > 0 {
-		const insertItemQuery = `
-			INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
-			VALUES ($1, $2, $3, $4, $5)
-		`
-		for _, item := range input.Items {
-			if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), input.OrderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
-				return repositoryModels.AcceptResult{}, err
-			}
-		}
-	}
+	// var itemsCount int
+	// countQuery := "SELECT COUNT(1) FROM ORDERS_ITEMS WHERE order_id = $1"
+	// if err = tx.QueryRowContext(ctx, countQuery, input.OrderID).Scan(&itemsCount); err != nil {
+	// 	return repositoryModels.AcceptResult{}, err
+	// }
+	// if itemsCount == 0 && len(input.Items) > 0 {
+	// 	const insertItemQuery = `
+	// 		INSERT INTO ORDERS_ITEMS (id, order_id, restaurant_item_id, price, quantity)
+	// 		VALUES ($1, $2, $3, $4, $5)
+	// 	`
+	// 	for _, item := range input.Items {
+	// 		if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), input.OrderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
+	// 			return repositoryModels.AcceptResult{}, err
+	// 		}
+	// 	}
+	// }
 
 	if err = tx.Commit(); err != nil {
 		return repositoryModels.AcceptResult{}, err
@@ -281,7 +298,7 @@ func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UU
 	}
 
 	var status string
-	query := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	query := "SELECT status FROM ORDERS WHERE id = $1"
 	if err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&status); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", ErrOrderNotFound
@@ -299,7 +316,7 @@ func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid
 		return errors.New("order_id must be a valid UUID")
 	}
 
-	res, err := r.ordersDB.ExecContext(ctx, "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE emp_id = $3", string(status), time.Now().UTC(), orderID)
+	res, err := r.ordersDB.ExecContext(ctx, "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE id = $3", string(status), time.Now().UTC(), orderID)
 	if err != nil {
 		return err
 	}
@@ -338,7 +355,7 @@ func (r *postgresRepository) GetCustomerWalletAddress(ctx context.Context, custo
 	}
 
 	var wallet string
-	query := "SELECT wallet_address FROM CUSTOMERS WHERE emp_id = $1"
+	query := "SELECT wallet_address FROM CUSTOMERS WHERE id = $1"
 	if err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&wallet); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", ErrCustomerNotFound
@@ -370,7 +387,7 @@ func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.
 	}()
 
 	var exists int
-	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE emp_id = $1", orderID).Scan(&exists); err != nil {
+	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE id = $1", orderID).Scan(&exists); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrOrderNotFound
 		}
@@ -378,14 +395,14 @@ func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.
 	}
 
 	const insertItemQuery = `
-		INSERT INTO ORDERS_ITEMS (emp_id, order_id, restaurant_item_id, price, quantity)
+		INSERT INTO ORDERS_ITEMS (id, order_id, restaurant_item_id, price, quantity)
 		VALUES ($1, $2, $3, $4, $5)
 	`
 	if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), orderID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
 		return err
 	}
 
-	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE emp_id = $2", time.Now().UTC(), orderID); err != nil {
+	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE id = $2", time.Now().UTC(), orderID); err != nil {
 		return err
 	}
 
@@ -418,7 +435,7 @@ func (r *postgresRepository) RemoveItemFromOrder(ctx context.Context, orderID uu
 	}()
 
 	var exists int
-	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE emp_id = $1", orderID).Scan(&exists); err != nil {
+	if err = tx.QueryRowContext(ctx, "SELECT 1 FROM ORDERS WHERE id = $1", orderID).Scan(&exists); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrOrderNotFound
 		}
@@ -439,7 +456,7 @@ func (r *postgresRepository) RemoveItemFromOrder(ctx context.Context, orderID uu
 		return err
 	}
 
-	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE emp_id = $2", time.Now().UTC(), orderID); err != nil {
+	if _, err = tx.ExecContext(ctx, "UPDATE ORDERS SET updated_at = $1 WHERE id = $2", time.Now().UTC(), orderID); err != nil {
 		return err
 	}
 
@@ -459,7 +476,7 @@ func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) er
 	}
 
 	var currentStatus string
-	statusQuery := "SELECT status FROM ORDERS WHERE emp_id = $1"
+	statusQuery := "SELECT status FROM ORDERS WHERE id = $1"
 	err := r.ordersDB.QueryRowContext(ctx, statusQuery, orderID).Scan(&currentStatus)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -472,7 +489,7 @@ func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) er
 		return errors.New("order can only be paid when in CUSTOMER_CREATED status")
 	}
 
-	updateQuery := "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE emp_id = $3"
+	updateQuery := "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE id = $3"
 	_, err = r.ordersDB.ExecContext(ctx, updateQuery, string(models.OrderStatusCustomerPaid), time.Now().UTC(), orderID)
 	if err != nil {
 		return err
@@ -482,7 +499,7 @@ func (r *postgresRepository) PayOrder(ctx context.Context, orderID uuid.UUID) er
 
 func (r *postgresRepository) ensureCustomerExists(ctx context.Context, customerID uuid.UUID) error {
 	var dummy int
-	query := "SELECT 1 FROM customers WHERE emp_id = $1"
+	query := "SELECT 1 FROM customers WHERE id = $1"
 	err := r.customersDB.QueryRowContext(ctx, query, customerID).Scan(&dummy)
 	if err == nil {
 		return nil
@@ -495,7 +512,7 @@ func (r *postgresRepository) ensureCustomerExists(ctx context.Context, customerI
 
 func (r *postgresRepository) ensureCourierExists(ctx context.Context, courierID uuid.UUID) error {
 	var dummy int
-	query := "SELECT 1 FROM couriers WHERE emp_id = $1"
+	query := "SELECT 1 FROM couriers WHERE id = $1"
 	err := r.couriersDB.QueryRowContext(ctx, query, courierID).Scan(&dummy)
 	if err == nil {
 		return nil

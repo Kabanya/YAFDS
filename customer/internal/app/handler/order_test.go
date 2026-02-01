@@ -1,4 +1,4 @@
-package handler_test
+package app_test
 
 import (
 	"bytes"

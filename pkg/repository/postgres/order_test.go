@@ -49,12 +49,12 @@ func TestPgRepo_CreateOrder(t *testing.T) {
 	}
 
 	// 1. ensureCustomerExists
-	customersMock.ExpectQuery("SELECT 1 FROM customers WHERE emp_id = \\$1").
+	customersMock.ExpectQuery("SELECT 1 FROM customers WHERE id = \\$1").
 		WithArgs(customerID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
 	// 2. ensureCourierExists
-	couriersMock.ExpectQuery("SELECT 1 FROM couriers WHERE emp_id = \\$1").
+	couriersMock.ExpectQuery("SELECT 1 FROM couriers WHERE id = \\$1").
 		WithArgs(courierID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
@@ -131,12 +131,12 @@ func TestPgRepo_CreateOrderWithItems(t *testing.T) {
 	}
 
 	// 1. ensureCustomerExists
-	customersMock.ExpectQuery("SELECT 1 FROM customers WHERE emp_id = \\$1").
+	customersMock.ExpectQuery("SELECT 1 FROM customers WHERE id = \\$1").
 		WithArgs(customerID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
 	// 2. ensureCourierExists
-	couriersMock.ExpectQuery("SELECT 1 FROM couriers WHERE emp_id = \\$1").
+	couriersMock.ExpectQuery("SELECT 1 FROM couriers WHERE id = \\$1").
 		WithArgs(courierID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
@@ -194,9 +194,9 @@ func TestPgRepo_GetOrder(t *testing.T) {
 	status := models.OrderStatusCustomerCreated
 
 	// QueryRowContext
-	ordersMock.ExpectQuery("SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
-		WillReturnRows(sqlmock.NewRows([]string{"emp_id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
 			AddRow(orderID, customerID, courierID, now, now, string(status)))
 
 	o, err := repo.GetOrder(ctx, orderID)
@@ -211,7 +211,7 @@ func TestPgRepo_GetOrder(t *testing.T) {
 	}
 
 	// Test Not Found
-	ordersMock.ExpectQuery("SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnError(sql.ErrNoRows)
 
@@ -236,8 +236,8 @@ func TestPgRepo_ListOrders(t *testing.T) {
 	orderID2 := uuid.New()
 	now := time.Now().UTC()
 
-	ordersMock.ExpectQuery("SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS ORDER BY created_at DESC").
-		WillReturnRows(sqlmock.NewRows([]string{"emp_id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
+	ordersMock.ExpectQuery("SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS ORDER BY created_at DESC").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
 			AddRow(orderID1, uuid.New(), uuid.New(), now, now, "STATUS1").
 			AddRow(orderID2, uuid.New(), uuid.New(), now, now, "STATUS2"))
 
@@ -253,9 +253,9 @@ func TestPgRepo_ListOrders(t *testing.T) {
 	custID := uuid.New()
 	filter := repositoryModels.Filter{CustomerID: &custID}
 
-	ordersMock.ExpectQuery("SELECT emp_id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE customer_id = \\$1 ORDER BY created_at DESC").
+	ordersMock.ExpectQuery("SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE customer_id = \\$1 ORDER BY created_at DESC").
 		WithArgs(custID).
-		WillReturnRows(sqlmock.NewRows([]string{"emp_id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "customer_id", "courier_id", "created_at", "updated_at", "status"}).
 			AddRow(orderID1, custID, uuid.New(), now, now, "STATUS1"))
 
 	listFiltered, err := repo.ListOrders(ctx, filter)
@@ -311,7 +311,7 @@ func TestPgRepo_AcceptOrder(t *testing.T) {
 	ordersMock.ExpectBegin()
 
 	// 4. Check status
-	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE id = \\$1").
 		WithArgs(input.OrderID).
 		WillReturnRows(sqlmock.NewRows([]string{"status"}).AddRow("CUSTOMER_CREATED"))
 
@@ -378,7 +378,7 @@ func TestPgRepo_GetOrderStatus(t *testing.T) {
 	status := models.OrderStatusKitchenAccepted
 
 	// Test successful retrieval
-	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnRows(sqlmock.NewRows([]string{"status"}).AddRow(string(status)))
 
@@ -391,7 +391,7 @@ func TestPgRepo_GetOrderStatus(t *testing.T) {
 	}
 
 	// Test order not found
-	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnError(sql.ErrNoRows)
 
@@ -402,7 +402,7 @@ func TestPgRepo_GetOrderStatus(t *testing.T) {
 
 	// Test database error
 	expectedErr := sql.ErrConnDone
-	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT status FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnError(expectedErr)
 
@@ -429,7 +429,7 @@ func TestPgRepo_UpdateOrderStatus(t *testing.T) {
 	newStatus := models.OrderStatusDeliveryDelivering
 
 	// Success
-	ordersMock.ExpectExec("UPDATE ORDERS SET status = \\$1, updated_at = \\$2 WHERE emp_id = \\$3").
+	ordersMock.ExpectExec("UPDATE ORDERS SET status = \\$1, updated_at = \\$2 WHERE id = \\$3").
 		WithArgs(string(newStatus), sqlmock.AnyArg(), orderID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
@@ -439,7 +439,7 @@ func TestPgRepo_UpdateOrderStatus(t *testing.T) {
 	}
 
 	// Not Found (rows affected 0)
-	ordersMock.ExpectExec("UPDATE ORDERS SET status = \\$1, updated_at = \\$2 WHERE emp_id = \\$3").
+	ordersMock.ExpectExec("UPDATE ORDERS SET status = \\$1, updated_at = \\$2 WHERE id = \\$3").
 		WithArgs(string(newStatus), sqlmock.AnyArg(), orderID).
 		WillReturnResult(sqlmock.NewResult(0, 0))
 
@@ -507,7 +507,7 @@ func TestPgRepo_AddItemIntoOrder(t *testing.T) {
 
 	ordersMock.ExpectBegin()
 	// Check exists
-	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
@@ -517,7 +517,7 @@ func TestPgRepo_AddItemIntoOrder(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	// Update order updated_at
-	ordersMock.ExpectExec("UPDATE ORDERS SET updated_at = \\$1 WHERE emp_id = \\$2").
+	ordersMock.ExpectExec("UPDATE ORDERS SET updated_at = \\$1 WHERE id = \\$2").
 		WithArgs(sqlmock.AnyArg(), orderID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
@@ -541,7 +541,7 @@ func TestPgRepo_GetCustomerWalletAddress(t *testing.T) {
 	customerID := uuid.New()
 	wallet := "0x123456789"
 
-	customersMock.ExpectQuery("SELECT wallet_address FROM CUSTOMERS WHERE emp_id = \\$1").
+	customersMock.ExpectQuery("SELECT wallet_address FROM CUSTOMERS WHERE id = \\$1").
 		WithArgs(customerID).
 		WillReturnRows(sqlmock.NewRows([]string{"wallet_address"}).AddRow(wallet))
 
@@ -554,7 +554,7 @@ func TestPgRepo_GetCustomerWalletAddress(t *testing.T) {
 	}
 
 	// Not found
-	customersMock.ExpectQuery("SELECT wallet_address FROM CUSTOMERS WHERE emp_id = \\$1").
+	customersMock.ExpectQuery("SELECT wallet_address FROM CUSTOMERS WHERE id = \\$1").
 		WithArgs(customerID).
 		WillReturnError(sql.ErrNoRows)
 
@@ -578,7 +578,7 @@ func TestPgRepo_RemoveItemFromOrder(t *testing.T) {
 
 	// 1. Success
 	ordersMock.ExpectBegin()
-	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 
@@ -586,7 +586,7 @@ func TestPgRepo_RemoveItemFromOrder(t *testing.T) {
 		WithArgs(orderID, restItemID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	ordersMock.ExpectExec("UPDATE ORDERS SET updated_at = \\$1 WHERE emp_id = \\$2").
+	ordersMock.ExpectExec("UPDATE ORDERS SET updated_at = \\$1 WHERE id = \\$2").
 		WithArgs(sqlmock.AnyArg(), orderID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
@@ -599,7 +599,7 @@ func TestPgRepo_RemoveItemFromOrder(t *testing.T) {
 
 	// 2. Order not found
 	ordersMock.ExpectBegin()
-	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnError(sql.ErrNoRows)
 	ordersMock.ExpectRollback()
@@ -611,7 +611,7 @@ func TestPgRepo_RemoveItemFromOrder(t *testing.T) {
 
 	// 3. Item not found in order
 	ordersMock.ExpectBegin()
-	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE emp_id = \\$1").
+	ordersMock.ExpectQuery("SELECT 1 FROM ORDERS WHERE id = \\$1").
 		WithArgs(orderID).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(1))
 

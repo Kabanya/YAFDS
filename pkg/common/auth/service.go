@@ -28,9 +28,9 @@ func logPrintf(format string, v ...any) {
 
 func NewService(cfg ServiceConfig) (*Service, error) {
 	logPrintf("auth: initializing service with session TTL %s", cfg.SessionTTL)
-	if cfg.Store == nil {
-		return nil, fmt.Errorf("auth: store is required")
-	}
+	// if cfg.Store == nil {
+	// 	return nil, fmt.Errorf("auth: store is required")
+	// }
 	if cfg.Sessions == nil {
 		return nil, fmt.Errorf("auth: session manager is required")
 	}
@@ -48,7 +48,7 @@ func NewService(cfg ServiceConfig) (*Service, error) {
 	}
 	logPrintf("auth: using session TTL %s", sessTTL)
 	return &Service{
-		store:      cfg.Store,
+		// store:      cfg.Store,
 		hasher:     hasher,
 		sessions:   cfg.Sessions,
 		validator:  validator,

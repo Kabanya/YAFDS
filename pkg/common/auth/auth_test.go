@@ -116,7 +116,7 @@ func TestAuthService(t *testing.T) {
 	sessions := &mockSessionManager{sessions: make(map[string]uuid.UUID)}
 
 	service, err := NewService(ServiceConfig{
-		Store:      store,
+		// Store:      store,
 		Hasher:     NewArgon2Hasher(DefaultArgonParams),
 		Sessions:   sessions,
 		SessionTTL: time.Hour,
@@ -191,7 +191,7 @@ func TestAuthService(t *testing.T) {
 		}
 
 		svc, _ := NewService(ServiceConfig{
-			Store:     store,
+			// Store:     store,
 			Sessions:  sessions,
 			Validator: v,
 		})

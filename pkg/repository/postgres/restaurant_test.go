@@ -23,11 +23,11 @@ func TestRestaurantPostgresRepository_ListRestaurants(t *testing.T) {
 		res1ID := uuid.New()
 		res2ID := uuid.New()
 
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "address", "status"}).
+		rows := sqlmock.NewRows([]string{"id", "name", "address", "status"}).
 			AddRow(res1ID, "Restaurant 1", "Address 1", true).
 			AddRow(res2ID, "Restaurant 2", "Address 2", false)
 
-		mock.ExpectQuery("SELECT emp_id, name, address, status FROM RESTAURANTS").
+		mock.ExpectQuery("SELECT id, name, address, status FROM RESTAURANTS").
 			WillReturnRows(rows)
 
 		restaurants, err := repo.ListRestaurants(context.Background())
@@ -42,9 +42,9 @@ func TestRestaurantPostgresRepository_ListRestaurants(t *testing.T) {
 	})
 
 	t.Run("empty list", func(t *testing.T) {
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "address", "status"})
+		rows := sqlmock.NewRows([]string{"id", "name", "address", "status"})
 
-		mock.ExpectQuery("SELECT emp_id, name, address, status FROM RESTAURANTS").
+		mock.ExpectQuery("SELECT id, name, address, status FROM RESTAURANTS").
 			WillReturnRows(rows)
 
 		restaurants, err := repo.ListRestaurants(context.Background())
@@ -54,7 +54,7 @@ func TestRestaurantPostgresRepository_ListRestaurants(t *testing.T) {
 	})
 
 	t.Run("query error", func(t *testing.T) {
-		mock.ExpectQuery("SELECT emp_id, name, address, status FROM RESTAURANTS").
+		mock.ExpectQuery("SELECT id, name, address, status FROM RESTAURANTS").
 			WillReturnError(errors.New("db error"))
 
 		restaurants, err := repo.ListRestaurants(context.Background())
@@ -65,10 +65,10 @@ func TestRestaurantPostgresRepository_ListRestaurants(t *testing.T) {
 	})
 
 	t.Run("scan error", func(t *testing.T) {
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "address", "status"}).
+		rows := sqlmock.NewRows([]string{"id", "name", "address", "status"}).
 			AddRow("invalid-uuid", "Restaurant 1", "Address 1", true)
 
-		mock.ExpectQuery("SELECT emp_id, name, address, status FROM RESTAURANTS").
+		mock.ExpectQuery("SELECT id, name, address, status FROM RESTAURANTS").
 			WillReturnRows(rows)
 
 		restaurants, err := repo.ListRestaurants(context.Background())

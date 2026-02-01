@@ -16,8 +16,9 @@ func NewCourierPostgresRepository(db *sql.DB) repositoryModels.CourierRepo {
 	return &courierPostgresRepository{db: db}
 }
 
+// TODO: засунуть в courier/internal
 func (r *courierPostgresRepository) ListCouriers(ctx context.Context) ([]models.Courier, error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT emp_id, name, transport_type, is_active FROM COURIERS")
+	rows, err := r.db.QueryContext(ctx, "SELECT id, name, transport_type, is_active FROM COURIERS")
 	if err != nil {
 		return nil, err
 	}

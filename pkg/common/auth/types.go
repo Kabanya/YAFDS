@@ -54,7 +54,7 @@ type LoginResult struct {
 }
 
 type ServiceConfig struct {
-	Store      Store
+	// Store      Store
 	Hasher     Hasher
 	Sessions   SessionManager
 	Validator  Validator

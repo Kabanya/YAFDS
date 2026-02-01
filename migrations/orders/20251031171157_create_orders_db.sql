@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE ORDERS (
-  emp_id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY,
   customer_id UUID NOT NULL,
   courier_id UUID NOT NULL,
   created_at TIMESTAMP NOT NULL,

@@ -23,11 +23,11 @@ func TestCourierPostgresRepository_ListCouriers(t *testing.T) {
 		c1ID := uuid.New()
 		c2ID := uuid.New()
 
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "transport_type", "is_active"}).
+		rows := sqlmock.NewRows([]string{"id", "name", "transport_type", "is_active"}).
 			AddRow(c1ID, "Courier 1", "bike", true).
 			AddRow(c2ID, "Courier 2", "car", false)
 
-		mock.ExpectQuery("SELECT emp_id, name, transport_type, is_active FROM COURIERS").
+		mock.ExpectQuery("SELECT id, name, transport_type, is_active FROM COURIERS").
 			WillReturnRows(rows)
 
 		couriers, err := repo.ListCouriers(context.Background())
@@ -42,9 +42,9 @@ func TestCourierPostgresRepository_ListCouriers(t *testing.T) {
 	})
 
 	t.Run("empty list", func(t *testing.T) {
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "transport_type", "is_active"})
+		rows := sqlmock.NewRows([]string{"id", "name", "transport_type", "is_active"})
 
-		mock.ExpectQuery("SELECT emp_id, name, transport_type, is_active FROM COURIERS").
+		mock.ExpectQuery("SELECT id, name, transport_type, is_active FROM COURIERS").
 			WillReturnRows(rows)
 
 		couriers, err := repo.ListCouriers(context.Background())
@@ -54,7 +54,7 @@ func TestCourierPostgresRepository_ListCouriers(t *testing.T) {
 	})
 
 	t.Run("query error", func(t *testing.T) {
-		mock.ExpectQuery("SELECT emp_id, name, transport_type, is_active FROM COURIERS").
+		mock.ExpectQuery("SELECT id, name, transport_type, is_active FROM COURIERS").
 			WillReturnError(errors.New("db error"))
 
 		couriers, err := repo.ListCouriers(context.Background())
@@ -65,10 +65,10 @@ func TestCourierPostgresRepository_ListCouriers(t *testing.T) {
 	})
 
 	t.Run("scan error", func(t *testing.T) {
-		rows := sqlmock.NewRows([]string{"emp_id", "name", "transport_type", "is_active"}).
+		rows := sqlmock.NewRows([]string{"id", "name", "transport_type", "is_active"}).
 			AddRow("invalid-uuid", "Courier 1", "bike", true)
 
-		mock.ExpectQuery("SELECT emp_id, name, transport_type, is_active FROM COURIERS").
+		mock.ExpectQuery("SELECT id, name, transport_type, is_active FROM COURIERS").
 			WillReturnRows(rows)
 
 		couriers, err := repo.ListCouriers(context.Background())

@@ -26,7 +26,7 @@ type userService struct {
 
 func NewUserService(repo repository.UserRepo, redisClient *redis.Client, sessionTTL time.Duration) UserService {
 	service, err := auth.NewService(auth.ServiceConfig{
-		Store:      storeAdapter{repo: repo},
+		// Store:      storeAdapter{repo: repo},
 		Hasher:     auth.NewArgon2Hasher(auth.DefaultArgonParams),
 		Sessions:   auth.NewRedisSessionManager(redisClient),
 		Validator:  auth.NoopValidator,
