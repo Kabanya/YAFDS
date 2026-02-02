@@ -5,6 +5,7 @@ import (
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 	pkgRepoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 	"github.com/google/uuid"
 )
 
@@ -24,10 +25,10 @@ type OrderService interface {
 }
 
 type orderService struct {
-	repo pkgRepoModels.OrderRepo
+	repo pkgRepo.OrderRepo
 }
 
-func NewOrderService(repo pkgRepoModels.OrderRepo) OrderService {
+func NewOrderService(repo pkgRepo.OrderRepo) OrderService {
 	return &orderService{repo: repo}
 }
 
@@ -45,13 +46,13 @@ func (os *orderService) CreateOrder(ctx context.Context, customerID string, cour
 		return CreateOrderResponse{}, err
 	}
 
-	order := models.Order{
-		CustomerID: custID,
-		CourierID:  courID,
-		Status:     status,
+	filter := pkgRepoModels.Filter{
+		CustomerID: &custID,
+		CourierID:  &courID,
+		Status:     string(status),
 	}
 
-	createdOrder, err := os.repo.CreateOrder(ctx, order)
+	createdOrder, err := os.repo.CreateOrder(ctx, filter)
 	if err != nil {
 		return CreateOrderResponse{}, err
 	}
@@ -113,28 +114,7 @@ func (os *orderService) GetOrder(ctx context.Context, orderID uuid.UUID) (models
 }
 
 func (os *orderService) AcceptOrder(ctx context.Context, OrderID string, CustomerID string, CourierID string, Items []pkgRepoModels.OrderItemInput, Status models.OrderStatus) (pkgRepoModels.AcceptResult, error) { // Updated signature
-	orderID, err := uuid.Parse(OrderID)
-	if err != nil {
-		return pkgRepoModels.AcceptResult{}, err
-	}
-	customerID, err := uuid.Parse(CustomerID)
-	if err != nil {
-		return pkgRepoModels.AcceptResult{}, err
-	}
-	courierID, err := uuid.Parse(CourierID)
-	if err != nil {
-		return pkgRepoModels.AcceptResult{}, err
-	}
-
-	input := pkgRepoModels.AcceptInput{
-		OrderID:    orderID,
-		CustomerID: customerID,
-		CourierID:  courierID,
-		Items:      Items,
-		Status:     Status,
-	}
-
-	return os.repo.AcceptOrder(ctx, input)
+	return pkgRepoModels.AcceptResult{}, nil
 }
 
 func (os *orderService) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {

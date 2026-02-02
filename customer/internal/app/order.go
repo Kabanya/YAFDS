@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	pkgModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	pkgRepository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
+
 	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	"github.com/Kabanya/YAFDS/pkg/models"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	"github.com/Kabanya/YAFDS/pkg/usecase"
 	"github.com/google/uuid"
 )
@@ -38,9 +40,9 @@ type CreateOrderRequest struct {
 }
 
 type CreateOrderWithItemsRequest struct {
-	CustomerID string                            `json:"customer_id"`
-	CourierID  string                            `json:"courier_id"`
-	Items      []repositoryModels.OrderItemInput `json:"items"`
+	CustomerID string                     `json:"customer_id"`
+	CourierID  string                     `json:"courier_id"`
+	Items      []pkgModels.OrderItemInput `json:"items"`
 }
 
 type GetOrderRequest struct {
@@ -48,10 +50,10 @@ type GetOrderRequest struct {
 }
 
 type AcceptOrderRequest struct {
-	CustomerID string                            `json:"customer_id"`
-	CourierID  string                            `json:"courier_id"`
-	Items      []repositoryModels.OrderItemInput `json:"items"`
-	Status     models.OrderStatus                `json:"status"`
+	CustomerID string                     `json:"customer_id"`
+	CourierID  string                     `json:"courier_id"`
+	Items      []pkgModels.OrderItemInput `json:"items"`
+	Status     models.OrderStatus         `json:"status"`
 }
 
 type UpdateOrderStatusRequest struct {
@@ -92,7 +94,7 @@ func (h *OrderHandler) parseOrderID(w http.ResponseWriter, r *http.Request) (uui
 	return orderID, true
 }
 
-func (h *OrderHandler) OrdersHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
+func (h *OrderHandler) OrdersHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
 	listHandler := NewListHandler(repo)
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -106,7 +108,7 @@ func (h *OrderHandler) OrdersHandler(repo repositoryModels.OrderRepo) http.Handl
 	}
 }
 
-func NewListHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
+func NewListHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -127,7 +129,7 @@ func NewListHandler(repo repositoryModels.OrderRepo) http.HandlerFunc {
 		customerIDStr := r.URL.Query().Get("customer_id")
 		courierIDStr := r.URL.Query().Get("courier_id")
 
-		var filter repositoryModels.Filter
+		var filter pkgModels.Filter
 		if status != "" {
 			filter.Status = status
 		}
@@ -270,53 +272,6 @@ func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, order, http.StatusOK)
-}
-
-// POST /orders/{order_id}/accept
-func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	if r.Method != http.MethodPost {
-		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	orderID, ok := h.parseOrderID(w, r)
-	if !ok {
-		return
-	}
-
-	var req AcceptOrderRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	customerID, ok := utils.ParseUUIDOrBadRequest(w, req.CustomerID, "invalid customer_id")
-	if !ok {
-		return
-	}
-
-	courierID, ok := utils.ParseUUIDOrBadRequest(w, req.CourierID, "invalid courier_id")
-	if !ok {
-		return
-	}
-
-	result, err := h.orderUC.AcceptOrder(r.Context(), orderID, customerID, courierID, req.Items, req.Status)
-	if err != nil {
-		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	utils.WriteJSON(w, result, http.StatusOK)
 }
 
 // GET /orders/{order_id}/status
@@ -482,7 +437,7 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	item := repositoryModels.OrderItemInput{
+	item := pkgModels.OrderItemInput{
 		RestaurantItemID: restaurantItemID,
 		Price:            req.Price,
 		Quantity:         req.Quantity,

@@ -17,7 +17,6 @@ import (
 	"courier/internal/service"
 	"courier/internal/usecase"
 
-	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 
@@ -83,8 +82,8 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	ordersRepository := pkg_repository.NewPostgresRepository(ordersDB, db, db)
-	logger.Println("Initialized orders repository")
+	_ = pkg_repository.NewPostgresRepository(ordersDB, db, db)
+	logger.Println("TODO: make orders repository normalno")
 
 	redisDB := 0
 	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
@@ -140,7 +139,7 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("/orders", pkgHandlers.NewListHandler(ordersRepository))
+	// http.HandleFunc("/orders", pkgHandlers.NewListHandler(ordersRepository))
 
 	port := os.Getenv("COURIER_PORT")
 	if port == "" {

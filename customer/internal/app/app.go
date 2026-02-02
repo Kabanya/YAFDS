@@ -183,8 +183,7 @@ func Run() {
 	handler := NewHandler(userUseCase, db)
 	logger.Println("Initialized handler")
 
-	orderHandler := pkgHandlers.NewOrderHandler(orderUseCase)
-
+	orderHandler := NewOrderHandler(orderUseCase)
 	// registry endpoints
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
@@ -195,7 +194,6 @@ func Run() {
 	http.HandleFunc("GET /orders/{order_id}/status", orderHandler.GetOrderStatus)
 	http.HandleFunc("PUT /orders/{order_id}/status", orderHandler.UpdateOrderStatus)
 	http.HandleFunc("GET /orders/{order_id}/total", orderHandler.CalculateOrderTotal)
-	http.HandleFunc("POST /orders/{order_id}/accept", orderHandler.AcceptOrder)
 	http.HandleFunc("POST /orders/{order_id}/pay", func(w http.ResponseWriter, r *http.Request) {
 		orderHandler.PayOrder(w, r, walletClient)
 	})
