@@ -18,10 +18,10 @@ const TransportType = "HTTP"
 type Handler struct {
 	userUseCase                usecase.UserUseCase
 	restaurantMenuItemsUseCase usecase.RestaurantMenuItemsUseCase
-	ordersUseCase              usecase.OrdersUseCase
+	ordersUseCase              usecase.OrderUseCase
 }
 
-func NewHandler(userUC usecase.UserUseCase, menuItemsUC usecase.RestaurantMenuItemsUseCase, ordersUC usecase.OrdersUseCase) *Handler {
+func NewHandler(userUC usecase.UserUseCase, menuItemsUC usecase.RestaurantMenuItemsUseCase, ordersUC usecase.OrderUseCase) *Handler {
 	return &Handler{
 		userUseCase:                userUC,
 		restaurantMenuItemsUseCase: menuItemsUC,

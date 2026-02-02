@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	repoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+
 	"github.com/Kabanya/YAFDS/pkg/service"
 	. "github.com/Kabanya/YAFDS/pkg/usecase"
 	"github.com/google/uuid"
@@ -24,12 +25,12 @@ func (m *MockOrderService) CreateOrder(ctx context.Context, customerID string, c
 	return args.Get(0).(service.CreateOrderResponse), args.Error(1)
 }
 
-func (m *MockOrderService) CreateOrderWithItems(ctx context.Context, customerID string, courierID string, status models.OrderStatus, items []repositoryModels.OrderItemInput) (service.CreateOrderResponse, error) {
+func (m *MockOrderService) CreateOrderWithItems(ctx context.Context, customerID string, courierID string, status models.OrderStatus, items []repoModels.OrderItemInput) (service.CreateOrderResponse, error) {
 	args := m.Called(ctx, customerID, courierID, status, items)
 	return args.Get(0).(service.CreateOrderResponse), args.Error(1)
 }
 
-func (m *MockOrderService) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
+func (m *MockOrderService) ListOrders(ctx context.Context, filter repoModels.Filter) ([]models.Order, error) {
 	args := m.Called(ctx, filter)
 	return args.Get(0).([]models.Order), args.Error(1)
 }
@@ -39,9 +40,9 @@ func (m *MockOrderService) GetOrder(ctx context.Context, orderID uuid.UUID) (mod
 	return args.Get(0).(models.Order), args.Error(1)
 }
 
-func (m *MockOrderService) AcceptOrder(ctx context.Context, orderID string, customerID string, courierID string, items []repositoryModels.OrderItemInput, status models.OrderStatus) (repositoryModels.AcceptResult, error) {
-	args := m.Called(ctx, orderID, customerID, courierID, items, status)
-	return args.Get(0).(repositoryModels.AcceptResult), args.Error(1)
+func (m *MockOrderService) AcceptOrder(ctx context.Context, orderID string) (repoModels.AcceptResult, error) {
+	args := m.Called(ctx, orderID)
+	return args.Get(0).(repoModels.AcceptResult), args.Error(1)
 }
 
 func (m *MockOrderService) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
@@ -64,7 +65,7 @@ func (m *MockOrderService) GetCustomerWalletAddress(ctx context.Context, custome
 	return args.String(0), args.Error(1)
 }
 
-func (m *MockOrderService) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
+func (m *MockOrderService) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repoModels.OrderItemInput) error {
 	args := m.Called(ctx, orderID, item)
 	return args.Error(0)
 }
@@ -90,8 +91,8 @@ func createTestOrder() models.Order {
 	}
 }
 
-func createTestOrderItemInput() repositoryModels.OrderItemInput {
-	return repositoryModels.OrderItemInput{
+func createTestOrderItemInput() repoModels.OrderItemInput {
+	return repoModels.OrderItemInput{
 		RestaurantItemID: uuid.New(),
 		Price:            10.5,
 		Quantity:         2,
@@ -165,7 +166,7 @@ func TestOrderUseCase_CreateOrderWithItems_Success(t *testing.T) {
 	ctx := context.Background()
 	customerID := uuid.New()
 	courierID := uuid.New()
-	items := []repositoryModels.OrderItemInput{createTestOrderItemInput()}
+	items := []repoModels.OrderItemInput{createTestOrderItemInput()}
 
 	createdOrder := createTestOrder()
 	response := service.CreateOrderResponse{OrderID: createdOrder.ID.String()}
@@ -187,7 +188,7 @@ func TestOrderUseCase_CreateOrderWithItems_InvalidOrderID(t *testing.T) {
 	ctx := context.Background()
 	customerID := uuid.New()
 	courierID := uuid.New()
-	items := []repositoryModels.OrderItemInput{createTestOrderItemInput()}
+	items := []repoModels.OrderItemInput{createTestOrderItemInput()}
 
 	response := service.CreateOrderResponse{OrderID: "invalid-uuid"}
 	mockService.On("CreateOrderWithItems", ctx, customerID.String(), courierID.String(), models.OrderStatusCustomerCreated, items).Return(response, nil)
@@ -214,27 +215,6 @@ func TestOrderUseCase_GetOrder_Success(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedOrder, result)
-	mockService.AssertExpectations(t)
-}
-
-func TestOrderUseCase_AcceptOrder_Success(t *testing.T) {
-	mockService := new(MockOrderService)
-	uc := NewOrderUseCase(mockService)
-
-	ctx := context.Background()
-	orderID := uuid.New()
-	customerID := uuid.New()
-	courierID := uuid.New()
-	items := []repositoryModels.OrderItemInput{createTestOrderItemInput()}
-	status := models.OrderStatusKitchenAccepted
-
-	expected := repositoryModels.AcceptResult{OrderID: orderID, Status: string(status)}
-	mockService.On("AcceptOrder", ctx, orderID.String(), customerID.String(), courierID.String(), items, status).Return(expected, nil)
-
-	result, err := uc.AcceptOrder(ctx, orderID, customerID, courierID, items, status)
-
-	assert.NoError(t, err)
-	assert.Equal(t, expected, result)
 	mockService.AssertExpectations(t)
 }
 

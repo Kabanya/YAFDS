@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 	pkgRepoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
@@ -14,7 +15,6 @@ type OrderService interface {
 	CreateOrderWithItems(ctx context.Context, customerID string, courierID string, status models.OrderStatus, items []pkgRepoModels.OrderItemInput) (CreateOrderResponse, error)
 	ListOrders(ctx context.Context, filter pkgRepoModels.Filter) ([]models.Order, error)
 	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
-	AcceptOrder(ctx context.Context, OrderID string, CustomerID string, CourierID string, items []pkgRepoModels.OrderItemInput, status models.OrderStatus) (pkgRepoModels.AcceptResult, error)
 	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
 	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
 	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
@@ -35,6 +35,10 @@ func NewOrderService(repo pkgRepo.OrderRepo) OrderService {
 type CreateOrderResponse struct {
 	OrderID string `json:"order_id"`
 }
+
+var (
+	ErrNotPayedOrderState = errors.New("order not in paid state : OrderStatusCustomerPaid")
+)
 
 func (os *orderService) CreateOrder(ctx context.Context, customerID string, courierID string, status models.OrderStatus) (CreateOrderResponse, error) {
 	custID, err := uuid.Parse(customerID)
@@ -111,10 +115,6 @@ func (os *orderService) ListOrders(ctx context.Context, filter pkgRepoModels.Fil
 
 func (os *orderService) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	return os.repo.GetOrder(ctx, orderID)
-}
-
-func (os *orderService) AcceptOrder(ctx context.Context, OrderID string, CustomerID string, CourierID string, Items []pkgRepoModels.OrderItemInput, Status models.OrderStatus) (pkgRepoModels.AcceptResult, error) { // Updated signature
-	return pkgRepoModels.AcceptResult{}, nil
 }
 
 func (os *orderService) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
