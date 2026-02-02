@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"courier/internal/repository"
+	repository "courier/internal/repository/postgres"
 	"courier/models"
 	"errors"
 	"time"

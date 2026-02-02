@@ -13,14 +13,14 @@ import (
 	"strconv"
 	"time"
 
-	"customer/internal/repository"
+	repository "customer/internal/repository/postgres"
 	"customer/internal/service"
 	"customer/internal/usecase"
 
 	"github.com/Kabanya/YAFDS/pkg/app/client"
 	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 	pkgService "github.com/Kabanya/YAFDS/pkg/service"
 	pkgUseCase "github.com/Kabanya/YAFDS/pkg/usecase"
 

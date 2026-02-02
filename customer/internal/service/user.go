@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"customer/internal/repository"
+	repository "customer/internal/repository/postgres"
 	"customer/models"
 	"time"
 

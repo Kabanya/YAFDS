@@ -13,13 +13,13 @@ import (
 	"strconv"
 	"time"
 
-	"courier/internal/repository"
+	repository "courier/internal/repository/postgres"
 	"courier/internal/service"
 	"courier/internal/usecase"
 
 	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository"
+	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
