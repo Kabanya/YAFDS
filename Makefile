@@ -127,7 +127,7 @@ start-dev: check-docker setup-python-env
 		echo "$(YELLOW)⚠️  send_requests.py не найден, пропускаем загрузку тестовых данных$(RESET)"; \
 	fi
 
-run: db-clean clean-all start-dev
+run: clean-all start-dev
 
 stop:
 	@echo "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"

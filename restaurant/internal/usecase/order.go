@@ -17,7 +17,6 @@ type OrderUseCase interface {
 }
 
 type orderUseCase struct {
-	// service service.OrdersService
 	orderService service.OrdersService
 }
 
@@ -26,12 +25,8 @@ func NewOrderUseCase(service service.OrdersService) OrderUseCase {
 }
 
 func (u *orderUseCase) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error) {
-	panic("unimplemented")
+	return u.orderService.ListOrdersByRestaurantID(ctx, restaurantID, status)
 }
-
-// func (u *ordersUseCase) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error) {
-// 	return u.service.ListOrdersByRestaurantID(ctx, restaurantID, status)
-// }
 
 func (u *orderUseCase) AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgRepositoryModels.AcceptResult, error) {
 	return u.orderService.AcceptOrder(ctx, orderID)
