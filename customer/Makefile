@@ -1,4 +1,4 @@
-include config/.env
+-include config/.env
 
 help:
 	@echo "Makefile commands:"
@@ -27,6 +27,7 @@ help:
 	@echo "  build-all            Build required components"
 	@echo "  launch-all           Start all services (docker, redis, db, minio, rabbitmq, customer)"
 	@echo "  clear-all            Stop and remove containers"
+	@echo "  copy-env             Copy .env.example to .env"
 	@echo
 	@echo "Use 'make <target>' to run a specific command."
 
@@ -41,6 +42,9 @@ endif
 # other
 launch-docker:
 	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+
+copy-env:
+	cp config/.env.example config/.env
 
 # redis
 launch-redis:

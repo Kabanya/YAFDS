@@ -64,9 +64,9 @@ func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID 
 	}
 
 	query := `
-		SELECT DISTINCT o.emp_id, o.customer_id, o.courier_id, o.created_at, o.updated_at, o.status
+		SELECT DISTINCT o.id, o.customer_id, o.courier_id, o.created_at, o.updated_at, o.status
 		FROM ORDERS o
-		JOIN ORDERS_ITEMS oi ON oi.order_id = o.emp_id
+		JOIN ORDERS_ITEMS oi ON oi.order_id = o.id
 		WHERE oi.restaurant_item_id IN (` + strings.Join(placeholders, ",") + `)
 	`
 

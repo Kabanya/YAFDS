@@ -17,7 +17,7 @@ import (
 	"restaurant/internal/service"
 	"restaurant/internal/usecase"
 
-	"github.com/Kabanya/YAFDS/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

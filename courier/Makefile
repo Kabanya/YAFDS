@@ -1,4 +1,4 @@
-include config/.env
+-include config/.env
 
 # Set PATH to include Go binaries
 ifeq ($(OS),Windows_NT)
@@ -11,6 +11,9 @@ endif
 # other
 launch-docker:
 	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+
+copy-env:
+	cp config/.env.example config/.env
 
 # redis
 launch-redis:

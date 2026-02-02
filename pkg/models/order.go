@@ -23,6 +23,7 @@ const (
 	OrderStatusDeliveryRefunded   OrderStatus = "DELIVERY_REFUNDED"
 	OrderStatusDeliveryDelivering OrderStatus = "DELIVERY_DELIVERING"
 	OrderStatusOrderCompleted     OrderStatus = "ORDER_COMPLETED"
+	OrderStatusOrderFailed        OrderStatus = "ORDER_FAILED"
 )
 
 type ErrorResponce struct {
@@ -30,12 +31,12 @@ type ErrorResponce struct {
 }
 
 type Order struct {
-	ID         uuid.UUID `json:"id"`
-	CustomerID uuid.UUID `json:"customer_id"`
-	CourierID  uuid.UUID `json:"courier_id"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	Status     string    `json:"status"`
+	ID         uuid.UUID   `json:"id"`
+	CustomerID uuid.UUID   `json:"customer_id"`
+	CourierID  uuid.UUID   `json:"courier_id"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+	Status     OrderStatus `json:"status"`
 }
 
 type MenuItem struct {

@@ -7,7 +7,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/auth"
+	"github.com/Kabanya/YAFDS/pkg/common/auth"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
@@ -26,7 +26,7 @@ type userService struct {
 
 func NewUserService(repo repository.UserRepo, redisClient *redis.Client, sessionTTL time.Duration) UserService {
 	service, err := auth.NewService(auth.ServiceConfig{
-		Store:      storeAdapter{repo: repo},
+		// Store:      storeAdapter{repo: repo},
 		Hasher:     auth.NewArgon2Hasher(auth.DefaultArgonParams),
 		Sessions:   auth.NewRedisSessionManager(redisClient),
 		Validator:  auth.NoopValidator,

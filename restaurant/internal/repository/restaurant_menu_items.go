@@ -3,8 +3,8 @@ package repository
 import (
 	"database/sql"
 
+	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )

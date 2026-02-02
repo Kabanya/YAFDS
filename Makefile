@@ -17,6 +17,8 @@ RESET := \033[0m
 # Список сервисов
 SERVICES := customer courier restaurant front
 BACKEND_SERVICES := customer courier restaurant
+# Все директории с Go кодом (включая общие пакеты)
+GO_MODULES := pkg customer courier restaurant
 
 # ============================================================================
 # HELP - Главное меню помощи
@@ -30,6 +32,7 @@ help:
 	@echo "$(GREEN)📦 Основные команды:$(RESET)"
 	@echo "  $(YELLOW)make start$(RESET)              - Запустить все сервисы (полный деплой)"
 	@echo "  $(YELLOW)make start-dev$(RESET)          - Запустить все сервисы с тестовыми данными"
+	@echo "  $(YELLOW)make init-env$(RESET)           - Инициализировать .env файлы из .env.example"
 	@echo "  $(YELLOW)make stop$(RESET)               - Остановить все сервисы"
 	@echo "  $(YELLOW)make restart$(RESET)            - Перезапустить все сервисы"
 	@echo "  $(YELLOW)make status$(RESET)             - Показать статус всех контейнеров"
@@ -356,16 +359,22 @@ check-deps:
 # ============================================================================
 # УТИЛИТЫ
 # ============================================================================
-
+init-env:
+	@echo "$(CYAN)📝 Копирование .env.example в .env для всех сервисов...$(RESET)"
+	@for service in $(BACKEND_SERVICES); do \
+		echo "$(YELLOW)Копирование для $$service...$(RESET)"; \
+		(cd $$service && $(MAKE) copy-env); \
+	done
+	@echo "$(GREEN)✅ Все .env файлы созданы$(RESET)"
 update-deps:
 	@echo "$(CYAN)📦 Обновление зависимостей...$(RESET)"
 	@./update_deps.sh
 
 test:
 	@echo "$(CYAN)🧪 Запуск тестов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Тестирование $$service...$(RESET)"; \
-		cd $$service && go test ./... -v || true; \
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Тестирование $$dir...$(RESET)"; \
+		cd $$dir && go test ./... -v || true; \
 		cd ..; \
 	done
 
@@ -427,40 +436,40 @@ generate-db-html:
 # ============================================================================
 
 go-tidy:
-	@echo "$(CYAN)🔨 Выполнение go mod tidy для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)go mod tidy в $$service...$(RESET)"; \
-		cd $$service && go mod tidy && echo "$(GREEN)✅ $$service$(RESET)" || echo "$(RED)❌ $$service$(RESET)"; \
+	@echo "$(CYAN)🔨 Выполнение go mod tidy для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)go mod tidy в $$dir...$(RESET)"; \
+		cd $$dir && go mod tidy && echo "$(GREEN)✅ $$dir$(RESET)" || echo "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done
-	@echo "$(GREEN)✅ go mod tidy завершено для всех сервисов$(RESET)"
+	@echo "$(GREEN)✅ go mod tidy завершено для всех модулей$(RESET)"
 
 go-fmt:
-	@echo "$(CYAN)🎨 Форматирование кода (go fmt) для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Форматирование $$service...$(RESET)"; \
-		cd $$service && go fmt ./... && echo "$(GREEN)✅ $$service$(RESET)" || echo "$(RED)❌ $$service$(RESET)"; \
+	@echo "$(CYAN)🎨 Форматирование кода (go fmt) для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Форматирование $$dir...$(RESET)"; \
+		cd $$dir && go fmt ./... && echo "$(GREEN)✅ $$dir$(RESET)" || echo "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done
-	@echo "$(GREEN)✅ go fmt завершено для всех сервисов$(RESET)"
+	@echo "$(GREEN)✅ go fmt завершено для всех модулей$(RESET)"
 
 go-vet:
-	@echo "$(CYAN)🔍 Проверка кода (go vet) для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Проверка $$service...$(RESET)"; \
-		cd $$service && go vet ./... && echo "$(GREEN)✅ $$service$(RESET)" || echo "$(YELLOW)⚠️  $$service (предупреждения)$(RESET)"; \
+	@echo "$(CYAN)🔍 Проверка кода (go vet) для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Проверка $$dir...$(RESET)"; \
+		cd $$dir && go vet ./... && echo "$(GREEN)✅ $$dir$(RESET)" || echo "$(YELLOW)⚠️  $$dir (предупреждения)$(RESET)"; \
 		cd ..; \
 	done
-	@echo "$(GREEN)✅ go vet завершено для всех сервисов$(RESET)"
+	@echo "$(GREEN)✅ go vet завершено для всех модулей$(RESET)"
 
 go-test:
-	@echo "$(CYAN)🧪 Запуск тестов (go test) для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Тестирование $$service...$(RESET)"; \
-		cd $$service && go test -v -cover ./... || echo "$(YELLOW)⚠️  Тесты в $$service не прошли$(RESET)"; \
+	@echo "$(CYAN)🧪 Запуск тестов (go test) для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Тестирование $$dir...$(RESET)"; \
+		cd $$dir && go test -v -cover ./... || echo "$(YELLOW)⚠️  Тесты в $$dir не прошли$(RESET)"; \
 		cd ..; \
 	done
-	@echo "$(GREEN)✅ go test завершено для всех сервисов$(RESET)"
+	@echo "$(GREEN)✅ go test завершено для всех модулей$(RESET)"
 
 go-build:
 	@echo "$(CYAN)🏗️  Сборка бинарников (go build) для всех backend сервисов...$(RESET)"
@@ -482,19 +491,19 @@ go-clean:
 	@echo "$(GREEN)✅ Очистка завершена$(RESET)"
 
 go-deps-check:
-	@echo "$(CYAN)📦 Проверка зависимостей для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Проверка $$service...$(RESET)"; \
-		cd $$service && go list -u -m all | grep -v indirect || echo "$(GREEN)✅ Все зависимости актуальны$(RESET)"; \
+	@echo "$(CYAN)📦 Проверка зависимостей для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Проверка $$dir...$(RESET)"; \
+		cd $$dir && go list -u -m all | grep -v indirect || echo "$(GREEN)✅ Все зависимости актуальны$(RESET)"; \
 		cd ..; \
 	done
 	@echo "$(GREEN)✅ Проверка завершена$(RESET)"
 
 go-upgrade-deps:
-	@echo "$(CYAN)📦 Обновление зависимостей для всех backend сервисов...$(RESET)"
-	@for service in $(BACKEND_SERVICES); do \
-		echo "$(YELLOW)Обновление $$service...$(RESET)"; \
-		cd $$service && go get -u ./... && go mod tidy && echo "$(GREEN)✅ $$service$(RESET)" || echo "$(RED)❌ $$service$(RESET)"; \
+	@echo "$(CYAN)📦 Обновление зависимостей для всех Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo "$(YELLOW)Обновление $$dir...$(RESET)"; \
+		cd $$dir && go get -u ./... && go mod tidy && echo "$(GREEN)✅ $$dir$(RESET)" || echo "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done
-	@echo "$(GREEN)✅ Обновление завершено для всех сервисов$(RESET)"
+	@echo "$(GREEN)✅ Обновление завершено для всех модулей$(RESET)"

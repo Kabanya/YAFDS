@@ -45,7 +45,7 @@ type LoginResponse struct {
 	Expiration    int64     `json:"expiration"`
 }
 
-var ErrInvalidCredentials = errors.New("invalid credentials")
+// var ErrInvalidCredentials = errors.New("invalid credentials") // НЕ НАДО
 
 func NewError(message string) error {
 	return errors.New(message)
