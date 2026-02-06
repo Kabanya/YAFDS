@@ -33,6 +33,7 @@ help:
 	@echo "  $(YELLOW)make start$(RESET)              - Запустить все сервисы (полный деплой)"
 	@echo "  $(YELLOW)make start-dev$(RESET)          - Запустить все сервисы с тестовыми данными"
 	@echo "  $(YELLOW)make init-env$(RESET)           - Инициализировать .env файлы из .env.example"
+	@echo "  $(YELLOW)make init$(RESET)               - Инициализировать .env файлы (в будущем расширить)"
 	@echo "  $(YELLOW)make stop$(RESET)               - Остановить все сервисы"
 	@echo "  $(YELLOW)make restart$(RESET)            - Перезапустить все сервисы"
 	@echo "  $(YELLOW)make status$(RESET)             - Показать статус всех контейнеров"
@@ -126,7 +127,7 @@ start-dev: check-docker setup-python-env
 		echo "$(YELLOW)⚠️  send_requests.py не найден, пропускаем загрузку тестовых данных$(RESET)"; \
 	fi
 
-run: db-clean clean-all start-dev
+run: clean-all start-dev
 
 stop:
 	@echo "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"
@@ -366,6 +367,9 @@ init-env:
 		(cd $$service && $(MAKE) copy-env); \
 	done
 	@echo "$(GREEN)✅ Все .env файлы созданы$(RESET)"
+
+init: init-env
+
 update-deps:
 	@echo "$(CYAN)📦 Обновление зависимостей...$(RESET)"
 	@./update_deps.sh

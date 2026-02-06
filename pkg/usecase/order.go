@@ -23,7 +23,6 @@ type OrderUseCase interface {
 	CreateOrder(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID) (models.Order, error)
 	CreateOrderWithItems(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput) (models.Order, error)
 	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
-	AcceptOrder(ctx context.Context, orderID uuid.UUID, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput, status models.OrderStatus) (repositoryModels.AcceptResult, error)
 	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
 	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
 	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
@@ -67,10 +66,6 @@ func (u *orderUseCase) CreateOrderWithItems(ctx context.Context, customerID uuid
 
 func (u *orderUseCase) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	return u.serviceOrder.GetOrder(ctx, orderID)
-}
-
-func (u *orderUseCase) AcceptOrder(ctx context.Context, orderID uuid.UUID, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput, status models.OrderStatus) (repositoryModels.AcceptResult, error) {
-	return u.serviceOrder.AcceptOrder(ctx, orderID.String(), customerID.String(), courierID.String(), items, status)
 }
 
 func (u *orderUseCase) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {

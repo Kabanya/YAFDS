@@ -216,9 +216,9 @@ func (r *postgresRepository) ListOrders(ctx context.Context, filter repositoryMo
 	return result, nil
 }
 
-func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
-	return repositoryModels.AcceptResult{}, nil
-}
+// func (r *postgresRepository) AcceptOrder(ctx context.Context, input repositoryModels.AcceptInput) (repositoryModels.AcceptResult, error) {
+// 	return repositoryModels.AcceptResult{}, nil
+// }
 
 func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
 	if r.ordersDB == nil {
@@ -240,19 +240,12 @@ func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UU
 }
 
 func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
-	if r.ordersDB == nil {
-		return errors.New("orders repository not fully initialized")
-	}
-	if orderID == uuid.Nil {
-		return errors.New("order_id must be a valid UUID")
-	}
-
-	res, err := r.ordersDB.ExecContext(ctx, "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE id = $3", string(status), time.Now().UTC(), orderID)
+	const query = "UPDATE ORDERS SET status = $1, updated_at = NOW() WHERE id = $2"
+	res, err := r.ordersDB.ExecContext(ctx, query, string(status), orderID)
 	if err != nil {
 		return err
 	}
-	rows, err := res.RowsAffected()
-	if err == nil && rows == 0 {
+	if rows, _ := res.RowsAffected(); rows == 0 { // если не обновилось ни одной строки => заказа нет
 		return ErrOrderNotFound
 	}
 	return err

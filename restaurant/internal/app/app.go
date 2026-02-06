@@ -18,6 +18,8 @@ import (
 	"restaurant/internal/usecase"
 
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
+	pkgService "github.com/Kabanya/YAFDS/pkg/service"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -134,7 +136,9 @@ func Run() {
 	restaurantMenuItemsService := service.NewRestaurantMenuItemsService(restaurantMenuItemsRepo)
 	logger.Println("Initialized restaurant menu items service")
 
-	ordersService := service.NewOrdersService(ordersRepository)
+	pkgOrderRepo := pkgRepo.NewPostgresRepository(ordersDB, nil, nil)
+	pkgOrderService := pkgService.NewOrderService(pkgOrderRepo)
+	ordersService := service.NewOrderService(ordersRepository, pkgOrderRepo, pkgOrderService)
 	logger.Println("Initialized orders service")
 
 	userUseCase := usecase.NewUserUseCase(userService)
@@ -143,7 +147,7 @@ func Run() {
 	restaurantMenuItemsUseCase := usecase.NewRestaurantMenuItemsUseCase(restaurantMenuItemsService)
 	logger.Println("Initialized restaurant menu items usecase")
 
-	ordersUseCase := usecase.NewOrdersUseCase(ordersService)
+	ordersUseCase := usecase.NewOrderUseCase(ordersService)
 	logger.Println("Initialized orders usecase")
 
 	handler := NewHandler(userUseCase, restaurantMenuItemsUseCase, ordersUseCase)
