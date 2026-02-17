@@ -18,6 +18,7 @@ import (
 	"restaurant/internal/usecase"
 
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 	pkgService "github.com/Kabanya/YAFDS/pkg/service"
 
@@ -174,7 +175,8 @@ func Run() {
 	logger.Printf("  POST http://localhost:%s/menu/upload - Upload menu item", port)
 	logger.Printf("Starting HTTP server on %s", addr)
 
-	err = http.ListenAndServe(addr, nil)
+	handlerWithCORS := pkgMiddleware.CORSMiddleware(http.DefaultServeMux)
+	err = http.ListenAndServe(addr, handlerWithCORS)
 	if err != nil {
 		logger.Printf("Server error: %v", err)
 	}

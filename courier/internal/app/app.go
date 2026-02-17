@@ -17,6 +17,7 @@ import (
 	"courier/internal/service"
 	"courier/internal/usecase"
 
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 
@@ -152,7 +153,8 @@ func Run() {
 	logger.Printf("  GET  http://localhost:%s/orders - List orders", port)
 	logger.Printf("Starting HTTP server on %s", addr)
 
-	err = http.ListenAndServe(addr, nil)
+	handlerWithCORS := pkgMiddleware.CORSMiddleware(http.DefaultServeMux)
+	err = http.ListenAndServe(addr, handlerWithCORS)
 	if err != nil {
 		logger.Printf("Server error: %v", err)
 	}

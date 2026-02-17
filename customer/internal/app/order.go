@@ -110,16 +110,6 @@ func (h *OrderHandler) OrdersHandler(repo pkgRepository.OrderRepo) http.HandlerF
 
 func NewListHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
 		if r.Method != http.MethodGet {
 			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -160,16 +150,6 @@ func NewListHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
 
 // POST /orders
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodPost {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -203,16 +183,6 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 // CreateOrderWithItems creates a new order with items
 // POST /orders/with-items
 func (h *OrderHandler) CreateOrderWithItems(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodPost {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -245,16 +215,6 @@ func (h *OrderHandler) CreateOrderWithItems(w http.ResponseWriter, r *http.Reque
 
 // GET /orders/{order_id}
 func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodGet {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -276,16 +236,6 @@ func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 
 // GET /orders/{order_id}/status
 func (h *OrderHandler) GetOrderStatus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodGet {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -307,16 +257,6 @@ func (h *OrderHandler) GetOrderStatus(w http.ResponseWriter, r *http.Request) {
 
 // PUT /orders/{order_id}/status
 func (h *OrderHandler) UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodPut {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -344,16 +284,6 @@ func (h *OrderHandler) UpdateOrderStatus(w http.ResponseWriter, r *http.Request)
 
 // GET /orders/{order_id}/total
 func (h *OrderHandler) CalculateOrderTotal(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodGet {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -375,16 +305,6 @@ func (h *OrderHandler) CalculateOrderTotal(w http.ResponseWriter, r *http.Reques
 
 // GET /customers/{customer_id}/wallet
 func (h *OrderHandler) GetCustomerWalletAddress(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodGet {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -406,16 +326,6 @@ func (h *OrderHandler) GetCustomerWalletAddress(w http.ResponseWriter, r *http.R
 
 // POST /orders/{order_id}/items
 func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodPost {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -454,16 +364,6 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 
 // DELETE /orders/{order_id}/items
 func (h *OrderHandler) RemoveItemFromOrder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodDelete {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -490,16 +390,6 @@ func (h *OrderHandler) RemoveItemFromOrder(w http.ResponseWriter, r *http.Reques
 
 // POST /orders/{order_id}/pay
 func (h *OrderHandler) PayOrder(w http.ResponseWriter, r *http.Request, walletClient client.WalletClient) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
 	if r.Method != http.MethodPost {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return

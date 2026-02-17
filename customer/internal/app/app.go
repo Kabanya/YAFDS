@@ -19,6 +19,7 @@ import (
 
 	"github.com/Kabanya/YAFDS/pkg/app/client"
 	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
 	pkgService "github.com/Kabanya/YAFDS/pkg/service"
@@ -214,7 +215,8 @@ func Run() {
 	logger.Println("  GET http://localhost:8091/menu?restaurant_id=<uuid> - Show restaurant menu items")
 	logger.Println("Starting HTTP server on :8091")
 
-	err = http.ListenAndServe(":8091", nil)
+	handlerWithCORS := pkgMiddleware.CORSMiddleware(http.DefaultServeMux)
+	err = http.ListenAndServe(":8091", handlerWithCORS)
 	if err != nil {
 		logger.Printf("Server error: %v", err)
 	}
