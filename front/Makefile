@@ -23,7 +23,7 @@ clear-front:
 	-docker rmi front-app
 
 launch-front:
-	-docker start yafds-front-service 2>nul || docker run --name yafds-front-service -p 5173:5173 -d front-app
+	-docker start yafds-front-service 2>/dev/null || docker run --name yafds-front-service -p 5173:5173 -d front-app
 
 .PHONY: install build preview dev clean build-docker clear-front launch-front run
 

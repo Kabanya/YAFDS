@@ -29,7 +29,7 @@ type storeAdapter struct {
 
 func NewUserService(repo repository.UserRepo, redisClient *redis.Client, sessionTTL time.Duration) UserService {
 	service, err := auth.NewService(auth.ServiceConfig{
-		// Store:      storeAdapter{repo: repo},
+		Store:      storeAdapter{repo: repo},
 		Hasher:     auth.NewArgon2Hasher(auth.DefaultArgonParams).WithLogger(),
 		Sessions:   auth.NewRedisSessionManager(redisClient),
 		Validator:  auth.NoopValidator,
@@ -66,21 +66,21 @@ func (s *userService) Login(walletAddress string, password string) (models.Login
 	}, nil
 }
 
-// func (a storeAdapter) SaveWithPassword(ctx context.Context, data auth.RegisterInput, passwordHash string, passwordSalt []byte) error {
-// 	return a.repo.SaveWithPassword(data.ID, data.Name, data.WalletAddress, data.Address, passwordHash, passwordSalt)
-// }
+func (a storeAdapter) SaveWithPassword(ctx context.Context, data auth.RegisterInput, passwordHash string, passwordSalt []byte) error {
+	return a.repo.SaveWithPassword(data.ID, data.Name, data.WalletAddress, data.Address, passwordHash, passwordSalt)
+}
 
-// func (a storeAdapter) LoadByWalletAddress(ctx context.Context, walletAddress string) (auth.StoredUser, error) {
-// 	user, err := a.repo.LoadByWalletAddress(walletAddress)
-// 	if err != nil {
-// 		return auth.StoredUser{}, err
-// 	}
-// 	return auth.StoredUser{
-// 		ID:            user.Id,
-// 		Name:          user.Name,
-// 		WalletAddress: user.WalletAddress,
-// 		Address:       user.Address,
-// 		PasswordHash:  user.PasswordHash,
-// 		PasswordSalt:  user.PasswordSalt,
-// 	}, nil
-// }
+func (a storeAdapter) LoadByWalletAddress(ctx context.Context, walletAddress string) (auth.StoredUser, error) {
+	user, err := a.repo.LoadByWalletAddress(walletAddress)
+	if err != nil {
+		return auth.StoredUser{}, err
+	}
+	return auth.StoredUser{
+		ID:            user.Id,
+		Name:          user.Name,
+		WalletAddress: user.WalletAddress,
+		Address:       user.Address,
+		PasswordHash:  user.PasswordHash,
+		PasswordSalt:  user.PasswordSalt,
+	}, nil
+}

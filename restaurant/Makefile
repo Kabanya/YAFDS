@@ -10,33 +10,33 @@ endif
 
 # other
 launch-docker:
-	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+	@docker info >/dev/null 2>&1 || echo "Warning: Docker might not be running"
 
 copy-env:
 	cp config/.env.example config/.env
 
 # redis
 launch-redis:
-	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
+	-docker start $(REDIS_CONTAINER_NAME) 2>/dev/null || \
 		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
 		-d $(REDIS_IMAGE) --port $(REDIS_PORT) --requirepass $(REDIS_PASSWORD)
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+	@sleep 2
 
 clear-redis:
-	-docker stop $(REDIS_CONTAINER_NAME)
-	-docker rm $(REDIS_CONTAINER_NAME)
+	-docker stop $(REDIS_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(REDIS_CONTAINER_NAME) 2>/dev/null
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
-	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >nul 2>&1 || (timeout /t 10 /nobreak >nul 2>&1 || sleep 10)
+	-docker start $(DB_CONTAINER_NAME) 2>/dev/null || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
+	@sleep 5
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >/dev/null 2>&1 || sleep 10
 	$(MAKE) create-restaurant-db
 	$(MAKE) create-order-db
 
 clear-db:
-	-docker stop $(DB_CONTAINER_NAME)
-	-docker rm $(DB_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(DB_CONTAINER_NAME) 2>/dev/null
 
 # migrations
 migrate-up:
@@ -81,12 +81,13 @@ seed-status-orders-db:
 
 # restaurant
 build-restaurant:
-	-docker rmi restaurant-app 2>nul
+	-docker rmi restaurant-app 2>/dev/null
 	docker build --build-arg BUILD_TIME=1 -t restaurant-app -f Dockerfile ..
 
 launch-restaurant:
-	-docker start $(RESTAURANT_CONTAINER_NAME) 2>nul || \
-		docker run --name $(RESTAURANT_CONTAINER_NAME) \
+	-docker start $(RESTAURANT_CONTAINER_NAME) 2>/dev/null || \
+		docker run --add-host host.docker.internal:host-gateway \
+			--name $(RESTAURANT_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
@@ -95,19 +96,19 @@ launch-restaurant:
 			-p $(RESTAURANT_PORT):$(RESTAURANT_PORT) -d restaurant-app
 
 clear-restaurant:
-	-docker stop $(RESTAURANT_CONTAINER_NAME)
-	-docker rm $(RESTAURANT_CONTAINER_NAME)
-	-docker rmi restaurant-app
+	-docker stop $(RESTAURANT_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(RESTAURANT_CONTAINER_NAME) 2>/dev/null
+	-docker rmi restaurant-app 2>/dev/null
 
 # db's
 create-restaurant-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(RESTAURANT_DB);"
-	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	@sleep 3
 	$(MAKE) migrate-up
 
 create-order-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(ORDER_DB);"
-	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	@sleep 3
 	$(MAKE) migrate-up-orders-db
 
 # logs
@@ -136,6 +137,7 @@ logs-all: debug-info-restaurant logs-restaurant
 check-all: check-db-customers
 
 # minimalistic
+# Test credentials: 0xbd2f054c1faa44b2a561c47dd1a0a367 / JO88M0Rtf0BG
 stop:  stop-all
 logs:  logs-all
 clean: clear-all clear-db

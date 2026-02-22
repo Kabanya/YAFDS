@@ -41,62 +41,62 @@ endif
 
 # other
 launch-docker:
-	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+	@docker info >/dev/null 2>&1 || echo "Warning: Docker might not be running"
 
 copy-env:
 	cp config/.env.example config/.env
 
 # redis
 launch-redis:
-	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
+	-docker start $(REDIS_CONTAINER_NAME) 2>/dev/null || \
 		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
 		-d $(REDIS_IMAGE) --port $(REDIS_PORT) --requirepass $(REDIS_PASSWORD)
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+	@sleep 2
 
 clear-redis:
-	-docker stop $(REDIS_CONTAINER_NAME)
-	-docker rm $(REDIS_CONTAINER_NAME)
+	-docker stop $(REDIS_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(REDIS_CONTAINER_NAME) 2>/dev/null
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 5
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
+	-docker start $(DB_CONTAINER_NAME) 2>/dev/null || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
+	@sleep 5
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >/dev/null 2>&1 || sleep 5
 	$(MAKE) create-customer-db
 
 clear-db:
-	-docker stop $(DB_CONTAINER_NAME)
-	-docker rm $(DB_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(DB_CONTAINER_NAME) 2>/dev/null
 
 # minio
 launch-minio:
-	-docker start $(MINIO_CONTAINER_NAME) 2>nul || \
+	-docker start $(MINIO_CONTAINER_NAME) 2>/dev/null || \
 		docker run --name $(MINIO_CONTAINER_NAME) \
 			-p $(MINIO_PORT):9000 \
 			-p $(MINIO_CONSOLE_PORT):9001 \
 			-e MINIO_ROOT_USER=$(MINIO_ROOT_USER) \
 			-e MINIO_ROOT_PASSWORD=$(MINIO_ROOT_PASSWORD) \
 			-d $(MINIO_IMAGE) server /data --console-address ":9001"
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+	@sleep 2
 
 clear-minio:
-	-docker stop $(MINIO_CONTAINER_NAME)
-	-docker rm $(MINIO_CONTAINER_NAME)
+	-docker stop $(MINIO_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(MINIO_CONTAINER_NAME) 2>/dev/null
 
 # rabbitmq
 launch-rabbitmq:
-	-docker start $(RABBITMQ_CONTAINER_NAME) 2>nul || \
+	-docker start $(RABBITMQ_CONTAINER_NAME) 2>/dev/null || \
 		docker run --name $(RABBITMQ_CONTAINER_NAME) \
 			-p $(RABBITMQ_PORT):5672 \
 			-p $(RABBITMQ_MANAGEMENT_PORT):15672 \
 			-e RABBITMQ_DEFAULT_USER=$(RABBITMQ_DEFAULT_USER) \
 			-e RABBITMQ_DEFAULT_PASS=$(RABBITMQ_DEFAULT_PASS) \
 			-d $(RABBITMQ_IMAGE)
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+	@sleep 2
 
 clear-rabbitmq:
-	-docker stop $(RABBITMQ_CONTAINER_NAME)
-	-docker rm $(RABBITMQ_CONTAINER_NAME)
+	-docker stop $(RABBITMQ_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(RABBITMQ_CONTAINER_NAME) 2>/dev/null
 
 # migrations
 migrate-up:
@@ -120,12 +120,13 @@ seed-status:
 
 # customer
 build-customer:
-	-docker rmi customer-app 2>nul
+	-docker rmi customer-app 2>/dev/null
 	docker build --build-arg BUILD_TIME=1 -t customer-app -f Dockerfile ..
 
 launch-customer:
-	-docker start $(CUSTOMER_CONTAINER_NAME) 2>nul || \
-		docker run --name $(CUSTOMER_CONTAINER_NAME) \
+	-docker start $(CUSTOMER_CONTAINER_NAME) 2>/dev/null || \
+		docker run --add-host host.docker.internal:host-gateway \
+			--name $(CUSTOMER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e RESTAURANT_API_URL=http://host.docker.internal:8092 \
@@ -135,14 +136,14 @@ launch-customer:
 			-p $(CUSTOMER_PORT):$(CUSTOMER_PORT) -d customer-app
 
 clear-customer:
-	-docker stop $(CUSTOMER_CONTAINER_NAME)
-	-docker rm $(CUSTOMER_CONTAINER_NAME)
-	-docker rmi customer-app
+	-docker stop $(CUSTOMER_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(CUSTOMER_CONTAINER_NAME) 2>/dev/null
+	-docker rmi customer-app 2>/dev/null
 
 # db's
 create-customer-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(CUSTOMER_DB);"
-	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	@sleep 3
 	$(MAKE) migrate-up
 
 # logs
@@ -172,6 +173,7 @@ logs-all: debug-info-customer logs-customer
 check-all: check-db-customers
 
 # minimalistic
+# Test credentials: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e / StrongPass001
 stop:  stop-all
 logs:  logs-all
 clean: clear-all clear-db

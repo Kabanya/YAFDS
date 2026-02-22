@@ -10,32 +10,32 @@ endif
 
 # other
 launch-docker:
-	@docker info >nul 2>&1 || echo "Warning: Docker might not be running"
+	@docker info >/dev/null 2>&1 || echo "Warning: Docker might not be running"
 
 copy-env:
 	cp config/.env.example config/.env
 
 # redis
 launch-redis:
-	-docker start $(REDIS_CONTAINER_NAME) 2>nul || \
+	-docker start $(REDIS_CONTAINER_NAME) 2>/dev/null || \
 		docker run --name $(REDIS_CONTAINER_NAME) -p $(REDIS_PORT):$(REDIS_PORT) \
 		-d $(REDIS_IMAGE) --port $(REDIS_PORT) --requirepass $(REDIS_PASSWORD)
-	@timeout /t 2 /nobreak >nul 2>&1 || sleep 2
+	@sleep 2
 
 clear-redis:
-	-docker stop $(REDIS_CONTAINER_NAME)
-	-docker rm $(REDIS_CONTAINER_NAME)
+	-docker stop $(REDIS_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(REDIS_CONTAINER_NAME) 2>/dev/null
 
 # db
 launch-db:
-	-docker start $(DB_CONTAINER_NAME) 2>nul || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
-	@timeout /t 5 /nobreak >nul 2>&1 || sleep 5
-	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >nul 2>&1 || (timeout /t 5 /nobreak >nul 2>&1 || sleep 5)
+	-docker start $(DB_CONTAINER_NAME) 2>/dev/null || docker run --name $(DB_CONTAINER_NAME) -p $(DB_PORT):$(DB_PORT) -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d $(DB_IMAGE) -c port=$(DB_PORT)
+	@sleep 5
+	@docker exec $(DB_CONTAINER_NAME) pg_isready -U $(DB_USER) -p $(DB_PORT) >/dev/null 2>&1 || sleep 5
 	$(MAKE) create-courier-db
 
 clear-db:
-	-docker stop $(DB_CONTAINER_NAME)
-	-docker rm $(DB_CONTAINER_NAME)
+	-docker stop $(DB_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(DB_CONTAINER_NAME) 2>/dev/null
 
 # migrations
 migrate-up:
@@ -59,12 +59,13 @@ seed-status:
 
 # courier
 build-courier:
-	-docker rmi courier-app 2>nul
+	-docker rmi courier-app 2>/dev/null
 	docker build --build-arg BUILD_TIME=1 -t courier-app -f Dockerfile ..
 
 launch-courier:
-	-docker start $(COURIER_CONTAINER_NAME) 2>nul || \
-		docker run --name $(COURIER_CONTAINER_NAME) \
+	-docker start $(COURIER_CONTAINER_NAME) 2>/dev/null || \
+		docker run --add-host host.docker.internal:host-gateway \
+			--name $(COURIER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
 			-e REDIS_ADDRESS=host.docker.internal:$(REDIS_PORT) \
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
@@ -73,14 +74,14 @@ launch-courier:
 			-p $(COURIER_PORT):$(COURIER_PORT) -d courier-app
 
 clear-courier:
-	-docker stop $(COURIER_CONTAINER_NAME)
-	-docker rm $(COURIER_CONTAINER_NAME)
-	-docker rmi courier-app
+	-docker stop $(COURIER_CONTAINER_NAME) 2>/dev/null
+	-docker rm $(COURIER_CONTAINER_NAME) 2>/dev/null
+	-docker rmi courier-app 2>/dev/null
 
 # db's
 create-courier-db:
 	-docker exec $(DB_CONTAINER_NAME) psql -U $(DB_USER) -p $(DB_PORT) -c "CREATE DATABASE $(COURIER_DB);"
-	@timeout /t 3 /nobreak >nul 2>&1 || sleep 3
+	@sleep 3
 	$(MAKE) migrate-up
 
 # logs
@@ -110,6 +111,7 @@ logs-all: debug-info-courier logs-courier
 check-all: db-check
 
 # minimalistic
+# Test credentials: 0x5647445a3e564b189fc35a75079fc924 / aad9D6C7e9R7
 stop:  stop-all
 logs:  logs-all
 clean: clear-all clear-db

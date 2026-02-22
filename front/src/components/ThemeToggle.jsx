@@ -1,8 +1,11 @@
-import React from 'react';
-import { useTheme } from '../ThemeContext';
+import { useTheme } from '../ThemeContext'
 
+/**
+ * ThemeToggle - Minimal Neo-Operational theme switcher
+ * Square button with sharp edges, no circular background
+ */
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <button
@@ -10,7 +13,7 @@ export default function ThemeToggle() {
       className="theme-toggle"
       aria-label="Toggle theme"
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      {theme === 'light' ? '◐' : '◑'}
     </button>
-  );
+  )
 }

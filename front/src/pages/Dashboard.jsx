@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import OrderStageStepper from '../components/OrderStageStepper'
+import Modal from '../components/Modal'
 
 export default function Dashboard() {
   const { role } = useParams()
@@ -793,322 +794,235 @@ export default function Dashboard() {
           </section>
         )}
 
-        {createOrderModal && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}
-            onClick={() => setCreateOrderModal(false)}
-          >
-            <div
-              style={{
-                background: 'var(--card-bg)',
-                padding: '2rem',
-                borderRadius: '8px',
-                maxWidth: '400px',
-                width: '90%',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-              }}
-              onClick={(e) => e.stopPropagation()}
+        {/* Create Order Modal */}
+        <Modal
+          isOpen={createOrderModal}
+          onClose={() => setCreateOrderModal(false)}
+          title="Create New Order"
+        >
+          <div className="modal-section">
+            <label className="label">Courier</label>
+            <select
+              value={selectedCourier}
+              onChange={(e) => setSelectedCourier(e.target.value)}
+              className="auth-input"
+              disabled={couriersLoading || couriers.length === 0}
             >
-              <h3 style={{ marginTop: 0 }}>Create New Order</h3>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Select Courier:</label>
-                <select
-                  value={selectedCourier}
-                  onChange={(e) => setSelectedCourier(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    borderRadius: '4px',
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-main)'
-                  }}
-                  disabled={couriersLoading || couriers.length === 0}
-                >
-                  <option value="">Choose a courier...</option>
-                  {couriersLoading && <option disabled>Loading...</option>}
-                  {!couriersLoading && couriersError && <option disabled>{couriersError}</option>}
-                  {!couriersLoading && !couriersError && couriers.length === 0 && <option disabled>No couriers found</option>}
-                  {!couriersLoading && !couriersError && couriers.map((courier) => (
-                    <option key={courier.id} value={courier.id}>
-                      {courier.name || courier.wallet_address || courier.id}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Select Restaurant:</label>
-                <select
-                  value={selectedRestaurant}
-                  onChange={(e) => setSelectedRestaurant(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    borderRadius: '4px',
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-main)'
-                  }}
-                  disabled={restaurantsLoading || restaurants.length === 0}
-                >
-                  <option value="">Choose a restaurant...</option>
-                  {restaurantsLoading && <option disabled>Loading...</option>}
-                  {!restaurantsLoading && restaurantsError && <option disabled>{restaurantsError}</option>}
-                  {!restaurantsLoading && !restaurantsError && restaurants.length === 0 && <option disabled>No restaurants found</option>}
-                  {!restaurantsLoading && !restaurantsError && restaurants.map((restaurant) => (
-                    <option key={restaurant.id} value={restaurant.id}>
-                      {restaurant.name || restaurant.id}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={fetchRestaurantMenuForOrder}
-                  className="dashboard-ghost"
-                  disabled={restaurantMenuLoading || !selectedRestaurant}
-                  style={{ marginTop: '0.5rem' }}
-                >
-                  {restaurantMenuLoading ? 'Loading menu...' : 'Load menu'}
-                </button>
-                {restaurantMenuError && (
-                  <div style={{ color: 'red', marginTop: '0.5rem' }}>{restaurantMenuError}</div>
-                )}
-              </div>
-              {restaurantMenu.length > 0 && (
-                <div style={{ marginBottom: '1rem' }}>
-                  <p style={{ marginBottom: '0.5rem' }}>Menu items</p>
-                  <div style={{ display: 'grid', gap: '0.75rem' }}>
-                    {restaurantMenu.map((item) => {
-                      const id = item.order_item_id || item.orderItemID || item.id
-                      return (
-                        <div
-                          key={id}
-                          style={{
-                            border: '1px solid var(--border)',
-                            borderRadius: '6px',
-                            padding: '0.75rem'
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-                            <div>
-                              <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
-                              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{item.description || '—'}</div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
-                              <input
-                                type="number"
-                                min="0"
-                                step="1"
-                                value={orderItems[id] || ''}
-                                onChange={(e) =>
-                                  setOrderItems((prev) => ({
-                                    ...prev,
-                                    [id]: e.target.value
-                                  }))
-                                }
-                                placeholder="Qty"
-                                style={{
-                                  width: '72px',
-                                  marginTop: '0.4rem',
-                                  padding: '0.35rem',
-                                  borderRadius: '4px',
-                                  border: '1px solid var(--border)',
-                                  background: 'var(--bg)',
-                                  color: 'var(--text-main)'
-                                }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-              {createOrderError && (
-                <div style={{ color: 'red', marginBottom: '1rem' }}>{createOrderError}</div>
-              )}
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => setCreateOrderModal(false)}
-                  className="dashboard-ghost"
-                  disabled={creatingOrder}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateOrder}
-                  disabled={creatingOrder || !selectedCourier}
-                  style={{
-                    background: 'var(--accent)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '4px',
-                    cursor: creatingOrder ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {creatingOrder ? 'Creating...' : 'Create Order'}
-                </button>
-              </div>
-            </div>
+              <option value="">Choose courier...</option>
+              {couriersLoading && <option disabled>Loading...</option>}
+              {!couriersLoading && couriersError && <option disabled>{couriersError}</option>}
+              {!couriersLoading && !couriersError && couriers.length === 0 && <option disabled>No couriers</option>}
+              {!couriersLoading && !couriersError && couriers.map((courier) => (
+                <option key={courier.id} value={courier.id}>
+                  {courier.name || courier.wallet_address || courier.id}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
 
-        {addItemModal && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}
-            onClick={() => setAddItemModal(false)}
-          >
-            <div
-              style={{
-                background: 'var(--card-bg)',
-                padding: '2rem',
-                borderRadius: '8px',
-                maxWidth: '420px',
-                width: '90%',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-              }}
-              onClick={(e) => e.stopPropagation()}
+          <div className="modal-section">
+            <label className="label">Restaurant</label>
+            <select
+              value={selectedRestaurant}
+              onChange={(e) => setSelectedRestaurant(e.target.value)}
+              className="auth-input"
+              disabled={restaurantsLoading || restaurants.length === 0}
             >
-              <h3 style={{ marginTop: 0 }}>Add item to order</h3>
-              <p style={{ marginBottom: '1rem', opacity: 0.75 }}>
-                Order #{String(addItemOrder?.id || '').slice(0, 8)}
-              </p>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem' }}>Restaurant id:</label>
-                <input
-                  type="text"
-                  value={addItemRestaurantId}
-                  onChange={(e) => setAddItemRestaurantId(e.target.value)}
-                  placeholder="Enter restaurant UUID"
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    borderRadius: '4px',
-                    border: '1px solid var(--border)',
-                    background: 'var(--bg)',
-                    color: 'var(--text-main)'
-                  }}
-                />
-                <button
-                  onClick={fetchMenuForAddItem}
-                  className="dashboard-ghost"
-                  disabled={addItemMenuLoading || !addItemRestaurantId}
-                  style={{ marginTop: '0.5rem' }}
-                >
-                  {addItemMenuLoading ? 'Loading menu...' : 'Load menu'}
-                </button>
-                {addItemMenuError && (
-                  <div style={{ color: 'red', marginTop: '0.5rem' }}>{addItemMenuError}</div>
-                )}
-              </div>
-              {addItemMenu.length > 0 && (
-                <div style={{ marginBottom: '1rem' }}>
-                  <p style={{ marginBottom: '0.5rem' }}>Menu items</p>
-                  <div style={{ display: 'grid', gap: '0.75rem' }}>
-                    {addItemMenu.map((item) => {
-                      const id = item.order_item_id || item.orderItemID || item.id
-                      return (
-                        <div
-                          key={id}
-                          style={{
-                            border: '1px solid var(--border)',
-                            borderRadius: '6px',
-                            padding: '0.75rem'
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-                            <div>
-                              <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
-                              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>{item.description || '—'}</div>
-                            </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
-                              <input
-                                type="number"
-                                min="0"
-                                step="1"
-                                value={addItemQuantities[id] || ''}
-                                onChange={(e) =>
-                                  setAddItemQuantities((prev) => ({
-                                    ...prev,
-                                    [id]: e.target.value
-                                  }))
-                                }
-                                placeholder="Qty"
-                                style={{
-                                  width: '72px',
-                                  marginTop: '0.4rem',
-                                  padding: '0.35rem',
-                                  borderRadius: '4px',
-                                  border: '1px solid var(--border)',
-                                  background: 'var(--bg)',
-                                  color: 'var(--text-main)'
-                                }}
-                              />
-                            </div>
-                          </div>
+              <option value="">Choose restaurant...</option>
+              {restaurantsLoading && <option disabled>Loading...</option>}
+              {!restaurantsLoading && restaurantsError && <option disabled>{restaurantsError}</option>}
+              {!restaurantsLoading && !restaurantsError && restaurants.length === 0 && <option disabled>No restaurants</option>}
+              {!restaurantsLoading && !restaurantsError && restaurants.map((restaurant) => (
+                <option key={restaurant.id} value={restaurant.id}>
+                  {restaurant.name || restaurant.id}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={fetchRestaurantMenuForOrder}
+              className="dashboard-ghost"
+              disabled={restaurantMenuLoading || !selectedRestaurant}
+              style={{ marginTop: '8px', width: '100%' }}
+            >
+              {restaurantMenuLoading ? 'Loading menu...' : 'Load menu'}
+            </button>
+            {restaurantMenuError && (
+              <div className="dashboard-alert" style={{ marginTop: '8px' }}>{restaurantMenuError}</div>
+            )}
+          </div>
+
+          {restaurantMenu.length > 0 && (
+            <div className="modal-section">
+              <p className="label" style={{ marginBottom: '8px' }}>Menu items</p>
+              <div style={{ display: 'grid', gap: '8px' }}>
+                {restaurantMenu.map((item) => {
+                  const id = item.order_item_id || item.orderItemID || item.id
+                  return (
+                    <div
+                      key={id}
+                      style={{
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '6px',
+                        padding: '8px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
+                          <div style={{ fontSize: '12px', opacity: 0.7 }}>{item.description || '—'}</div>
                         </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-              {addItemError && (
-                <div style={{ color: 'red', marginBottom: '0.75rem' }}>{addItemError}</div>
-              )}
-              {addItemSuccess && (
-                <div style={{ color: 'green', marginBottom: '0.75rem' }}>{addItemSuccess}</div>
-              )}
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => setAddItemModal(false)}
-                  className="dashboard-ghost"
-                  disabled={addItemSaving}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddItem}
-                  disabled={addItemSaving || !addItemRestaurantId}
-                  style={{
-                    background: 'var(--accent)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '4px',
-                    cursor: addItemSaving ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {addItemSaving ? 'Adding...' : 'Add item'}
-                </button>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={orderItems[id] || ''}
+                            onChange={(e) =>
+                              setOrderItems((prev) => ({
+                                ...prev,
+                                [id]: e.target.value
+                              }))
+                            }
+                            placeholder="Qty"
+                            className="auth-input"
+                            style={{ width: '64px', marginTop: '4px', padding: '6px' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
+          )}
+
+          {createOrderError && (
+            <div className="dashboard-alert">{createOrderError}</div>
+          )}
+
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <button
+              onClick={() => setCreateOrderModal(false)}
+              className="dashboard-ghost"
+              disabled={creatingOrder}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateOrder}
+              disabled={creatingOrder || !selectedCourier}
+              className="auth-button"
+              style={{ marginTop: 0 }}
+            >
+              {creatingOrder ? 'Creating...' : 'Create Order'}
+            </button>
           </div>
-        )}
+        </Modal>
+
+        {/* Add Item Modal */}
+        <Modal
+          isOpen={addItemModal}
+          onClose={() => setAddItemModal(false)}
+          title="Add item to order"
+        >
+          <p style={{ marginBottom: '12px', opacity: 0.7, fontSize: '13px' }}>
+            Order #{String(addItemOrder?.id || '').slice(0, 8)}
+          </p>
+
+          <div className="modal-section">
+            <label className="label">Restaurant ID</label>
+            <input
+              type="text"
+              value={addItemRestaurantId}
+              onChange={(e) => setAddItemRestaurantId(e.target.value)}
+              placeholder="Enter restaurant UUID"
+              className="auth-input"
+            />
+            <button
+              onClick={fetchMenuForAddItem}
+              className="dashboard-ghost"
+              disabled={addItemMenuLoading || !addItemRestaurantId}
+              style={{ marginTop: '8px', width: '100%' }}
+            >
+              {addItemMenuLoading ? 'Loading menu...' : 'Load menu'}
+            </button>
+            {addItemMenuError && (
+              <div className="dashboard-alert" style={{ marginTop: '8px' }}>{addItemMenuError}</div>
+            )}
+          </div>
+
+          {addItemMenu.length > 0 && (
+            <div className="modal-section">
+              <p className="label" style={{ marginBottom: '8px' }}>Menu items</p>
+              <div style={{ display: 'grid', gap: '8px' }}>
+                {addItemMenu.map((item) => {
+                  const id = item.order_item_id || item.orderItemID || item.id
+                  return (
+                    <div
+                      key={id}
+                      style={{
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '6px',
+                        padding: '8px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
+                          <div style={{ fontSize: '12px', opacity: 0.7 }}>{item.description || '—'}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={addItemQuantities[id] || ''}
+                            onChange={(e) =>
+                              setAddItemQuantities((prev) => ({
+                                ...prev,
+                                [id]: e.target.value
+                              }))
+                            }
+                            placeholder="Qty"
+                            className="auth-input"
+                            style={{ width: '64px', marginTop: '4px', padding: '6px' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {addItemError && (
+            <div className="dashboard-alert">{addItemError}</div>
+          )}
+          {addItemSuccess && (
+            <div className="menu-success">{addItemSuccess}</div>
+          )}
+
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
+            <button
+              onClick={() => setAddItemModal(false)}
+              className="dashboard-ghost"
+              disabled={addItemSaving}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddItem}
+              disabled={addItemSaving || !addItemRestaurantId}
+              className="auth-button"
+              style={{ marginTop: 0 }}
+            >
+              {addItemSaving ? 'Adding...' : 'Add item'}
+            </button>
+          </div>
+        </Modal>
       </div>
     </div>
   )

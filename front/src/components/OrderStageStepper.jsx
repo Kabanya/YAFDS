@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { getVisibleStages, getStageState } from '../utils/orderStages'
 
 /**
- * OrderStageStepper - A beautiful glassmorphic stepper component for visualizing order stages
+ * OrderStageStepper - Neo-Operational stepper with geometric shapes
  *
  * @param {Object} props
  * @param {Object} props.order - The order object with at least { id, status }
@@ -40,7 +40,7 @@ export default function OrderStageStepper({
           <div key={stage.key} className="stage-wrapper">
             <div className={`stage-node stage-node-${stageState} ${compact ? 'stage-node-compact' : ''}`}>
               <div className="stage-icon">
-                {stage.icon}
+                <span>{stage.icon}</span>
               </div>
               {!compact && (
                 <div className="stage-label">
@@ -49,7 +49,7 @@ export default function OrderStageStepper({
               )}
             </div>
 
-            {/* Connector line (not shown on last stage or in compact mode) */}
+            {/* Connector line (not shown on last stage or in vertical compact mode) */}
             {!isLast && !isVertical && (
               <div className={`stage-connector ${stageState === 'completed' ? 'stage-connector-active' : ''}`} />
             )}
