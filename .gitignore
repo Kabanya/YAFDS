@@ -42,3 +42,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+
+package-lock.json
+**/**_log_info.txt

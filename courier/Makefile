@@ -100,7 +100,7 @@ build-all: launch-db build-courier
 
 launch-all: launch-docker launch-redis launch-db launch-courier
 
-clear-all: clear-redis clear-courier
+clear-all: clear-redis clear-db clear-courier
 	@echo "All containers removed!"
 
 stop-all:
@@ -125,3 +125,9 @@ run: clear-all build-all migrate-up launch-all
 
 dev: clear-all build-all migrate-up launch-all seed-up
 	@echo "Courier launched with test data!"
+
+# local run (without Docker)
+run-local:
+	@echo "Starting Courier service locally on port $(COURIER_PORT)..."
+	@echo "Make sure PostgreSQL is running on $(DB_HOST):$(DB_PORT)"
+	@go run cmd/server/main.go

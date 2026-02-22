@@ -40,6 +40,8 @@ help:
 	@echo -e "$(GREEN)📦 Основные команды:$(RESET)"
 	@echo -e "  $(YELLOW)make start$(RESET)              - Запустить все сервисы (полный деплой)"
 	@echo -e "  $(YELLOW)make start-dev$(RESET)          - Запустить все сервисы с тестовыми данными"
+	@echo -e "  $(YELLOW)make run-local$(RESET)          - Запустить все сервисы локально (без Docker)"
+	@echo -e "  $(YELLOW)make stop-local$(RESET)         - Остановить все локальные сервисы"
 	@echo -e "  $(YELLOW)make init-env$(RESET)           - Инициализировать .env файлы из .env.example"
 	@echo -e "  $(YELLOW)make init$(RESET)               - Инициализировать .env файлы (в будущем расширить)"
 	@echo -e "  $(YELLOW)make stop$(RESET)               - Остановить все сервисы"
@@ -141,6 +143,38 @@ start-dev: check-docker init-env setup-python-env
 	fi
 
 run: init-env clean-all start-dev
+
+run-local: init-env
+	@echo -e "$(GREEN)🚀 Запуск всех сервисов локально (без Docker)...$(RESET)"
+	@echo -e "$(CYAN)Установка зависимостей Frontend...$(RESET)"
+	@cd front && npm install --silent
+	@echo -e "$(CYAN)Запуск Customer сервиса (порт 8091)...$(RESET)"
+	@cd customer && $(MAKE) run-local &
+	@echo -e "$(CYAN)Запуск Courier сервиса (порт 8090)...$(RESET)"
+	@cd courier && $(MAKE) run-local &
+	@echo -e "$(CYAN)Запуск Restaurant сервиса (порт 8092)...$(RESET)"
+	@cd restaurant && $(MAKE) run-local &
+	@sleep 2
+	@echo -e "$(CYAN)Запуск Frontend (порт 5173)...$(RESET)"
+	@cd front && $(MAKE) dev &
+	@echo -e "$(GREEN)✅ Все сервисы запущены локально!$(RESET)"
+	@echo ""
+	@echo -e "$(CYAN)📍 Доступные URL:$(RESET)"
+	@echo -e "  $(YELLOW)Frontend:$$(RESET)     http://localhost:5173"
+	@echo -e "  $(YELLOW)Customer API:$$(RESET) http://localhost:8091"
+	@echo -e "  $(YELLOW)Courier API:$$(RESET)  http://localhost:8090"
+	@echo -e "  $(YELLOW)Restaurant API:$$(RESET) http://localhost:8092"
+	@echo ""
+	@echo -e "$(YELLOW)Для остановки нажмите Ctrl+C или используйте: make stop-local$(RESET)"
+	@wait
+
+stop-local:
+	@echo -e "$(YELLOW)🛑 Остановка всех локальных сервисов...$(RESET)"
+	@pkill -f "customer/cmd/server" 2>/dev/null || true
+	@pkill -f "courier/cmd/server" 2>/dev/null || true
+	@pkill -f "restaurant/cmd/server" 2>/dev/null || true
+	@pkill -f "vite" 2>/dev/null || true
+	@echo -e "$(GREEN)✅ Все локальные сервисы остановлены$(RESET)"
 
 stop:
 	@echo -e "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"

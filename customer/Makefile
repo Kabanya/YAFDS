@@ -162,7 +162,7 @@ build-all: launch-db build-customer
 
 launch-all: launch-docker launch-redis launch-db launch-minio launch-rabbitmq launch-customer
 
-clear-all: clear-redis clear-minio clear-rabbitmq clear-customer
+clear-all: clear-redis clear-db clear-minio clear-rabbitmq clear-customer
 	@echo "All containers removed!"
 
 stop-all:
@@ -187,3 +187,9 @@ run: clear-all build-all migrate-up launch-all
 
 dev: clear-all build-all migrate-up seed-up launch-all
 	@echo "Application launched with test data!"
+
+# local run (without Docker)
+run-local:
+	@echo "Starting Customer service locally on port $(CUSTOMER_PORT)..."
+	@echo "Make sure PostgreSQL is running on $(DB_HOST):$(DB_PORT)"
+	@go run cmd/server/main.go
