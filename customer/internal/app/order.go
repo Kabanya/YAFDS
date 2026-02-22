@@ -282,6 +282,38 @@ func (h *OrderHandler) UpdateOrderStatus(w http.ResponseWriter, r *http.Request)
 	utils.WriteJSON(w, map[string]string{"message": "status updated successfully"}, http.StatusOK)
 }
 
+// POST /orders/{order_id}/accept
+func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	orderID, ok := h.parseOrderID(w, r)
+	if !ok {
+		return
+	}
+
+	var req AcceptOrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	status := req.Status
+	if status == "" {
+		status = models.OrderStatusDeliveryPicking
+	}
+
+	err := h.orderUC.UpdateOrderStatus(r.Context(), orderID, status)
+	if err != nil {
+		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.WriteJSON(w, map[string]string{"message": "order accepted successfully"}, http.StatusOK)
+}
+
 // GET /orders/{order_id}/total
 func (h *OrderHandler) CalculateOrderTotal(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

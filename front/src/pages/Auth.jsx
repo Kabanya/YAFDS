@@ -127,7 +127,9 @@ export default function Auth() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1 className="auth-title">{role.toUpperCase()}</h1>
+        <button className="auth-title-link" onClick={() => navigate(`/${role}`)}>
+          {role.toUpperCase()}
+        </button>
 
         <form onSubmit={handleAuth} className="auth-form">
           <input

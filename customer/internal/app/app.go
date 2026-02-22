@@ -194,6 +194,7 @@ func Run() {
 	http.HandleFunc("GET /orders/{order_id}", orderHandler.GetOrder)
 	http.HandleFunc("GET /orders/{order_id}/status", orderHandler.GetOrderStatus)
 	http.HandleFunc("PUT /orders/{order_id}/status", orderHandler.UpdateOrderStatus)
+	http.HandleFunc("POST /orders/{order_id}/accept", orderHandler.AcceptOrder)
 	http.HandleFunc("GET /orders/{order_id}/total", orderHandler.CalculateOrderTotal)
 	http.HandleFunc("POST /orders/{order_id}/pay", func(w http.ResponseWriter, r *http.Request) {
 		orderHandler.PayOrder(w, r, walletClient)

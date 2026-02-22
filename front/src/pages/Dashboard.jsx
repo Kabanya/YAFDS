@@ -116,7 +116,7 @@ export default function Dashboard() {
         const data = await response.json()
 
         if (!response.ok) {
-          throw new Error(data?.error || 'Не удалось получить заказы')
+          throw new Error(data?.error || 'Failed to fetch orders')
         }
 
         setOrders(Array.isArray(data) ? data : [])
@@ -145,7 +145,7 @@ export default function Dashboard() {
         const data = await response.json()
 
         if (!response.ok) {
-          throw new Error(data?.error || 'Не удалось получить курьеров')
+          throw new Error(data?.error || 'Failed to fetch couriers')
         }
 
         setCouriers(Array.isArray(data) ? data : [])
@@ -174,7 +174,7 @@ export default function Dashboard() {
         const data = await response.json()
 
         if (!response.ok) {
-          throw new Error(data?.error || 'Не удалось получить рестораны')
+          throw new Error(data?.error || 'Failed to fetch restaurants')
         }
 
         setRestaurants(Array.isArray(data) ? data : [])
@@ -207,7 +207,7 @@ export default function Dashboard() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data?.error || 'Не удалось получить меню')
+        throw new Error(data?.error || 'Failed to fetch menu')
       }
 
       setMenuItems(Array.isArray(data) ? data : [])
@@ -319,7 +319,7 @@ export default function Dashboard() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data?.error || 'Не удалось получить меню ресторана')
+        throw new Error(data?.error || 'Failed to fetch restaurant menu')
       }
 
       setAddItemMenu(Array.isArray(data) ? data : [])
@@ -402,12 +402,12 @@ export default function Dashboard() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data?.error || 'Не удалось получить меню ресторана')
+        throw new Error(data?.error || 'Failed to fetch restaurant menu')
       }
 
       const menu = Array.isArray(data) ? data : []
       if (menu.length === 0) {
-        setRestaurantMenuError('В этом ресторане пока нет доступных блюд')
+        setRestaurantMenuError('No dishes available at this restaurant yet')
       }
       setRestaurantMenu(menu)
       setOrderItems({})
@@ -621,7 +621,6 @@ export default function Dashboard() {
                 <button
                   onClick={() => setCreateOrderModal(true)}
                   className="dashboard-ghost"
-                  style={{ background: 'var(--accent)', color: 'white', border: 'none' }}
                 >
                   Create Order
                 </button>
@@ -631,13 +630,16 @@ export default function Dashboard() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="filter-select"
                 style={{
-                  padding: '0.4rem 0.8rem',
-                  borderRadius: '6px',
-                  border: '1px solid var(--border)',
-                  background: 'var(--card-bg)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.875rem',
+                  padding: '10px 16px',
+                  borderRadius: '0',
+                  border: '3px solid var(--color-black)',
+                  background: 'var(--color-offwhite)',
+                  color: 'var(--color-black)',
+                  fontSize: '12px',
                   cursor: 'pointer',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
                 }}
               >
                 <option value="">All Statuses</option>
@@ -651,10 +653,10 @@ export default function Dashboard() {
             </div>
           </header>
 
-          {ordersLoading && <div className="orders-state">Загружаем заказы...</div>}
+          {ordersLoading && <div className="orders-state">Loading orders...</div>}
           {!ordersLoading && ordersError && <div className="dashboard-alert">{ordersError}</div>}
           {!ordersLoading && !ordersError && orders.length === 0 && (
-            <div className="orders-state">Пока нет заказов</div>
+            <div className="orders-state">No orders yet</div>
           )}
 
           {!ordersLoading && !ordersError && orders.length > 0 && (
@@ -680,7 +682,6 @@ export default function Dashboard() {
                       <button
                         onClick={() => openAddItemModal(order)}
                         className="dashboard-ghost"
-                        style={{ marginTop: '0.75rem' }}
                       >
                         Add item
                       </button>
@@ -713,7 +714,7 @@ export default function Dashboard() {
               </button>
             </header>
 
-            {menuItemsLoading && <div className="orders-state">Загружаем меню...</div>}
+            {menuItemsLoading && <div className="orders-state">Loading menu...</div>}
             {!menuItemsLoading && menuItemsError && (
               <div className="dashboard-alert">{menuItemsError}</div>
             )}
@@ -729,14 +730,14 @@ export default function Dashboard() {
                     className="menu-row"
                   >
                     <div>
-                      <p className="label">Название</p>
+                      <p className="label">Name</p>
                       <p className="menu-name">{item.name || '—'}</p>
                       <p className="menu-desc">{item.description || '—'}</p>
                     </div>
                     <div className="menu-meta">
-                      <p className="label">Цена</p>
+                      <p className="label">Price</p>
                       <p className="menu-value">{formatPrice(item.price)}</p>
-                      <p className="menu-hint">Количество: {item.quantity ?? '—'}</p>
+                      <p className="menu-hint">Quantity: {item.quantity ?? '—'}</p>
                     </div>
                   </div>
                 ))}
@@ -842,18 +843,17 @@ export default function Dashboard() {
               onClick={fetchRestaurantMenuForOrder}
               className="dashboard-ghost"
               disabled={restaurantMenuLoading || !selectedRestaurant}
-              style={{ marginTop: '8px', width: '100%' }}
             >
               {restaurantMenuLoading ? 'Loading menu...' : 'Load menu'}
             </button>
             {restaurantMenuError && (
-              <div className="dashboard-alert" style={{ marginTop: '8px' }}>{restaurantMenuError}</div>
+              <div className="dashboard-alert">{restaurantMenuError}</div>
             )}
           </div>
 
           {restaurantMenu.length > 0 && (
             <div className="modal-section">
-              <p className="label" style={{ marginBottom: '8px' }}>Menu items</p>
+              <p className="label">Menu items</p>
               <div style={{ display: 'grid', gap: '8px' }}>
                 {restaurantMenu.map((item) => {
                   const id = item.order_item_id || item.orderItemID || item.id
@@ -861,15 +861,15 @@ export default function Dashboard() {
                     <div
                       key={id}
                       style={{
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: '6px',
+                        border: '3px solid var(--color-black)',
+                        borderRadius: '0',
                         padding: '8px'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                         <div>
                           <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
-                          <div style={{ fontSize: '12px', opacity: 0.7 }}>{item.description || '—'}</div>
+                          <div style={{ fontSize: '12px' }}>{item.description || '—'}</div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
@@ -913,7 +913,6 @@ export default function Dashboard() {
               onClick={handleCreateOrder}
               disabled={creatingOrder || !selectedCourier}
               className="auth-button"
-              style={{ marginTop: 0 }}
             >
               {creatingOrder ? 'Creating...' : 'Create Order'}
             </button>
@@ -926,7 +925,7 @@ export default function Dashboard() {
           onClose={() => setAddItemModal(false)}
           title="Add item to order"
         >
-          <p style={{ marginBottom: '12px', opacity: 0.7, fontSize: '13px' }}>
+          <p style={{ marginBottom: '12px', fontSize: '13px', fontWeight: 600 }}>
             Order #{String(addItemOrder?.id || '').slice(0, 8)}
           </p>
 
@@ -943,18 +942,17 @@ export default function Dashboard() {
               onClick={fetchMenuForAddItem}
               className="dashboard-ghost"
               disabled={addItemMenuLoading || !addItemRestaurantId}
-              style={{ marginTop: '8px', width: '100%' }}
             >
               {addItemMenuLoading ? 'Loading menu...' : 'Load menu'}
             </button>
             {addItemMenuError && (
-              <div className="dashboard-alert" style={{ marginTop: '8px' }}>{addItemMenuError}</div>
+              <div className="dashboard-alert">{addItemMenuError}</div>
             )}
           </div>
 
           {addItemMenu.length > 0 && (
             <div className="modal-section">
-              <p className="label" style={{ marginBottom: '8px' }}>Menu items</p>
+              <p className="label">Menu items</p>
               <div style={{ display: 'grid', gap: '8px' }}>
                 {addItemMenu.map((item) => {
                   const id = item.order_item_id || item.orderItemID || item.id
@@ -962,15 +960,15 @@ export default function Dashboard() {
                     <div
                       key={id}
                       style={{
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: '6px',
+                        border: '3px solid var(--color-black)',
+                        borderRadius: '0',
                         padding: '8px'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
                         <div>
                           <div style={{ fontWeight: 600 }}>{item.name || '—'}</div>
-                          <div style={{ fontSize: '12px', opacity: 0.7 }}>{item.description || '—'}</div>
+                          <div style={{ fontSize: '12px' }}>{item.description || '—'}</div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontWeight: 600 }}>{formatPrice(item.price)}</div>
@@ -1017,7 +1015,6 @@ export default function Dashboard() {
               onClick={handleAddItem}
               disabled={addItemSaving || !addItemRestaurantId}
               className="auth-button"
-              style={{ marginTop: 0 }}
             >
               {addItemSaving ? 'Adding...' : 'Add item'}
             </button>

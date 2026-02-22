@@ -40,7 +40,7 @@ help:
 	@echo -e "$(GREEN)📦 Основные команды:$(RESET)"
 	@echo -e "  $(YELLOW)make start$(RESET)              - Запустить все сервисы (полный деплой)"
 	@echo -e "  $(YELLOW)make start-dev$(RESET)          - Запустить все сервисы с тестовыми данными"
-	@echo -e "  $(YELLOW)make run-local$(RESET)          - Запустить все сервисы локально (без Docker)"
+	@echo -e "  $(YELLOW)make run-local$(RESET)          - Очистить, собрать и запустить всё локально"
 	@echo -e "  $(YELLOW)make stop-local$(RESET)         - Остановить все локальные сервисы"
 	@echo -e "  $(YELLOW)make init-env$(RESET)           - Инициализировать .env файлы из .env.example"
 	@echo -e "  $(YELLOW)make init$(RESET)               - Инициализировать .env файлы (в будущем расширить)"
@@ -71,10 +71,13 @@ help:
 	@echo -e "  $(YELLOW)make clean$(RESET)              - Остановить и удалить все контейнеры"
 	@echo -e "  $(YELLOW)make clean-all$(RESET)          - Полная очистка (контейнеры + образы + volumes)"
 	@echo -e "  $(YELLOW)make clean-images$(RESET)       - Удалить Docker образы проекта"
+	@echo -e "  $(YELLOW)make clean-local$(RESET)        - Очистить локальные артефакты (bin, dist, node_modules)"
 	@echo -e ""
 	@echo -e "$(GREEN)🏗️  Сборка:$(RESET)"
-	@echo -e "  $(YELLOW)make build$(RESET)              - Пересобрать все сервисы"
-	@echo -e "  $(YELLOW)make build-backend$(RESET)      - Пересобрать только backend сервисы"
+	@echo -e "  $(YELLOW)make build$(RESET)              - Пересобрать все сервисы (Docker)"
+	@echo -e "  $(YELLOW)make build-backend$(RESET)      - Пересобрать только backend сервисы (Docker)"
+	@echo -e "  $(YELLOW)make build-local$(RESET)        - Собрать всё локально (Go + Frontend)"
+	@echo -e "  $(YELLOW)make install-local$(RESET)      - Установить зависимости локально"
 	@echo -e ""
 	@echo -e "$(GREEN)🔍 Диагностика:$(RESET)"
 	@echo -e "  $(YELLOW)make health$(RESET)             - Проверить здоровье всех сервисов"
@@ -98,6 +101,8 @@ help:
 	@echo -e "  $(CYAN)Courier:$(RESET)    Wallet: $(YELLOW)$(TEST_COURIER_LOGIN)$(RESET), Password: $(YELLOW)$(TEST_COURIER_PASS)$(RESET)"
 	@echo -e "  $(CYAN)Restaurant:$(RESET) Wallet: $(YELLOW)$(TEST_RESTAURANT_LOGIN)$(RESET), Password: $(YELLOW)$(TEST_RESTAURANT_PASS)$(RESET)"
 	@echo -e ""
+	@echo -e "$(GREEN)🌐 Frontend:$(RESET) http://localhost:5174/"
+	@echo -e ""
 
 # ============================================================================
 # ОСНОВНЫЕ КОМАНДЫ
@@ -117,18 +122,36 @@ setup-python-env:
 
 start: check-docker
 	@echo -e "$(GREEN)🚀 Запуск всех сервисов (полный деплой)...$(RESET)"
-	@cd customer && $(MAKE) run
-	@cd courier && $(MAKE) run
-	@cd restaurant && $(MAKE) run
+	@echo -e "$(CYAN)Поднимаем общую инфраструктуру...$(RESET)"
+	@cd restaurant && $(MAKE) launch-db
+	@cd customer && $(MAKE) launch-redis
+	@cd customer && $(MAKE) launch-minio
+	@cd customer && $(MAKE) launch-rabbitmq
+	@echo -e "$(CYAN)Применяем миграции для всех сервисов...$(RESET)"
+	@cd migrations && $(MAKE) up
+	@cd restaurant && $(MAKE) migrate-up-orders-db
+	@echo -e "$(CYAN)Собираем и запускаем backend сервисы...$(RESET)"
+	@cd customer && $(MAKE) build-customer && $(MAKE) launch-customer
+	@cd courier && $(MAKE) build-courier && $(MAKE) launch-courier
+	@cd restaurant && $(MAKE) build-restaurant && $(MAKE) launch-restaurant
 	@cd front && $(MAKE) run
 	@echo -e "$(GREEN)✅ Все сервисы запущены!$(RESET)"
 	@$(MAKE) status
 
 start-dev: check-docker init-env setup-python-env
 	@echo -e "$(GREEN)🚀 Запуск всех сервисов с тестовыми данными...$(RESET)"
-	@cd customer && $(MAKE) dev
-	@cd courier && $(MAKE) dev
-	@cd restaurant && $(MAKE) dev
+	@echo -e "$(CYAN)Поднимаем общую инфраструктуру...$(RESET)"
+	@cd restaurant && $(MAKE) launch-db
+	@cd customer && $(MAKE) launch-redis
+	@cd customer && $(MAKE) launch-minio
+	@cd customer && $(MAKE) launch-rabbitmq
+	@echo -e "$(CYAN)Применяем миграции для всех сервисов...$(RESET)"
+	@cd migrations && $(MAKE) up
+	@cd restaurant && $(MAKE) migrate-up-orders-db
+	@echo -e "$(CYAN)Собираем и запускаем backend сервисы...$(RESET)"
+	@cd customer && $(MAKE) build-customer && $(MAKE) launch-customer
+	@cd courier && $(MAKE) build-courier && $(MAKE) launch-courier
+	@cd restaurant && $(MAKE) build-restaurant && $(MAKE) launch-restaurant
 	@cd front && $(MAKE) run
 	@echo -e "$(GREEN)✅ Все сервисы запущены в dev режиме!$(RESET)"
 	@sleep 3
@@ -144,10 +167,8 @@ start-dev: check-docker init-env setup-python-env
 
 run: init-env clean-all start-dev
 
-run-local: init-env
+run-local: clean-local install-local
 	@echo -e "$(GREEN)🚀 Запуск всех сервисов локально (без Docker)...$(RESET)"
-	@echo -e "$(CYAN)Установка зависимостей Frontend...$(RESET)"
-	@cd front && npm install --silent
 	@echo -e "$(CYAN)Запуск Customer сервиса (порт 8091)...$(RESET)"
 	@cd customer && $(MAKE) run-local &
 	@echo -e "$(CYAN)Запуск Courier сервиса (порт 8090)...$(RESET)"
@@ -362,6 +383,38 @@ build-backend:
 	done
 	@echo -e "$(GREEN)✅ Backend сервисы собраны$(RESET)"
 
+# Локальная сборка всего проекта (без Docker)
+install-local:
+	@echo -e "$(CYAN)📦 Установка зависимостей локально...$(RESET)"
+	@echo -e "$(YELLOW)Установка зависимостей Go модулей...$(RESET)"
+	@for dir in $(GO_MODULES); do \
+		echo -e "  $$dir..."; \
+		cd $$dir && go mod download > /dev/null 2>&1 || true; \
+		cd ..; \
+	done
+	@echo -e "$(YELLOW)Установка зависимостей Frontend...$(RESET)"
+	@cd front && npm install --silent
+	@echo -e "$(GREEN)✅ Все зависимости установлены$(RESET)"
+
+build-local: install-local
+	@echo -e "$(CYAN)🔨 Локальная сборка всех сервисов...$(RESET)"
+	@echo -e "$(YELLOW)Сборка Go сервисов...$(RESET)"
+	@for service in $(BACKEND_SERVICES); do \
+		echo -e "  $$service..."; \
+		cd $$service && go build -o bin/$$service ./cmd/server && echo -e "    $(GREEN)✅$(RESET)" || echo -e "    $(RED)❌$(RESET)"; \
+		cd ..; \
+	done
+	@echo -e "$(YELLOW)Сборка Frontend...$(RESET)"
+	@cd front && npm run build > /dev/null 2>&1 && echo -e "  $(GREEN)✅ front/dist$(RESET)" || echo -e "  $(RED)❌$(RESET)"
+	@echo -e ""
+	@echo -e "$(GREEN)✅ Локальная сборка завершена!$(RESET)"
+	@echo -e "$(CYAN)📍 Бинарники:$(RESET)"
+	@for service in $(BACKEND_SERVICES); do \
+		[ -f "$$service/bin/$$service" ] && echo -e "  $(YELLOW)$$service/bin/$$service$(RESET)"; \
+	done
+	@echo -e "$(CYAN)📍 Frontend:$(RESET)"
+	@echo -e "  $(YELLOW)front/dist/$(RESET)"
+
 # ============================================================================
 # ОЧИСТКА
 # ============================================================================
@@ -380,6 +433,16 @@ clean-all: clean clean-images
 	@echo -e "$(RED)🗑️  Удаление volumes...$(RESET)"
 	@docker volume ls --filter "name=yafds" -q | xargs -r docker volume rm 2>/dev/null || true
 	@echo -e "$(GREEN)✅ Полная очистка завершена$(RESET)"
+
+clean-local:
+	@echo -e "$(RED)🧹 Очистка локальных артефактов...$(RESET)"
+	@echo -e "$(YELLOW)Удаление Go бинарников...$(RESET)"
+	@for service in $(BACKEND_SERVICES); do \
+		rm -rf $$service/bin 2>/dev/null || true; \
+	done
+	@echo -e "$(YELLOW)Удаление Frontend dist и node_modules...$(RESET)"
+	@rm -rf front/dist front/node_modules 2>/dev/null || true
+	@echo -e "$(GREEN)✅ Локальные артефакты очищены$(RESET)"
 
 # ============================================================================
 # ДИАГНОСТИКА И ПРОВЕРКИ
