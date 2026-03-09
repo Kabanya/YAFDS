@@ -14,8 +14,6 @@ import (
 
 type OrdersRepo interface {
 	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error)
-
-	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) // Restaurant
 }
 
 type ordersRepo struct {
@@ -98,8 +96,4 @@ func (r *ordersRepo) ListOrdersByRestaurantID(ctx context.Context, restaurantID 
 	}
 
 	return result, nil
-}
-
-func (r *ordersRepo) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
-	panic("unimplemented")
 }

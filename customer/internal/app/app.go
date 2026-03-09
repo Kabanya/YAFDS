@@ -174,8 +174,8 @@ func Run() {
 	courierUseCase := pkgUseCase.NewCourierUseCase(courierService)
 	logger.Println("Initialized courier layers")
 
-	walletClient := client.NewWalletClient()
-	_ = walletClient //[[maybe_unused]]
+	// walletClient := client.NewWalletClient()
+	// _ = walletClient //[[maybe_unused]]
 
 	orderService := pkgService.NewOrderService(ordersRepository)
 	orderUseCase := pkgUseCase.NewOrderUseCase(orderService)

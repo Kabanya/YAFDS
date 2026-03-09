@@ -16,6 +16,7 @@ import (
 type OrdersService interface {
 	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error)
 	AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgRepoModels.AcceptResult, error)
+	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
 }
 
 type orderService struct {
@@ -32,6 +33,19 @@ func (s *orderService) ListOrdersByRestaurantID(ctx context.Context, restaurantI
 	return s.repo.ListOrdersByRestaurantID(ctx, restaurantID, status)
 }
 
+func (s *orderService) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
+	items, err := s.pkgOrderService.GetOrderItems(ctx, orderID)
+	if err != nil {
+		return 0, err
+	}
+
+	var total float64
+	for _, item := range items {
+		total += item.Price * float64(item.Quantity)
+	}
+	return total, nil
+}
+
 func (os *orderService) AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgRepoModels.AcceptResult, error) {
 	status, err := os.pkgOrderRepo.GetOrderStatus(ctx, orderID)
 	if err != nil {
@@ -41,7 +55,7 @@ func (os *orderService) AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkg
 		return pkgRepoModels.AcceptResult{}, pkgOrderService.ErrNotPayedOrderState
 	}
 
-	total, err := os.pkgOrderRepo.CalculateOrderTotal(ctx, orderID)
+	total, err := os.CalculateOrderTotal(ctx, orderID)
 	if err != nil {
 		return pkgRepoModels.AcceptResult{}, err
 	}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Kabanya/YAFDS/pkg/app/client"
 	"github.com/Kabanya/YAFDS/pkg/models"
 	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 	service "github.com/Kabanya/YAFDS/pkg/service"
@@ -20,16 +19,14 @@ var (
 )
 
 type OrderUseCase interface {
-	CreateOrder(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID) (models.Order, error)
-	CreateOrderWithItems(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput) (models.Order, error)
 	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
+	ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error)
+
 	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
 	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
-	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
-	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
+
 	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
-	PayOrder(ctx context.Context, orderID uuid.UUID, walletClient client.WalletClient) error
 }
 
 type orderUseCase struct {
@@ -40,32 +37,12 @@ func NewOrderUseCase(serviceOrder service.OrderService) OrderUseCase {
 	return &orderUseCase{serviceOrder: serviceOrder}
 }
 
-func (u *orderUseCase) CreateOrder(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID) (models.Order, error) {
-	resp, err := u.serviceOrder.CreateOrder(ctx, customerID.String(), courierID.String(), models.OrderStatusCustomerCreated)
-	if err != nil {
-		return models.Order{}, err
-	}
-	orderID, err := uuid.Parse(resp.OrderID)
-	if err != nil {
-		return models.Order{}, err
-	}
-	return u.serviceOrder.GetOrder(ctx, orderID)
-}
-
-func (u *orderUseCase) CreateOrderWithItems(ctx context.Context, customerID uuid.UUID, courierID uuid.UUID, items []repositoryModels.OrderItemInput) (models.Order, error) {
-	resp, err := u.serviceOrder.CreateOrderWithItems(ctx, customerID.String(), courierID.String(), models.OrderStatusCustomerCreated, items)
-	if err != nil {
-		return models.Order{}, err
-	}
-	orderID, err := uuid.Parse(resp.OrderID)
-	if err != nil {
-		return models.Order{}, err
-	}
-	return u.serviceOrder.GetOrder(ctx, orderID)
-}
-
 func (u *orderUseCase) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	return u.serviceOrder.GetOrder(ctx, orderID)
+}
+
+func (u *orderUseCase) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
+	return u.serviceOrder.ListOrders(ctx, filter)
 }
 
 func (u *orderUseCase) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
@@ -76,58 +53,10 @@ func (u *orderUseCase) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID,
 	return u.serviceOrder.UpdateOrderStatus(ctx, orderID, status)
 }
 
-func (u *orderUseCase) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
-	return u.serviceOrder.CalculateOrderTotal(ctx, orderID)
-}
-
-func (u *orderUseCase) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
-	return u.serviceOrder.GetCustomerWalletAddress(ctx, customerID)
-}
-
 func (u *orderUseCase) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
 	return u.serviceOrder.AddItemIntoOrder(ctx, orderID, item)
 }
 
 func (u *orderUseCase) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
 	return u.serviceOrder.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
-}
-
-func (u *orderUseCase) PayOrder(ctx context.Context, orderID uuid.UUID, walletClient client.WalletClient) error {
-	order, err := u.serviceOrder.GetOrder(ctx, orderID)
-	if err != nil {
-		return err
-	}
-
-	if order.Status != models.OrderStatusCustomerCreated {
-		return ErrInvalidStatusTransition
-	}
-
-	walletAddress, err := u.serviceOrder.GetCustomerWalletAddress(ctx, order.CustomerID)
-	if err != nil {
-		return ErrWalletUnavailable
-	}
-
-	total, err := u.serviceOrder.CalculateOrderTotal(ctx, orderID)
-	if err != nil {
-		return err
-	}
-
-	if total <= 0 {
-		return errors.New("order total is invalid")
-	}
-
-	balance, err := walletClient.GetBalanceWallet(ctx, walletAddress)
-	if err != nil {
-		return ErrWalletUnavailable
-	}
-
-	if balance < total {
-		return ErrInsufficientFunds
-	}
-
-	if err := walletClient.PayToWallet(ctx, walletAddress, total); err != nil {
-		return ErrWalletUnavailable
-	}
-
-	return u.serviceOrder.PayOrder(ctx, orderID)
 }

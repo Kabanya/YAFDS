@@ -11,17 +11,15 @@ import (
 )
 
 type OrderService interface {
-	CreateOrder(ctx context.Context, customerID string, courierID string, status models.OrderStatus) (CreateOrderResponse, error)
-	CreateOrderWithItems(ctx context.Context, customerID string, courierID string, status models.OrderStatus, items []pkgRepoModels.OrderItemInput) (CreateOrderResponse, error)
-	ListOrders(ctx context.Context, filter pkgRepoModels.Filter) ([]models.Order, error)
 	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
+	ListOrders(ctx context.Context, filter pkgRepoModels.Filter) ([]models.Order, error)
+
 	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
 	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
-	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
-	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
+
 	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item pkgRepoModels.OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
-	PayOrder(ctx context.Context, orderID uuid.UUID) error
+	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
 }
 
 type orderService struct {
@@ -40,78 +38,9 @@ var (
 	ErrNotPayedOrderState = errors.New("order not in paid state : OrderStatusCustomerPaid")
 )
 
-func (os *orderService) CreateOrder(ctx context.Context, customerID string, courierID string, status models.OrderStatus) (CreateOrderResponse, error) {
-	custID, err := uuid.Parse(customerID)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-	courID, err := uuid.Parse(courierID)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-
-	filter := pkgRepoModels.Filter{
-		CustomerID: &custID,
-		CourierID:  &courID,
-		Status:     string(status),
-	}
-
-	createdOrder, err := os.repo.CreateOrder(ctx, filter)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-
-	return CreateOrderResponse{
-		OrderID: createdOrder.ID.String(),
-	}, nil
-}
-
-func (os *orderService) CreateOrderWithItems(ctx context.Context, customerID string, courierID string, status models.OrderStatus, items []pkgRepoModels.OrderItemInput) (CreateOrderResponse, error) {
-	custID, err := uuid.Parse(customerID)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-	courID, err := uuid.Parse(courierID)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-
-	order := models.Order{
-		CustomerID: custID,
-		CourierID:  courID,
-		Status:     models.OrderStatus(status),
-	}
-
-	createdOrder, err := os.repo.CreateOrderWithItems(ctx, order, items)
-	if err != nil {
-		return CreateOrderResponse{}, err
-	}
-
-	return CreateOrderResponse{
-		OrderID: createdOrder.ID.String(),
-	}, nil
-}
-
 func (os *orderService) ListOrders(ctx context.Context, filter pkgRepoModels.Filter) ([]models.Order, error) {
 	return os.repo.ListOrders(ctx, filter)
 }
-
-// нужны ли в простых методах сервиса какие либо провеки если проверки были на уровне repository
-// func (os *orderService) ListOrders(ctx context.Context, filter pkgRepoModels.Filter) ([]models.Order, error) {
-// 	if filter.CustomerID != nil {
-// 		_, err := uuid.Parse(filter.CustomerID.String())
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 	}
-// 	if filter.CourierID != nil {
-// 		_, err := uuid.Parse(filter.CourierID.String())
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 	}
-// 	return os.repo.ListOrders(ctx, filter)
-// }
 
 func (os *orderService) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
 	return os.repo.GetOrder(ctx, orderID)
@@ -125,14 +54,6 @@ func (os *orderService) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID
 	return os.repo.UpdateOrderStatus(ctx, orderID, status)
 }
 
-func (os *orderService) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
-	return os.repo.CalculateOrderTotal(ctx, orderID)
-}
-
-func (os *orderService) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
-	return os.repo.GetCustomerWalletAddress(ctx, customerID)
-}
-
 func (os *orderService) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item pkgRepoModels.OrderItemInput) error {
 	return os.repo.AddItemIntoOrder(ctx, orderID, item)
 }
@@ -141,6 +62,15 @@ func (os *orderService) RemoveItemFromOrder(ctx context.Context, orderID uuid.UU
 	return os.repo.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
 }
 
-func (os *orderService) PayOrder(ctx context.Context, orderID uuid.UUID) error {
-	return os.repo.PayOrder(ctx, orderID)
+func (os *orderService) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
+	items, err := os.repo.GetOrderItems(ctx, orderID)
+	if err != nil {
+		return 0, err
+	}
+
+	var total float64
+	for _, item := range items {
+		total += item.Price * float64(item.Quantity)
+	}
+	return total, nil
 }
