@@ -18,12 +18,11 @@ import (
 type OrderUserRepo interface {
 	CreateOrder(ctx context.Context, order repoModels.Filter) (models.Order, error)                                        // Customer
 	CreateOrderWithItems(ctx context.Context, order models.Order, items []repoModels.OrderItemInput) (models.Order, error) // Customer
-	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)                                    // Customer
 	PayOrder(ctx context.Context, orderID uuid.UUID) error                                                                 // Customer
 }
 
 type postgresUserRepo struct {
-	customerDB *sql.DB
+	customerDB и*sql.DB
 	courierDB  *sql.DB
 	orderDB    *sql.DB
 }

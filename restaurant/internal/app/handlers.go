@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"restaurant/internal/usecase"
-	"restaurant/models"
+	"github.com/Kabanya/YAFDS/restaurant/internal/usecase"
+	"github.com/Kabanya/YAFDS/restaurant/models"
 
 	"github.com/Kabanya/YAFDS/pkg/common/id"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"

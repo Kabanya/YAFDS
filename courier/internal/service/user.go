@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
-	repository "courier/internal/repository/postgres"
-	"courier/models"
 	"errors"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/common/auth"
+	"github.com/Kabanya/YAFDS/courier/internal/domain"
+	repository "github.com/Kabanya/YAFDS/courier/internal/repository/postgres"
+
+	"github.com/Kabanya/YAFDS/pkg/auth"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
@@ -17,7 +18,7 @@ import (
 
 type UserService interface {
 	Register(uuid.UUID, string, string, string, string) error
-	Login(walletAddress string, password string) (models.LoginResponse, error)
+	Login(walletAddress string, password string) (domain.LoginResponse, error)
 }
 
 type userService struct {
@@ -48,15 +49,15 @@ func (s *userService) Register(id uuid.UUID, name string, walletAddress string, 
 	})
 }
 
-func (s *userService) Login(walletAddress string, password string) (models.LoginResponse, error) {
+func (s *userService) Login(walletAddress string, password string) (domain.LoginResponse, error) {
 	res, err := s.authService.Login(context.Background(), walletAddress, password)
 	if err != nil {
 		if errors.Is(err, auth.ErrInvalidCredentials) {
-			return models.LoginResponse{}, models.ErrInvalidCredentials
+			return domain.LoginResponse{}, domain.ErrInvalidCredentials
 		}
-		return models.LoginResponse{}, err
+		return domain.LoginResponse{}, err
 	}
-	return models.LoginResponse{
+	return domain.LoginResponse{
 		Id:            res.User.ID,
 		Name:          res.User.Name,
 		WalletAddress: res.User.WalletAddress,

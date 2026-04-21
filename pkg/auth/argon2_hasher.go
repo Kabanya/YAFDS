@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"golang.org/x/crypto/argon2"
 )

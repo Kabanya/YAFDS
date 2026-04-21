@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	repository "customer/internal/repository/postgres"
-	"customer/models"
+	repository "github.com/Kabanya/YAFDS/customer/internal/repository/postgres"
+	"github.com/Kabanya/YAFDS/customer/models"
 	"time"
 
 	"github.com/Kabanya/YAFDS/pkg/common/auth"

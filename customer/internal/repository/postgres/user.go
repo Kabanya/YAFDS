@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"customer/models"
+	"github.com/Kabanya/YAFDS/customer/models"
 	"database/sql"
 	"errors"
 
@@ -16,6 +16,7 @@ import (
 type UserRepo interface {
 	SaveWithPassword(uuid.UUID, string, string, string, string, []byte) error
 	LoadByWalletAddress(walletAddress string) (models.User, error)
+	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
 }
 
 type userRepo struct { //с маленькой = private; большая - public

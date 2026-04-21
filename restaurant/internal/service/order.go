@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"restaurant/internal/repository"
+	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 

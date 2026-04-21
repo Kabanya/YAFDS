@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 // Service coordinates hashing, persistence and sessions.

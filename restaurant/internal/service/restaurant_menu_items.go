@@ -1,7 +1,7 @@
 package service
 
 import (
-	"restaurant/internal/repository"
+	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 

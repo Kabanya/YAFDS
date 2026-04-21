@@ -13,9 +13,9 @@ import (
 	"strconv"
 	"time"
 
-	repository "customer/internal/repository/postgres"
-	"customer/internal/service"
-	"customer/internal/usecase"
+	repository "github.com/Kabanya/YAFDS/customer/internal/repository/postgres"
+	"github.com/Kabanya/YAFDS/customer/internal/service"
+	"github.com/Kabanya/YAFDS/customer/internal/usecase"
 
 	"github.com/Kabanya/YAFDS/pkg/app/client"
 	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"

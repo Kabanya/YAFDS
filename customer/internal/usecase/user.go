@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"customer/internal/service"
-	"customer/models"
+	"github.com/Kabanya/YAFDS/customer/internal/service"
+	"github.com/Kabanya/YAFDS/customer/models"
 
 	"github.com/google/uuid"
 )

@@ -1,11 +1,12 @@
 package app
 
 import (
-	"customer/internal/usecase"
-	"customer/models"
 	"database/sql"
 	"encoding/json"
 	"net/http"
+
+	"github.com/Kabanya/YAFDS/customer/internal/usecase"
+	"github.com/Kabanya/YAFDS/customer/models"
 
 	"github.com/Kabanya/YAFDS/pkg/common/id"
 	"github.com/Kabanya/YAFDS/pkg/common/utils"

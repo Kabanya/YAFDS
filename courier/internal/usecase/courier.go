@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"context"
-	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/service"
+
+	"github.com/Kabanya/YAFDS/courier/internal/domain"
+	"github.com/Kabanya/YAFDS/courier/internal/service"
 )
 
 type CourierUseCase interface {
-	ListCouriers(ctx context.Context) ([]models.Courier, error)
+	ListCouriers(ctx context.Context) ([]domain.Courier, error)
 }
 
 type courierUseCase struct {
@@ -18,6 +19,6 @@ func NewCourierUseCase(svc service.CourierService) CourierUseCase {
 	return &courierUseCase{svc: svc}
 }
 
-func (u *courierUseCase) ListCouriers(ctx context.Context) ([]models.Courier, error) {
+func (u *courierUseCase) ListCouriers(ctx context.Context) ([]domain.Courier, error) {
 	return u.svc.ListCouriers(ctx)
 }

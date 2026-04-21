@@ -1,7 +1,7 @@
 package main
 
 import (
-	"customer/internal/app"
+	"github.com/Kabanya/YAFDS/customer/internal/app"
 )
 
 func main() {

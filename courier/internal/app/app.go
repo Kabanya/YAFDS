@@ -13,13 +13,12 @@ import (
 	"strconv"
 	"time"
 
-	repository "courier/internal/repository/postgres"
-	"courier/internal/service"
-	"courier/internal/usecase"
+	repository "github.com/Kabanya/YAFDS/courier/internal/repository/postgres"
+	"github.com/Kabanya/YAFDS/courier/internal/service"
+	"github.com/Kabanya/YAFDS/courier/internal/usecase"
 
-	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkg_repository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/middleware"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -83,7 +82,6 @@ func Run() {
 	userRepository := repository.NewUser(db)
 	logger.Println("Initialized user repository")
 
-	_ = pkg_repository.NewPostgresRepository(ordersDB, db, db)
 	logger.Println("TODO: make orders repository normalno")
 
 	redisDB := 0

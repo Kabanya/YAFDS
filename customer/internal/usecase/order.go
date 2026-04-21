@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"customer/internal/models"
-	orderservice "customer/internal/service"
+	"github.com/Kabanya/YAFDS/customer/internal/models"
+	orderservice "github.com/Kabanya/YAFDS/customer/internal/service"
 
 	"github.com/google/uuid"
 )

@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Kabanya/YAFDS/pkg/models"
-
+	models "github.com/Kabanya/YAFDS/pkg/order/domain"
 	"github.com/google/uuid"
 )
 

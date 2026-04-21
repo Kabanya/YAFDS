@@ -1,10 +1,10 @@
-package handler
+package app
 
 import (
 	"net/http"
 
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	"github.com/Kabanya/YAFDS/pkg/usecase"
+	"github.com/Kabanya/YAFDS/courier/internal/usecase"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 func NewCouriersHandler(courUC usecase.CourierUseCase) http.HandlerFunc {

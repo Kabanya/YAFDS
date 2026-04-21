@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"restaurant/internal/service"
+	"github.com/Kabanya/YAFDS/restaurant/internal/service"
 
 	"github.com/Kabanya/YAFDS/pkg/models"
 

@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"restaurant/internal/service"
-	"restaurant/models"
+	"github.com/Kabanya/YAFDS/restaurant/internal/service"
+	"github.com/Kabanya/YAFDS/restaurant/models"
 
 	"github.com/google/uuid"
 )

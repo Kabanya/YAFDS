@@ -1,15 +1,15 @@
 package app
 
 import (
-	"courier/internal/usecase"
-	"courier/models"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/Kabanya/YAFDS/pkg/common/id"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/courier/internal/domain"
+	"github.com/Kabanya/YAFDS/courier/internal/usecase"
+	"github.com/Kabanya/YAFDS/pkg/id"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 const TransportType = "HTTP"
@@ -39,7 +39,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.RegisterRequest
+	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -78,7 +78,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, models.RegisterResponce{Id: userID}, http.StatusCreated)
+	utils.WriteJSON(w, RegisterResponce{Id: userID}, http.StatusCreated)
 	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 
@@ -102,7 +102,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.LoginRequest
+	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -123,7 +123,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		message := "internal server error"
-		if errors.Is(err, models.ErrInvalidCredentials) || errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, domain.ErrInvalidCredentials) || errors.Is(err, sql.ErrNoRows) {
 			statusCode = http.StatusUnauthorized
 			message = "invalid wallet address or password"
 		}

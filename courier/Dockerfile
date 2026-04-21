@@ -14,7 +14,6 @@ RUN go mod download
 
 COPY courier/cmd ./cmd
 COPY courier/internal ./internal
-COPY courier/models ./models
 COPY courier/config ./config
 
 RUN go mod tidy

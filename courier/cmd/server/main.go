@@ -1,7 +1,7 @@
 package main
 
 import (
-	"courier/internal/app"
+	"github.com/Kabanya/YAFDS/courier/internal/app"
 )
 
 func main() {

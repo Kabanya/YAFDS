@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"testing"
 
-	. "github.com/Kabanya/YAFDS/pkg/common/utils"
-	"github.com/Kabanya/YAFDS/pkg/models"
+	models "github.com/Kabanya/YAFDS/pkg/order/domain"
+	. "github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 func TestNumThreads(t *testing.T) {

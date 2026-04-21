@@ -1,4 +1,4 @@
-module restaurant
+module github.com/Kabanya/YAFDS/restaurant
 
 go 1.25.5
 

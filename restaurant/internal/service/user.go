@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"errors"
-	"restaurant/internal/repository"
-	"restaurant/models"
+	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
+	"github.com/Kabanya/YAFDS/restaurant/models"
 	"time"
 
 	"github.com/Kabanya/YAFDS/pkg/common/auth"

@@ -1,4 +1,4 @@
-module courier
+module github.com/Kabanya/YAFDS/courier
 
 go 1.25.5
 
