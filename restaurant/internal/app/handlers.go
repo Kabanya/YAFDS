@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/Kabanya/YAFDS/pkg/id"
-	domain "github.com/Kabanya/YAFDS/pkg/order/domain"
 	"github.com/Kabanya/YAFDS/pkg/utils"
 	usecase "github.com/Kabanya/YAFDS/restaurant/internal/usecase"
 	"github.com/Kabanya/YAFDS/restaurant/models"
@@ -174,7 +173,7 @@ func (h *Handler) UploadMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var menuItem domain.MenuItem
+	var menuItem models.MenuItem
 	if err := json.NewDecoder(r.Body).Decode(&menuItem); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return

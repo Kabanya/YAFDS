@@ -1,9 +1,8 @@
 package service
 
 import (
-	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
-
-	"github.com/Kabanya/YAFDS/pkg/models"
+	repository "github.com/Kabanya/YAFDS/restaurant/internal/repository/postgres"
+	"github.com/Kabanya/YAFDS/restaurant/models"
 
 	"github.com/google/uuid"
 )

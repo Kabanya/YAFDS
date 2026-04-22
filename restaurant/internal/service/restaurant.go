@@ -3,11 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/Kabanya/YAFDS/pkg/app/client"
-	"github.com/Kabanya/YAFDS/pkg/models"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	models "github.com/Kabanya/YAFDS/restaurant/internal/domain"
 	"github.com/google/uuid"
 )
+
+type RestaurantClient interface {
+	GetMenu(ctx context.Context, restaurantID uuid.UUID) ([]models.RestaurantMenuItem, error)
+}
 
 type RestaurantService interface {
 	ListRestaurants(ctx context.Context) ([]models.Restaurant, error)
@@ -15,11 +17,11 @@ type RestaurantService interface {
 }
 
 type restaurantService struct {
-	repo   repositoryModels.RestaurantRepo
-	client client.RestaurantClient
+	repo   models.RestaurantRepo
+	client RestaurantClient
 }
 
-func NewRestaurantService(repo repositoryModels.RestaurantRepo, client client.RestaurantClient) RestaurantService {
+func NewRestaurantService(repo models.RestaurantRepo, client RestaurantClient) RestaurantService {
 	return &restaurantService{repo: repo, client: client}
 }
 
@@ -28,20 +30,8 @@ func (s *restaurantService) ListRestaurants(ctx context.Context) ([]models.Resta
 }
 
 func (s *restaurantService) GetMenu(ctx context.Context, restaurantID uuid.UUID) ([]models.RestaurantMenuItem, error) {
-	// We need to map clients.RestaurantMenuItem to models.RestaurantMenuItem
-	clientMenu, err := s.client.GetMenu(ctx, restaurantID)
-	if err != nil {
-		return nil, err
+	if s.client == nil {
+		return []models.RestaurantMenuItem{}, nil
 	}
-
-	menu := make([]models.RestaurantMenuItem, len(clientMenu))
-	for i, item := range clientMenu {
-		menu[i] = models.RestaurantMenuItem{
-			ID:           item.ID,
-			RestaurantID: item.RestaurantID,
-			Name:         item.Name,
-			Price:        item.Price,
-		}
-	}
-	return menu, nil
+	return s.client.GetMenu(ctx, restaurantID)
 }

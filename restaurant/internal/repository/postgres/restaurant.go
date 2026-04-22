@@ -12,7 +12,7 @@ type restaurantPostgresRepo struct {
 	db *sql.DB
 }
 
-func NewRestaurantPostgresRepo(db *sql.DB) repositoryModels.RestaurantRepo {
+func NewRestaurantPostgresRepo(db *sql.DB) models.RestaurantRepo {
 	return &restaurantPostgresRepo{db: db}
 }
 

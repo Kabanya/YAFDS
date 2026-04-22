@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/Kabanya/YAFDS/pkg/utils"
+	"github.com/Kabanya/YAFDS/restaurant/models"
 
 	"github.com/google/uuid"
 )

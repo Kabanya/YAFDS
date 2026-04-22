@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
+	repository "github.com/Kabanya/YAFDS/restaurant/internal/repository/postgres"
 	"github.com/Kabanya/YAFDS/restaurant/models"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/common/auth"
+	"github.com/Kabanya/YAFDS/pkg/auth"
 
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"

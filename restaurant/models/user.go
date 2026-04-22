@@ -48,6 +48,15 @@ type LoginResponse struct {
 	Expiration    int64     `json:"expiration"`
 }
 
+type MenuItem struct {
+	OrderItemID  uuid.UUID `json:"id"`
+	RestaurantID uuid.UUID `json:"restaurant_id"`
+	Name         string    `json:"name"`
+	Price        float64   `json:"price"`
+	Quantity     int       `json:"quantity"`
+	Description  string    `json:"description"`
+}
+
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
 func NewError(message string) error {

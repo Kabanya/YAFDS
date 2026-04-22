@@ -3,19 +3,17 @@ package service
 import (
 	"context"
 
-	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
-
-	"github.com/Kabanya/YAFDS/pkg/models"
-
-	pkgRepoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
-	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
-	pkgOrderService "github.com/Kabanya/YAFDS/pkg/service"
+	"github.com/Kabanya/YAFDS/pkg/order/domain"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/order/repository/postgres"
+	pkgOrderService "github.com/Kabanya/YAFDS/pkg/order/service"
+	pkgOrderUsecase "github.com/Kabanya/YAFDS/pkg/order/usecase"
+	repository "github.com/Kabanya/YAFDS/restaurant/internal/repository/postgres"
 	"github.com/google/uuid"
 )
 
 type OrdersService interface {
-	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error)
-	AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgRepoModels.AcceptResult, error)
+	ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]domain.Order, error)
+	AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgOrderUsecase.AcceptResult, error)
 	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
 }
 
@@ -29,48 +27,39 @@ func NewOrderService(repo repository.OrdersRepo, pkgOrderRepo pkgRepo.OrderRepo,
 	return &orderService{repo: repo, pkgOrderRepo: pkgOrderRepo, pkgOrderService: pkgOrderService}
 }
 
-func (s *orderService) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]models.Order, error) {
+func (s *orderService) ListOrdersByRestaurantID(ctx context.Context, restaurantID uuid.UUID, status string) ([]domain.Order, error) {
 	return s.repo.ListOrdersByRestaurantID(ctx, restaurantID, status)
 }
 
 func (s *orderService) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
-	items, err := s.pkgOrderService.GetOrderItems(ctx, orderID)
-	if err != nil {
-		return 0, err
-	}
-
-	var total float64
-	for _, item := range items {
-		total += item.Price * float64(item.Quantity)
-	}
-	return total, nil
+	return s.pkgOrderService.CalculateOrderTotal(ctx, orderID)
 }
 
-func (os *orderService) AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgRepoModels.AcceptResult, error) {
+func (os *orderService) AcceptOrder(ctx context.Context, orderID uuid.UUID) (pkgOrderUsecase.AcceptResult, error) {
 	status, err := os.pkgOrderRepo.GetOrderStatus(ctx, orderID)
 	if err != nil {
-		return pkgRepoModels.AcceptResult{}, err
+		return pkgOrderUsecase.AcceptResult{}, err
 	}
-	if status != models.OrderStatusCustomerPaid {
-		return pkgRepoModels.AcceptResult{}, pkgOrderService.ErrNotPayedOrderState
+	if status != domain.OrderStatusCustomerPaid {
+		return pkgOrderUsecase.AcceptResult{}, pkgOrderService.ErrNotPayedOrderState
 	}
 
 	total, err := os.CalculateOrderTotal(ctx, orderID)
 	if err != nil {
-		return pkgRepoModels.AcceptResult{}, err
+		return pkgOrderUsecase.AcceptResult{}, err
 	}
 
-	newStatus := models.OrderStatusKitchenAccepted
+	newStatus := domain.OrderStatusKitchenAccepted
 	if total <= 0 {
-		newStatus = models.OrderStatusKitchenDenied
+		newStatus = domain.OrderStatusKitchenDenied
 	}
 
 	if err := os.pkgOrderService.UpdateOrderStatus(ctx, orderID, newStatus); err != nil {
-		return pkgRepoModels.AcceptResult{}, err
+		return pkgOrderUsecase.AcceptResult{}, err
 	}
 
-	return pkgRepoModels.AcceptResult{
+	return pkgOrderUsecase.AcceptResult{
 		OrderID: orderID,
-		Status:  string(newStatus),
+		Status:  newStatus,
 	}, nil
 }

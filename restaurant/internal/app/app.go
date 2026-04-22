@@ -13,8 +13,11 @@ import (
 	"strconv"
 	"time"
 
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/middleware"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/order/repository/postgres"
+	pkgService "github.com/Kabanya/YAFDS/pkg/order/service"
 	"github.com/Kabanya/YAFDS/pkg/utils"
-	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
+	repository "github.com/Kabanya/YAFDS/restaurant/internal/repository/postgres"
 	"github.com/Kabanya/YAFDS/restaurant/internal/service"
 	"github.com/Kabanya/YAFDS/restaurant/internal/usecase"
 
