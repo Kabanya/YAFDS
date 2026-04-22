@@ -7,11 +7,14 @@ build: install
 preview:
 	npm run preview
 
-dev:
+dev: install
 	npm run dev
 
 clean: clear-front
 	rm -rf node_modules dist
+
+stop-dev:
+	-lsof -ti tcp:5173 | xargs -r kill
 
 # Docker commands
 build-docker: clean
@@ -28,6 +31,8 @@ launch-front:
 clear-all: clear-front
 	@echo "All containers removed!"
 
-.PHONY: install build preview dev clean build-docker clear-front launch-front run clear-all
+.PHONY: install build preview dev clean stop-dev build-docker clear-front launch-front run run-local clear-all
 
 run: build-docker launch-front
+
+run-local: dev

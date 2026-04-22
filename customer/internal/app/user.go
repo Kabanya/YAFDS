@@ -3,11 +3,13 @@ package app
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/Kabanya/YAFDS/customer/internal/domain"
 	"github.com/Kabanya/YAFDS/customer/internal/usecase"
 
+	"github.com/Kabanya/YAFDS/pkg/auth"
 	"github.com/Kabanya/YAFDS/pkg/id"
 	"github.com/Kabanya/YAFDS/pkg/utils"
 )
@@ -120,10 +122,10 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		message := "internal server error"
-		// if errors.Is(err, models.ErrInvalidCredentials) || errors.Is(err, sql.ErrNoRows) {
-		// 	statusCode = http.StatusUnauthorized
-		// 	message = "invalid wallet address or password"
-		// }
+		if errors.Is(err, auth.ErrInvalidCredentials) || errors.Is(err, sql.ErrNoRows) {
+			statusCode = http.StatusUnauthorized
+			message = "invalid wallet address or password"
+		}
 		utils.WriteError(w, message, statusCode)
 		logger.Printf("Login failed for user: %s, error: %v", req.WalletAddress, err)
 		return

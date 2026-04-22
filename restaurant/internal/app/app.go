@@ -5,131 +5,40 @@
 package app
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
-	"os"
-	"strconv"
-	"time"
 
-	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/middleware"
+	"github.com/Kabanya/YAFDS/pkg/bootstrap"
 	pkgRepo "github.com/Kabanya/YAFDS/pkg/order/repository/postgres"
 	pkgService "github.com/Kabanya/YAFDS/pkg/order/service"
 	"github.com/Kabanya/YAFDS/pkg/utils"
 	repository "github.com/Kabanya/YAFDS/restaurant/internal/repository/postgres"
 	"github.com/Kabanya/YAFDS/restaurant/internal/service"
 	"github.com/Kabanya/YAFDS/restaurant/internal/usecase"
-
-	_ "github.com/lib/pq"
-	"github.com/redis/go-redis/v9"
 )
 
 func Run() {
-	utils.InitFileLogger("restaurant_log_info.txt")
-	logger, err := utils.Logger()
-	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
-	}
-	logger.Println("restaurant service started")
+	logger := bootstrap.InitLogger("restaurant_log_info.txt", "restaurant")
+	bootstrap.LoadEnv(logger)
 
-	// Load environment variables from .env
-	err = utils.LoadEnv(utils.PathToEnv)
-	if err != nil {
-		logger.Printf("Failed to load .env file: %v", err)
-		panic(err)
-	}
+	restaurantDB := bootstrap.OpenPostgres(logger, "RESTAURANT_DB", "restaurant_db", "database")
+	defer restaurantDB.Close()
 
-	// Connection to db
-	dbName := os.Getenv("RESTAURANT_DB")
-	if dbName == "" {
-		dbName = "restaurant_db"
-	}
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), dbName)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		logger.Printf("Failed to open database: %v", err)
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		logger.Printf("Failed to ping database: %v", err)
-		panic(err)
-	}
-	logger.Println("Successfully connected to database")
-
-	ordersDBName := os.Getenv("ORDER_DB")
-	if ordersDBName == "" {
-		ordersDBName = "order_db"
-	}
-	ordersConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), ordersDBName)
-	ordersDB, err := sql.Open("postgres", ordersConnStr)
-	if err != nil {
-		logger.Printf("Failed to open orders database: %v", err)
-		panic(err)
-	}
+	ordersDB := bootstrap.OpenPostgres(logger, "ORDER_DB", "order_db", "orders database")
 	defer ordersDB.Close()
 
-	if err := ordersDB.Ping(); err != nil {
-		logger.Printf("Failed to ping orders database: %v", err)
-		panic(err)
-	}
-	logger.Println("Successfully connected to orders database")
-
-	userRepository := repository.NewUser(db)
+	userRepository := repository.NewUser(restaurantDB)
 	logger.Println("Initialized user repository")
 
-	restaurantMenuItemsRepo := repository.NewRestaurantMenuItemsRepo(db)
+	restaurantMenuItemsRepo := repository.NewRestaurantMenuItemsRepo(restaurantDB)
 	logger.Println("Initialized restaurant menu items repository")
 
-	ordersRepository := repository.NewOrdersRepo(ordersDB, db)
+	ordersRepository := repository.NewOrdersRepo(ordersDB, restaurantDB)
 	logger.Println("Initialized orders repository")
 
-	redisDB := 0
-	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
-		if parsed, err := strconv.Atoi(redisDBStr); err == nil {
-			redisDB = parsed
-		} else {
-			logger.Printf("Invalid REDIS_DB value '%s', defaulting to 0: %v", redisDBStr, err)
-		}
-	}
-
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDRESS"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       redisDB,
-	})
-	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		logger.Printf("Failed to connect to Redis: %v", err)
-		panic(err)
-	}
+	redisClient := bootstrap.OpenRedis(logger)
 	defer redisClient.Close()
-	logger.Println("Successfully connected to Redis")
 
-	sessionTTL := utils.TimeTtl30Minutes
-	if ttlStr := os.Getenv("SESSION_TTL"); ttlStr != "" {
-		var parsed time.Duration
-		if d, err := time.ParseDuration(ttlStr); err == nil {
-			parsed = d
-		} else if sec, err := strconv.ParseInt(ttlStr, 10, 64); err == nil {
-			parsed = time.Duration(sec) * time.Second
-		} else {
-			logger.Printf("Invalid SESSION_TTL '%s', using default %v: %v", ttlStr, sessionTTL, err)
-			parsed = 0
-		}
-		if parsed > 0 {
-			sessionTTL = parsed
-		}
-	}
-	if sessionTTL <= 0 {
-		logger.Printf("SESSION_TTL must be positive, using default %v", utils.TimeTtl30Minutes)
-		sessionTTL = utils.TimeTtl30Minutes
-	}
-
+	sessionTTL := bootstrap.SessionTTL(logger)
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
 	logger.Println("Initialized user service")
 
@@ -161,24 +70,15 @@ func Run() {
 	http.HandleFunc("/menu/show", handler.ShowMenuItems)
 	http.HandleFunc("/menu/upload", handler.UploadMenuItem)
 
-	port := os.Getenv("RESTAURANT_PORT")
-	if port == "" {
-		port = "8092"
-	}
-	addr := ":" + port
+	port := bootstrap.Port("RESTAURANT_PORT", "8092")
 	logger.Println("Endpoints registered:")
 	logger.Printf("  POST http://localhost:%s/register - Register user with password", port)
 	logger.Printf("  POST http://localhost:%s/login - Login user with password", port)
 	logger.Printf("  GET  http://localhost:%s/orders?restaurant_id=<uuid> - List restaurant orders", port)
 	logger.Printf("  GET  http://localhost:%s/menu/show?restaurant_id=<uuid> - Show menu items", port)
 	logger.Printf("  POST http://localhost:%s/menu/upload - Upload menu item", port)
-	logger.Printf("Starting HTTP server on %s", addr)
 
-	handlerWithCORS := pkgMiddleware.CORSMiddleware(http.DefaultServeMux)
-	err = http.ListenAndServe(addr, handlerWithCORS)
-	if err != nil {
-		logger.Printf("Server error: %v", err)
-	}
+	bootstrap.ListenAndServe(logger, port, http.DefaultServeMux)
 
 	logger.Println("Process of restaurant is finished")
 	utils.CloseLogger()

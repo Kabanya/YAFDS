@@ -5,126 +5,35 @@
 package app
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
-	"os"
-	"strconv"
-	"time"
 
 	repository "github.com/Kabanya/YAFDS/courier/internal/repository/postgres"
 	"github.com/Kabanya/YAFDS/courier/internal/service"
 	"github.com/Kabanya/YAFDS/courier/internal/usecase"
 
-	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/middleware"
+	"github.com/Kabanya/YAFDS/pkg/bootstrap"
 	"github.com/Kabanya/YAFDS/pkg/utils"
-
-	_ "github.com/lib/pq"
-	"github.com/redis/go-redis/v9"
 )
 
 func Run() {
-	utils.InitFileLogger("courier_log_info.txt")
-	logger, err := utils.Logger()
-	if err != nil {
-		panic(fmt.Sprintf("Failed to initialize logger: %v", err))
-	}
-	logger.Println("courier service started")
+	logger := bootstrap.InitLogger("courier_log_info.txt", "courier")
+	bootstrap.LoadEnv(logger)
 
-	// Load environment variables from .env
-	err = utils.LoadEnv(utils.PathToEnv)
-	if err != nil {
-		logger.Printf("Failed to load .env file: %v", err)
-		panic(err)
-	}
+	courierDB := bootstrap.OpenPostgres(logger, "COURIER_DB", "courier_db", "database")
+	defer courierDB.Close()
 
-	// Connection to db
-	dbName := os.Getenv("COURIER_DB")
-	if dbName == "" {
-		dbName = "courier_db"
-	}
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), dbName)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		logger.Printf("Failed to open database: %v", err)
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		logger.Printf("Failed to ping database: %v", err)
-		panic(err)
-	}
-	logger.Println("Successfully connected to database")
-
-	ordersDBName := os.Getenv("ORDER_DB")
-	if ordersDBName == "" {
-		ordersDBName = "order_db"
-	}
-	ordersConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), ordersDBName)
-	ordersDB, err := sql.Open("postgres", ordersConnStr)
-	if err != nil {
-		logger.Printf("Failed to open orders database: %v", err)
-		panic(err)
-	}
+	ordersDB := bootstrap.OpenPostgres(logger, "ORDER_DB", "order_db", "orders database")
 	defer ordersDB.Close()
 
-	if err := ordersDB.Ping(); err != nil {
-		logger.Printf("Failed to ping orders database: %v", err)
-		panic(err)
-	}
-	logger.Println("Successfully connected to orders database")
-
-	userRepository := repository.NewUser(db)
+	userRepository := repository.NewUser(courierDB)
 	logger.Println("Initialized user repository")
 
 	logger.Println("TODO: make orders repository normalno")
 
-	redisDB := 0
-	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
-		if parsed, err := strconv.Atoi(redisDBStr); err == nil {
-			redisDB = parsed
-		} else {
-			logger.Printf("Invalid REDIS_DB value '%s', defaulting to 0: %v", redisDBStr, err)
-		}
-	}
-
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDRESS"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       redisDB,
-	})
-	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		logger.Printf("Failed to connect to Redis: %v", err)
-		panic(err)
-	}
+	redisClient := bootstrap.OpenRedis(logger)
 	defer redisClient.Close()
-	logger.Println("Successfully connected to Redis")
 
-	sessionTTL := utils.TimeTtl30Minutes
-	if ttlStr := os.Getenv("SESSION_TTL"); ttlStr != "" {
-		var parsed time.Duration
-		if d, err := time.ParseDuration(ttlStr); err == nil {
-			parsed = d
-		} else if sec, err := strconv.ParseInt(ttlStr, 10, 64); err == nil {
-			parsed = time.Duration(sec) * time.Second
-		} else {
-			logger.Printf("Invalid SESSION_TTL '%s', using default %v: %v", ttlStr, sessionTTL, err)
-			parsed = 0
-		}
-		if parsed > 0 {
-			sessionTTL = parsed
-		}
-	}
-	if sessionTTL <= 0 {
-		logger.Printf("SESSION_TTL must be positive, using default %v", utils.TimeTtl30Minutes)
-		sessionTTL = utils.TimeTtl30Minutes
-	}
-
+	sessionTTL := bootstrap.SessionTTL(logger)
 	userService := service.NewUserService(userRepository, redisClient, sessionTTL)
 	logger.Println("Initialized user service")
 
@@ -138,24 +47,14 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	// http.HandleFunc("/orders", pkgHandlers.NewListHandler(ordersRepository))
 
-	port := os.Getenv("COURIER_PORT")
-	if port == "" {
-		port = "8090"
-	}
-	addr := ":" + port
+	port := bootstrap.Port("COURIER_PORT", "8090")
 	logger.Println("Endpoints registered:")
 	logger.Printf("  POST http://localhost:%s/register - Register user with password", port)
 	logger.Printf("  POST http://localhost:%s/login - Login user with password", port)
 	logger.Printf("  GET  http://localhost:%s/orders - List orders", port)
-	logger.Printf("Starting HTTP server on %s", addr)
 
-	handlerWithCORS := pkgMiddleware.CORSMiddleware(http.DefaultServeMux)
-	err = http.ListenAndServe(addr, handlerWithCORS)
-	if err != nil {
-		logger.Printf("Server error: %v", err)
-	}
+	bootstrap.ListenAndServe(logger, port, http.DefaultServeMux)
 
 	logger.Println("Process of courier is finished")
 	utils.CloseLogger()

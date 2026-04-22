@@ -112,7 +112,7 @@ help:
 	@printf '%b\n' "  $(CYAN)Courier:$(RESET)    $(YELLOW)$(TEST_COURIER_LOGIN)$(RESET) / $(YELLOW)$(TEST_COURIER_PASS)$(RESET)"
 	@printf '%b\n' "  $(CYAN)Restaurant:$(RESET) $(YELLOW)$(TEST_RESTAURANT_LOGIN)$(RESET) / $(YELLOW)$(TEST_RESTAURANT_PASS)$(RESET)"
 	@printf '\n'
-	@printf '%b\n' "$(GREEN)🌐 Frontend:$(RESET) http://localhost:5174/"
+	@printf '%b\n' "$(GREEN)🌐 Frontend:$(RESET) http://localhost:5173/"
 	@printf '\n'
 
 # ============================================================================
@@ -234,7 +234,7 @@ start-front:
 	@cd front && $(MAKE) run
 
 stop-front:
-	@cd front && $(MAKE) clean
+	@cd front && $(MAKE) clear-all
 
 restart-front: stop-front
 	@sleep 1

@@ -20,7 +20,6 @@ WORKDIR /app/restaurant
 COPY restaurant/cmd ./cmd
 COPY restaurant/internal ./internal
 COPY restaurant/models ./models
-COPY restaurant/pkg ./pkg
 COPY restaurant/config ./config
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /restaurant-app ./cmd/server
