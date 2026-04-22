@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"github.com/Kabanya/YAFDS/customer/models"
+	"context"
 	"database/sql"
 	"errors"
 
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/customer/internal/domain"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +16,7 @@ import (
 
 type UserRepo interface {
 	SaveWithPassword(uuid.UUID, string, string, string, string, []byte) error
-	LoadByWalletAddress(walletAddress string) (models.User, error)
+	LoadByWalletAddress(walletAddress string) (domain.User, error)
 	GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error)
 }
 
@@ -54,10 +55,10 @@ func (r *userRepo) SaveWithPassword(id uuid.UUID, name string, walletAddress str
 	return nil
 }
 
-func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error) {
+func (r *userRepo) LoadByWalletAddress(walletAddress string) (domain.User, error) {
 	logger, err := utils.Logger()
 	if err != nil {
-		return models.User{}, err
+		return domain.User{}, err
 	}
 
 	sqlStatement := `
@@ -67,12 +68,12 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 		LIMIT 1
 	`
 
-	var user models.User
+	var user domain.User
 	var passwordHash sql.NullString
 	var passwordSalt []byte
 
 	err = r.db.QueryRow(sqlStatement, walletAddress).Scan(
-		&user.Id,
+		&user.ID,
 		&user.Name,
 		&user.WalletAddress,
 		&user.Address,
@@ -82,12 +83,12 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 
 	if err == sql.ErrNoRows {
 		logger.Printf("No customer found with wallet address: %s", walletAddress)
-		return models.User{}, err
+		return domain.User{}, err
 	}
 
 	if err != nil {
 		logger.Printf("Failed to load customer: %v", err)
-		return models.User{}, err
+		return domain.User{}, err
 	}
 
 	if passwordHash.Valid {
@@ -95,9 +96,25 @@ func (r *userRepo) LoadByWalletAddress(walletAddress string) (models.User, error
 		logger.Printf("Successfully loaded customer with wallet address: %s", walletAddress)
 	} else {
 		logger.Printf("Password hash is NULL for wallet address: %s", walletAddress)
-		return models.User{}, errors.New("password hash is null")
+		return domain.User{}, errors.New("password hash is null")
 	}
 	user.PasswordSalt = passwordSalt
 
 	return user, nil
+}
+
+func (r *userRepo) GetCustomerWalletAddress(ctx context.Context, customerID uuid.UUID) (string, error) {
+	if customerID == uuid.Nil {
+		return "", errors.New("customer_id must be a valid UUID")
+	}
+
+	var walletAddress string
+	err := r.db.QueryRowContext(ctx, "SELECT wallet_address FROM CUSTOMERS WHERE id = $1", customerID).Scan(&walletAddress)
+	if err == sql.ErrNoRows {
+		return "", errors.New("customer not found")
+	}
+	if err != nil {
+		return "", err
+	}
+	return walletAddress, nil
 }

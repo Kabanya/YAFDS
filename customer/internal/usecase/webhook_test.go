@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 	"github.com/google/uuid"
 )
 

@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/service"
 	"github.com/google/uuid"
 )
 

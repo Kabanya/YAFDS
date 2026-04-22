@@ -1,8 +1,8 @@
 package usecase
 
 import (
+	"github.com/Kabanya/YAFDS/customer/internal/domain"
 	"github.com/Kabanya/YAFDS/customer/internal/service"
-	"github.com/Kabanya/YAFDS/customer/models"
 
 	"github.com/google/uuid"
 )
@@ -11,7 +11,7 @@ import (
 
 type UserUseCase interface {
 	Register(uuid.UUID, string, string, string, string) error
-	Login(walletAddress string, password string) (models.LoginResponse, error)
+	Login(walletAddress string, password string) (domain.LoginResponse, error)
 }
 
 type userUseCase struct {
@@ -26,6 +26,6 @@ func (u *userUseCase) Register(id uuid.UUID, name string, walletAddress string, 
 	return u.service.Register(id, name, walletAddress, address, password)
 }
 
-func (u *userUseCase) Login(walletAddress string, password string) (models.LoginResponse, error) {
+func (u *userUseCase) Login(walletAddress string, password string) (domain.LoginResponse, error) {
 	return u.service.Login(walletAddress, password)
 }

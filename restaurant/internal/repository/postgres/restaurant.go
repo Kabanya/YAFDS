@@ -5,8 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/Kabanya/YAFDS/pkg/models"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
+	models "github.com/Kabanya/YAFDS/restaurant/internal/domain"
 )
 
 type restaurantPostgresRepo struct {

@@ -13,14 +13,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Kabanya/YAFDS/pkg/utils"
 	"github.com/Kabanya/YAFDS/restaurant/internal/repository"
 	"github.com/Kabanya/YAFDS/restaurant/internal/service"
 	"github.com/Kabanya/YAFDS/restaurant/internal/usecase"
-
-	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
-	pkgService "github.com/Kabanya/YAFDS/pkg/service"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"

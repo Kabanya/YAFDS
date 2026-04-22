@@ -4,25 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strings"
 	"time"
 
-	pkgErrors "github.com/Kabanya/YAFDS/pkg/common/errors"
-	"github.com/Kabanya/YAFDS/pkg/models"
-	repoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
-	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
-
+	courierexistence "github.com/Kabanya/YAFDS/courier/pkg/repository"
+	customerrepo "github.com/Kabanya/YAFDS/customer/internal/repository"
+	customerexistence "github.com/Kabanya/YAFDS/customer/pkg/repository"
+	pkgErrors "github.com/Kabanya/YAFDS/pkg/errors"
 	"github.com/google/uuid"
 )
 
 type OrderUserRepo interface {
-	CreateOrder(ctx context.Context, order repoModels.Filter) (models.Order, error)                                        // Customer
-	CreateOrderWithItems(ctx context.Context, order models.Order, items []repoModels.OrderItemInput) (models.Order, error) // Customer
-	PayOrder(ctx context.Context, orderID uuid.UUID) error                                                                 // Customer
+	customerrepo.CustomerOrderRepository
 }
 
 type postgresUserRepo struct {
-	customerDB и*sql.DB
+	customerDB *sql.DB
 	courierDB  *sql.DB
 	orderDB    *sql.DB
 }
@@ -31,34 +27,16 @@ func NewPostgresUserRepo(customerDB, courierDB, orderDB *sql.DB) OrderUserRepo {
 	return &postgresUserRepo{customerDB: customerDB, courierDB: courierDB, orderDB: orderDB}
 }
 
-func (r *postgresUserRepo) CreateOrder(ctx context.Context, filter repoModels.Filter) (models.Order, error) {
+func (r *postgresUserRepo) CreateOrder(ctx context.Context, order customerrepo.OrderDTO) (customerrepo.OrderDTO, error) {
 	if r.orderDB == nil || r.customerDB == nil || r.courierDB == nil {
-		return models.Order{}, pkgErrors.ErrRepositoryNotInitialized
+		return customerrepo.OrderDTO{}, pkgErrors.ErrRepositoryNotInitialized
 	}
 
-	now := time.Now().UTC()
-	order := models.Order{
-		ID:        uuid.New(),
-		CreatedAt: now,
-		UpdatedAt: now,
-		Status:    models.OrderStatusCustomerCreated,
+	if err := customerexistence.EnsureCustomerExists(ctx, r.customerDB, order.CustomerID); err != nil {
+		return customerrepo.OrderDTO{}, err
 	}
-
-	if filter.CustomerID != nil {
-		order.CustomerID = *filter.CustomerID
-	}
-	if filter.CourierID != nil {
-		order.CourierID = *filter.CourierID
-	}
-	if filter.Status != "" {
-		order.Status = models.OrderStatus(filter.Status)
-	}
-
-	if err := pkgRepo.EnsureCustomerExists(ctx, r.customerDB, order.CustomerID); err != nil {
-		return models.Order{}, err
-	}
-	if err := pkgRepo.EnsureCourierExists(ctx, r.courierDB, order.CourierID); err != nil {
-		return models.Order{}, err
+	if err := courierexistence.EnsureCourierExists(ctx, r.courierDB, order.CourierID); err != nil {
+		return customerrepo.OrderDTO{}, err
 	}
 
 	const insertQuery = `
@@ -66,43 +44,30 @@ func (r *postgresUserRepo) CreateOrder(ctx context.Context, filter repoModels.Fi
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
-	_, err := r.orderDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, string(order.Status))
+	_, err := r.orderDB.ExecContext(ctx, insertQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status)
 
 	if err != nil {
-		return models.Order{}, err
+		return customerrepo.OrderDTO{}, err
 	}
 
 	return order, nil
 }
 
-func (r *postgresUserRepo) CreateOrderWithItems(ctx context.Context, order models.Order, items []repoModels.OrderItemInput) (models.Order, error) {
+func (r *postgresUserRepo) CreateOrderWithItems(ctx context.Context, order customerrepo.OrderDTO, items []customerrepo.OrderItemDTO) (customerrepo.OrderDTO, error) {
 	if r.orderDB == nil || r.customerDB == nil || r.courierDB == nil {
-		return models.Order{}, pkgErrors.ErrRepositoryNotInitialized
-	}
-	if len(items) == 0 {
-		return models.Order{}, errors.New("items must not be empty")
+		return customerrepo.OrderDTO{}, pkgErrors.ErrRepositoryNotInitialized
 	}
 
-	now := time.Now().UTC()
-	if order.ID == uuid.Nil {
-		order.ID = uuid.New()
+	if err := customerexistence.EnsureCustomerExists(ctx, r.customerDB, order.CustomerID); err != nil {
+		return customerrepo.OrderDTO{}, err
 	}
-	order.CreatedAt = now
-	order.UpdatedAt = now
-	if strings.TrimSpace(string(order.Status)) == "" {
-		order.Status = models.OrderStatusCustomerCreated
-	}
-
-	if err := pkgRepo.EnsureCustomerExists(ctx, r.customerDB, order.CustomerID); err != nil {
-		return models.Order{}, err
-	}
-	if err := pkgRepo.EnsureCourierExists(ctx, r.courierDB, order.CourierID); err != nil {
-		return models.Order{}, err
+	if err := courierexistence.EnsureCourierExists(ctx, r.courierDB, order.CourierID); err != nil {
+		return customerrepo.OrderDTO{}, err
 	}
 
 	tx, err := r.orderDB.BeginTx(ctx, nil)
 	if err != nil {
-		return models.Order{}, err
+		return customerrepo.OrderDTO{}, err
 	}
 	defer func() {
 		if err != nil {
@@ -114,8 +79,8 @@ func (r *postgresUserRepo) CreateOrderWithItems(ctx context.Context, order model
 		INSERT INTO ORDERS (id, customer_id, courier_id, created_at, updated_at, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, string(order.Status)); err != nil {
-		return models.Order{}, err
+	if _, err = tx.ExecContext(ctx, insertOrderQuery, order.ID, order.CustomerID, order.CourierID, order.CreatedAt, order.UpdatedAt, order.Status); err != nil {
+		return customerrepo.OrderDTO{}, err
 	}
 
 	const insertItemQuery = `
@@ -124,12 +89,12 @@ func (r *postgresUserRepo) CreateOrderWithItems(ctx context.Context, order model
 	`
 	for _, item := range items {
 		if _, err = tx.ExecContext(ctx, insertItemQuery, uuid.New(), order.ID, item.RestaurantItemID, item.Price, item.Quantity); err != nil {
-			return models.Order{}, err
+			return customerrepo.OrderDTO{}, err
 		}
 	}
 
 	if err = tx.Commit(); err != nil {
-		return models.Order{}, err
+		return customerrepo.OrderDTO{}, err
 	}
 	return order, nil
 }
@@ -150,13 +115,10 @@ func (r *postgresUserRepo) GetCustomerWalletAddress(ctx context.Context, custome
 		}
 		return "", err
 	}
-	if strings.TrimSpace(wallet) == "" {
-		return "", errors.New("wallet_address is empty")
-	}
 	return wallet, nil
 }
 
-func (r *postgresUserRepo) PayOrder(ctx context.Context, orderID uuid.UUID) error {
+func (r *postgresUserRepo) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status string) error {
 	if r.orderDB == nil {
 		return errors.New("orders repository not fully initialized")
 	}
@@ -164,24 +126,13 @@ func (r *postgresUserRepo) PayOrder(ctx context.Context, orderID uuid.UUID) erro
 		return errors.New("order_id must be a valid UUID")
 	}
 
-	var currentStatus string
-	statusQuery := "SELECT status FROM ORDERS WHERE id = $1"
-	err := r.orderDB.QueryRowContext(ctx, statusQuery, orderID).Scan(&currentStatus)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return pkgErrors.ErrOrderNotFound
-		}
-		return err
-	}
-
-	if currentStatus != string(models.OrderStatusCustomerCreated) {
-		return errors.New("order can only be paid when in CUSTOMER_CREATED status")
-	}
-
 	updateQuery := "UPDATE ORDERS SET status = $1, updated_at = $2 WHERE id = $3"
-	_, err = r.orderDB.ExecContext(ctx, updateQuery, string(models.OrderStatusCustomerPaid), time.Now().UTC(), orderID)
+	res, err := r.orderDB.ExecContext(ctx, updateQuery, status, time.Now().UTC(), orderID)
 	if err != nil {
 		return err
+	}
+	if rows, _ := res.RowsAffected(); rows == 0 {
+		return pkgErrors.ErrOrderNotFound
 	}
 	return nil
 }

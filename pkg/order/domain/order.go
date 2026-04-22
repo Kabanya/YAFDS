@@ -1,5 +1,4 @@
-// создать enum для статусов заказа
-package models
+package domain
 
 import (
 	"time"
@@ -26,24 +25,20 @@ const (
 	OrderStatusOrderFailed        OrderStatus = "ORDER_FAILED"
 )
 
-type ErrorResponce struct {
-	ErrorMessage string `json:"error_message"`
-}
-
 type Order struct {
-	ID         uuid.UUID   `json:"id"`
-	CustomerID uuid.UUID   `json:"customer_id"`
-	CourierID  uuid.UUID   `json:"courier_id"`
-	CreatedAt  time.Time   `json:"created_at"`
-	UpdatedAt  time.Time   `json:"updated_at"`
-	Status     OrderStatus `json:"status"`
+	ID         uuid.UUID
+	CustomerID uuid.UUID
+	CourierID  uuid.UUID
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	Status     OrderStatus
 }
 
 type MenuItem struct {
-	OrderItemID  uuid.UUID `json:"order_item_id" db:"order_item_id"`
-	RestaurantID uuid.UUID `json:"restaurant_id" db:"restaurant_id"`
-	Name         string    `json:"name" db:"name"`
-	Price        float64   `json:"price" db:"price"`
-	Quantity     int       `json:"quantity" db:"quantity"`
-	Description  string    `json:"description" db:"description"`
+	OrderItemID      uuid.UUID
+	RestaurantItemID uuid.UUID
+	Name             string
+	Price            float64
+	Quantity         int
+	Description      string
 }

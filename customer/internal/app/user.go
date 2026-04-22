@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Kabanya/YAFDS/customer/internal/domain"
 	"github.com/Kabanya/YAFDS/customer/internal/usecase"
-	"github.com/Kabanya/YAFDS/customer/models"
 
-	"github.com/Kabanya/YAFDS/pkg/common/id"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
+	"github.com/Kabanya/YAFDS/pkg/id"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 )
 
 const TransportType = "HTTP"
@@ -49,7 +49,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.RegisterRequest
+	var req domain.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -85,7 +85,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, models.RegisterResponce{Id: userID}, http.StatusCreated)
+	utils.WriteJSON(w, domain.RegisterResponse{ID: userID}, http.StatusCreated)
 	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 
@@ -99,7 +99,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.LoginRequest
+	var req domain.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return

@@ -3,6 +3,7 @@ module github.com/Kabanya/YAFDS/customer
 go 1.25.5
 
 require (
+	github.com/Kabanya/YAFDS/courier v0.0.0
 	github.com/Kabanya/YAFDS/pkg v0.0.0
 	github.com/google/uuid v1.6.0
 )
@@ -23,4 +24,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/Kabanya/YAFDS/pkg => ../pkg
+replace (
+	github.com/Kabanya/YAFDS/courier => ../courier
+	github.com/Kabanya/YAFDS/pkg => ../pkg
+)

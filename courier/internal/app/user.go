@@ -10,7 +10,25 @@ import (
 	"github.com/Kabanya/YAFDS/courier/internal/usecase"
 	"github.com/Kabanya/YAFDS/pkg/id"
 	"github.com/Kabanya/YAFDS/pkg/utils"
+	"github.com/google/uuid"
 )
+
+type RegisterRequest struct {
+	Id            string `json:"id"`
+	Name          string `json:"name"`
+	WalletAddress string `json:"wallet_address"`
+	TransportType string `json:"transport_type"`
+	Password      string `json:"password"`
+}
+
+type RegisterResponse struct {
+	Id uuid.UUID `json:"id"`
+}
+
+type LoginRequest struct {
+	WalletAddress string `json:"wallet_address"`
+	Password      string `json:"password"`
+}
 
 const TransportType = "HTTP"
 
@@ -78,7 +96,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, RegisterResponce{Id: userID}, http.StatusCreated)
+	utils.WriteJSON(w, RegisterResponse{Id: userID}, http.StatusCreated)
 	logger.Printf("User %s registered successfully", req.WalletAddress)
 }
 

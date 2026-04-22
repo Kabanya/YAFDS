@@ -8,26 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Kabanya/YAFDS/pkg/models"
+	errorsPkg "github.com/Kabanya/YAFDS/pkg/errors"
+	"github.com/Kabanya/YAFDS/pkg/order/domain"
+	"github.com/Kabanya/YAFDS/pkg/order/usecase"
 	"github.com/google/uuid"
-
-	errorsPkg "github.com/Kabanya/YAFDS/pkg/common/errors"
-	repoModels "github.com/Kabanya/YAFDS/pkg/repository/models"
 )
 
-type OrderRepo interface { //   dto - data transfer object. dto похож на model но другое.
-	//                          Если совпадают, то приоритет модели по возможности не плодим dto
-	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)            // PKG (all)
-	ListOrders(ctx context.Context, filter repoModels.Filter) ([]models.Order, error) // PKG (all)
-
-	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)         // PKG (all)
-	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error // PKG (all)
-	// ЕСЛИ Прям нужна целостность данных (транзакции, которые можно только на уровне бд открывать) то пишем в repository слой, а так не выебываемся
-
-	GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]models.MenuItem, error)               // PKG (customer, restaurant)
-	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repoModels.OrderItemInput) error // PKG (customer, restaurant)
-	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error  // PKG (customer, restaurant)
-}
+type OrderRepo = usecase.OrderRepository
 
 type postgresRepository struct {
 	ordersDB    *sql.DB
@@ -39,48 +26,56 @@ func NewPostgresRepository(ordersDB, customersDB, couriersDB *sql.DB) OrderRepo 
 	return &postgresRepository{ordersDB: ordersDB, customersDB: customersDB, couriersDB: couriersDB}
 }
 
-func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
+func (r *postgresRepository) GetOrder(ctx context.Context, orderID uuid.UUID) (domain.Order, error) {
 	if r.ordersDB == nil {
-		return models.Order{}, errors.New("orders repository not fully initialized")
+		return domain.Order{}, errors.New("orders repository not fully initialized")
 	}
 	if orderID == uuid.Nil {
-		return models.Order{}, errors.New("order_id must be a valid UUID")
+		return domain.Order{}, errors.New("order_id must be a valid UUID")
 	}
 
-	var order models.Order
+	var order domain.Order
 	query := `SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS WHERE id = $1`
 	err := r.ordersDB.QueryRowContext(ctx, query, orderID).Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Order{}, errorsPkg.ErrOrderNotFound
+			return domain.Order{}, errorsPkg.ErrOrderNotFound
 		}
-		return models.Order{}, err
+		return domain.Order{}, err
 	}
 	return order, nil
 }
 
-func (r *postgresRepository) ListOrders(ctx context.Context, filter repoModels.Filter) ([]models.Order, error) {
+func (r *postgresRepository) ListOrders(ctx context.Context, filter usecase.Filter) ([]domain.Order, error) {
+	if r.ordersDB == nil {
+		return nil, errors.New("orders repository not fully initialized")
+	}
+
 	query := `SELECT id, customer_id, courier_id, created_at, updated_at, status FROM ORDERS`
 	var args []any
 	var where []string
 
+	if filter.ID != nil {
+		where = append(where, "id = $"+strconv.Itoa(len(args)+1))
+		args = append(args, *filter.ID)
+	}
 	if filter.CustomerID != nil {
 		where = append(where, "customer_id = $"+strconv.Itoa(len(args)+1))
 		args = append(args, *filter.CustomerID)
 	}
 	if filter.CourierID != nil {
-		where = append(where, "courrier_id = $"+strconv.Itoa(len(args)+1))
+		where = append(where, "courier_id = $"+strconv.Itoa(len(args)+1))
 		args = append(args, *filter.CourierID)
 	}
 	if filter.Status != "" {
 		where = append(where, "status = $"+strconv.Itoa(len(args)+1))
-		args = append(args, filter.Status)
+		args = append(args, string(filter.Status))
 	}
 
 	if len(where) > 0 {
 		query += " WHERE " + strings.Join(where, " AND ")
 	}
-	query += " ORDER BY created_at DESC "
+	query += " ORDER BY created_at DESC"
 
 	rows, err := r.ordersDB.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -88,9 +83,9 @@ func (r *postgresRepository) ListOrders(ctx context.Context, filter repoModels.F
 	}
 	defer rows.Close()
 
-	var result []models.Order
+	var result []domain.Order
 	for rows.Next() {
-		var order models.Order
+		var order domain.Order
 		if err := rows.Scan(&order.ID, &order.CustomerID, &order.CourierID, &order.CreatedAt, &order.UpdatedAt, &order.Status); err != nil {
 			return nil, err
 		}
@@ -103,11 +98,7 @@ func (r *postgresRepository) ListOrders(ctx context.Context, filter repoModels.F
 	return result, nil
 }
 
-// func (r *postgresRepository) AcceptOrder(ctx context.Context, input repoModels.AcceptInput) (repoModels.AcceptResult, error) {
-// 	return repoModels.AcceptResult{}, nil
-// }
-
-func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
+func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (domain.OrderStatus, error) {
 	if r.ordersDB == nil {
 		return "", errors.New("orders repository not fully initialized")
 	}
@@ -123,24 +114,34 @@ func (r *postgresRepository) GetOrderStatus(ctx context.Context, orderID uuid.UU
 		}
 		return "", err
 	}
-	return models.OrderStatus(status), nil
+	return domain.OrderStatus(status), nil
 }
 
-func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
+func (r *postgresRepository) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status domain.OrderStatus) error {
+	if r.ordersDB == nil {
+		return errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return errors.New("order_id must be a valid UUID")
+	}
+
 	const query = "UPDATE ORDERS SET status = $1, updated_at = NOW() WHERE id = $2"
 	res, err := r.ordersDB.ExecContext(ctx, query, string(status), orderID)
 	if err != nil {
 		return err
 	}
-	if rows, _ := res.RowsAffected(); rows == 0 { // если не обновилось ни одной строки => заказа нет
+	if rows, _ := res.RowsAffected(); rows == 0 {
 		return errorsPkg.ErrOrderNotFound
 	}
-	return err
+	return nil
 }
 
-func (r *postgresRepository) GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]models.MenuItem, error) {
+func (r *postgresRepository) GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]domain.MenuItem, error) {
 	if r.ordersDB == nil {
 		return nil, errors.New("orders repository not fully initialized")
+	}
+	if orderID == uuid.Nil {
+		return nil, errors.New("order_id must be a valid UUID")
 	}
 
 	query := `
@@ -154,19 +155,19 @@ func (r *postgresRepository) GetOrderItems(ctx context.Context, orderID uuid.UUI
 	}
 	defer rows.Close()
 
-	var items []models.MenuItem
+	var items []domain.MenuItem
 	for rows.Next() {
-		var item models.MenuItem
-		if err := rows.Scan(&item.RestaurantID, &item.Price, &item.Quantity); err != nil {
+		var item domain.MenuItem
+		if err := rows.Scan(&item.RestaurantItemID, &item.Price, &item.Quantity); err != nil {
 			return nil, err
 		}
 		items = append(items, item)
 	}
 
-	return items, nil
+	return items, rows.Err()
 }
 
-func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repoModels.OrderItemInput) error {
+func (r *postgresRepository) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item usecase.OrderItemInput) error {
 	if r.ordersDB == nil {
 		return errors.New("orders repository not fully initialized")
 	}

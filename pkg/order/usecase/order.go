@@ -4,59 +4,107 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Kabanya/YAFDS/pkg/models"
-	repositoryModels "github.com/Kabanya/YAFDS/pkg/repository/models"
-	service "github.com/Kabanya/YAFDS/pkg/service"
-
+	"github.com/Kabanya/YAFDS/pkg/order/domain"
 	"github.com/google/uuid"
 )
 
-// НА УРОВНЕ USECASE ходим за продуктовыми логикой
 var (
 	ErrInvalidStatusTransition = errors.New("invalid order status transition")
 	ErrWalletUnavailable       = errors.New("wallet service unavailable")
 	ErrInsufficientFunds       = errors.New("insufficient funds")
 )
 
-type OrderUseCase interface {
-	GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
-	ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error)
+type OrderItemInput struct {
+	RestaurantItemID uuid.UUID
+	Price            float64
+	Quantity         int
+}
 
-	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error)
-	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error
+type Filter struct {
+	ID         *uuid.UUID
+	CustomerID *uuid.UUID
+	CourierID  *uuid.UUID
+	Status     domain.OrderStatus
+}
 
-	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error
+type AcceptInput struct {
+	OrderID    uuid.UUID
+	CustomerID uuid.UUID
+	CourierID  uuid.UUID
+	Items      []OrderItemInput
+	Status     domain.OrderStatus
+}
+
+type AcceptResult struct {
+	OrderID uuid.UUID
+	Status  domain.OrderStatus
+}
+
+type OrderRepository interface {
+	GetOrder(ctx context.Context, orderID uuid.UUID) (domain.Order, error)
+	ListOrders(ctx context.Context, filter Filter) ([]domain.Order, error)
+
+	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (domain.OrderStatus, error)
+	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status domain.OrderStatus) error
+
+	GetOrderItems(ctx context.Context, orderID uuid.UUID) ([]domain.MenuItem, error)
+	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error
 	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
 }
 
+type OrderUseCase interface {
+	GetOrder(ctx context.Context, orderID uuid.UUID) (domain.Order, error)
+	ListOrders(ctx context.Context, filter Filter) ([]domain.Order, error)
+
+	GetOrderStatus(ctx context.Context, orderID uuid.UUID) (domain.OrderStatus, error)
+	UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status domain.OrderStatus) error
+
+	AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error
+	RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error
+	CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error)
+}
+
 type orderUseCase struct {
-	serviceOrder service.OrderService
+	repo OrderRepository
 }
 
-func NewOrderUseCase(serviceOrder service.OrderService) OrderUseCase {
-	return &orderUseCase{serviceOrder: serviceOrder}
+func NewOrderUseCase(repo OrderRepository) OrderUseCase {
+	return &orderUseCase{repo: repo}
 }
 
-func (u *orderUseCase) GetOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
-	return u.serviceOrder.GetOrder(ctx, orderID)
+func (u *orderUseCase) GetOrder(ctx context.Context, orderID uuid.UUID) (domain.Order, error) {
+	return u.repo.GetOrder(ctx, orderID)
 }
 
-func (u *orderUseCase) ListOrders(ctx context.Context, filter repositoryModels.Filter) ([]models.Order, error) {
-	return u.serviceOrder.ListOrders(ctx, filter)
+func (u *orderUseCase) ListOrders(ctx context.Context, filter Filter) ([]domain.Order, error) {
+	return u.repo.ListOrders(ctx, filter)
 }
 
-func (u *orderUseCase) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (models.OrderStatus, error) {
-	return u.serviceOrder.GetOrderStatus(ctx, orderID)
+func (u *orderUseCase) GetOrderStatus(ctx context.Context, orderID uuid.UUID) (domain.OrderStatus, error) {
+	return u.repo.GetOrderStatus(ctx, orderID)
 }
 
-func (u *orderUseCase) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status models.OrderStatus) error {
-	return u.serviceOrder.UpdateOrderStatus(ctx, orderID, status)
+func (u *orderUseCase) UpdateOrderStatus(ctx context.Context, orderID uuid.UUID, status domain.OrderStatus) error {
+	return u.repo.UpdateOrderStatus(ctx, orderID, status)
 }
 
-func (u *orderUseCase) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item repositoryModels.OrderItemInput) error {
-	return u.serviceOrder.AddItemIntoOrder(ctx, orderID, item)
+func (u *orderUseCase) AddItemIntoOrder(ctx context.Context, orderID uuid.UUID, item OrderItemInput) error {
+	return u.repo.AddItemIntoOrder(ctx, orderID, item)
 }
 
 func (u *orderUseCase) RemoveItemFromOrder(ctx context.Context, orderID uuid.UUID, restaurantItemID uuid.UUID) error {
-	return u.serviceOrder.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
+	return u.repo.RemoveItemFromOrder(ctx, orderID, restaurantItemID)
+}
+
+func (u *orderUseCase) CalculateOrderTotal(ctx context.Context, orderID uuid.UUID) (float64, error) {
+	items, err := u.repo.GetOrderItems(ctx, orderID)
+	if err != nil {
+		return 0, err
+	}
+
+	var total float64
+	for _, item := range items {
+		total += item.Price * float64(item.Quantity)
+	}
+	return total, nil
 }

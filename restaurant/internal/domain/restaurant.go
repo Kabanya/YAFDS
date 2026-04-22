@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type Restaurant struct {
 	ID      uuid.UUID `json:"id"`
@@ -14,4 +18,8 @@ type RestaurantMenuItem struct {
 	RestaurantID uuid.UUID `json:"restaurant_id"`
 	Name         string    `json:"name"`
 	Price        float64   `json:"price"`
+}
+
+type RestaurantRepo interface {
+	ListRestaurants(ctx context.Context) ([]Restaurant, error)
 }

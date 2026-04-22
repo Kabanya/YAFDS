@@ -7,8 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Kabanya/YAFDS/pkg/models"
-
+	models "github.com/Kabanya/YAFDS/pkg/order/domain"
 	"github.com/google/uuid"
 )
 

@@ -9,7 +9,6 @@ import (
 	"runtime"
 	"testing"
 
-	models "github.com/Kabanya/YAFDS/pkg/order/domain"
 	. "github.com/Kabanya/YAFDS/pkg/utils"
 )
 
@@ -180,7 +179,7 @@ func TestHTTPResponses(t *testing.T) {
 			t.Errorf("status = %d, want %d", w.Code, http.StatusBadRequest)
 		}
 
-		var got models.ErrorResponce
+		var got ErrorResponse
 		if err := json.NewDecoder(w.Body).Decode(&got); err != nil {
 			t.Fatalf("failed to decode response: %v", err)
 		}

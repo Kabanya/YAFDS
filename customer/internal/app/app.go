@@ -16,14 +16,11 @@ import (
 	repository "github.com/Kabanya/YAFDS/customer/internal/repository/postgres"
 	"github.com/Kabanya/YAFDS/customer/internal/service"
 	"github.com/Kabanya/YAFDS/customer/internal/usecase"
-
-	"github.com/Kabanya/YAFDS/pkg/app/client"
-	pkgHandlers "github.com/Kabanya/YAFDS/pkg/app/handler"
-	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/app/middleware"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkgRepo "github.com/Kabanya/YAFDS/pkg/repository/postgres"
-	pkgService "github.com/Kabanya/YAFDS/pkg/service"
-	pkgUseCase "github.com/Kabanya/YAFDS/pkg/usecase"
+	pkgMiddleware "github.com/Kabanya/YAFDS/pkg/middleware"
+	pkgRepo "github.com/Kabanya/YAFDS/pkg/order/repository/postgres"
+	pkgService "github.com/Kabanya/YAFDS/pkg/order/service"
+	"github.com/Kabanya/YAFDS/pkg/utils"
+	"github.com/Kabanya/YAFDS/pkg/wallet"
 
 	_ "github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
@@ -110,13 +107,6 @@ func Run() {
 	ordersRepository := pkgRepo.NewPostgresRepository(ordersDB, db, courierDB)
 	logger.Println("Initialized orders repository")
 
-	restaurantAPIURL := os.Getenv("RESTAURANT_API_URL")
-	if restaurantAPIURL == "" {
-		restaurantAPIURL = "http://localhost:8092"
-	}
-	restaurantClient := client.NewHTTPRestaurantClient(restaurantAPIURL)
-	logger.Printf("Initialized restaurant client with base URL: %s", restaurantAPIURL)
-
 	redisDB := 0
 	if redisDBStr := os.Getenv("REDIS_DB"); redisDBStr != "" {
 		if parsed, err := strconv.Atoi(redisDBStr); err == nil {
@@ -164,22 +154,18 @@ func Run() {
 	userUseCase := usecase.NewUserUseCase(userService)
 	logger.Println("Initialized user usecase")
 
-	restaurantRepository := pkgRepo.NewRestaurantPostgresRepository(db)
-	restaurantService := pkgService.NewRestaurantService(restaurantRepository, restaurantClient)
-	restaurantUseCase := pkgUseCase.NewRestaurantUseCase(restaurantService)
-	logger.Println("Initialized restaurant layers")
-
-	courierRepository := pkgRepo.NewCourierPostgresRepository(courierDB)
-	courierService := pkgService.NewCourierService(courierRepository)
-	courierUseCase := pkgUseCase.NewCourierUseCase(courierService)
-	logger.Println("Initialized courier layers")
-
-	// walletClient := client.NewWalletClient()
-	// _ = walletClient //[[maybe_unused]]
+	customerOrderRepository := repository.NewPostgresUserRepo(db, courierDB, ordersDB)
+	walletClient := wallet.NewWalletClient()
 
 	orderService := pkgService.NewOrderService(ordersRepository)
-	orderUseCase := pkgUseCase.NewOrderUseCase(orderService)
+	customerOrderService := service.NewOrderService(customerOrderRepository)
+	orderUseCase := usecase.NewOrderUseCase(orderService, customerOrderService, walletClient)
 	logger.Println("Initialized order usecase")
+
+	catalogRepository := repository.NewCatalogRepo(courierDB, db)
+	catalogService := service.NewCatalogService(catalogRepository)
+	catalogUseCase := usecase.NewCatalogUseCase(catalogService)
+	logger.Println("Initialized catalog usecase")
 
 	handler := NewHandler(userUseCase, db)
 	logger.Println("Initialized handler")
@@ -189,20 +175,18 @@ func Run() {
 	http.HandleFunc("/health", handler.Health)
 	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-	http.HandleFunc("GET /orders", orderHandler.OrdersHandler(ordersRepository))
-	http.HandleFunc("POST /orders", orderHandler.OrdersHandler(ordersRepository))
+	http.HandleFunc("GET /orders", orderHandler.OrdersHandler())
+	http.HandleFunc("POST /orders", orderHandler.OrdersHandler())
 	http.HandleFunc("GET /orders/{order_id}", orderHandler.GetOrder)
 	http.HandleFunc("GET /orders/{order_id}/status", orderHandler.GetOrderStatus)
 	http.HandleFunc("PUT /orders/{order_id}/status", orderHandler.UpdateOrderStatus)
 	http.HandleFunc("POST /orders/{order_id}/accept", orderHandler.AcceptOrder)
 	http.HandleFunc("GET /orders/{order_id}/total", orderHandler.CalculateOrderTotal)
-	http.HandleFunc("POST /orders/{order_id}/pay", func(w http.ResponseWriter, r *http.Request) {
-		orderHandler.PayOrder(w, r, walletClient)
-	})
+	http.HandleFunc("POST /orders/{order_id}/pay", orderHandler.PayOrder)
 	http.HandleFunc("POST /orders/{order_id}/items", orderHandler.AddItemIntoOrder)
-	http.HandleFunc("/couriers", pkgHandlers.NewCouriersHandler(courierUseCase))
-	http.HandleFunc("/restaurants", pkgHandlers.NewRestaurantsHandler(restaurantUseCase))
-	http.HandleFunc("/menu", pkgHandlers.NewRestaurantMenuHandler(restaurantUseCase))
+	http.HandleFunc("/couriers", NewCourierCatalogHandler(catalogUseCase))
+	http.HandleFunc("/restaurants", NewRestaurantCatalogHandler(catalogUseCase))
+	http.HandleFunc("/menu", NewRestaurantMenuCatalogHandler(catalogUseCase))
 
 	logger.Println("Endpoints registered:")
 	logger.Println("  POST http://localhost:8091/register - Register user with password")

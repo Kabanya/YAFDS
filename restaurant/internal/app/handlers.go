@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"github.com/Kabanya/YAFDS/restaurant/internal/usecase"
-	"github.com/Kabanya/YAFDS/restaurant/models"
 
-	"github.com/Kabanya/YAFDS/pkg/common/id"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	pkgmodels "github.com/Kabanya/YAFDS/pkg/models"
+	"github.com/Kabanya/YAFDS/pkg/id"
+	domain "github.com/Kabanya/YAFDS/pkg/order/domain"
+	"github.com/Kabanya/YAFDS/pkg/utils"
+	usecase "github.com/Kabanya/YAFDS/restaurant/internal/usecase"
+	"github.com/Kabanya/YAFDS/restaurant/models"
+	"github.com/google/uuid"
 )
 
 const TransportType = "HTTP"
@@ -173,7 +174,7 @@ func (h *Handler) UploadMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var menuItem pkgmodels.MenuItem
+	var menuItem domain.MenuItem
 	if err := json.NewDecoder(r.Body).Decode(&menuItem); err != nil {
 		utils.WriteError(w, "invalid request body", http.StatusBadRequest)
 		return
@@ -247,4 +248,39 @@ func (h *Handler) ListOrders(w http.ResponseWriter, r *http.Request) {
 
 	utils.WriteJSON(w, orders, http.StatusOK)
 	logger.Printf("Successfully retrieved %d orders for restaurant %s", len(orders), restaurantID)
+}
+
+func NewRestaurantsHandler(resUC usecase.RestaurantUseCase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		restaurants, err := resUC.ListRestaurants(r.Context())
+		if err != nil {
+			utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		utils.WriteJSON(w, restaurants, http.StatusOK)
+	}
+}
+
+func NewRestaurantMenuHandler(resUC usecase.RestaurantUseCase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		restaurantIDStr := r.URL.Query().Get("restaurant_id")
+		if restaurantIDStr == "" {
+			utils.WriteError(w, "restaurant_id is required", http.StatusBadRequest)
+			return
+		}
+
+		restaurantID, err := uuid.Parse(restaurantIDStr)
+		if err != nil {
+			utils.WriteError(w, "invalid restaurant_id", http.StatusBadRequest)
+			return
+		}
+
+		menu, err := resUC.GetMenu(r.Context(), restaurantID)
+		if err != nil {
+			utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		utils.WriteJSON(w, menu, http.StatusOK)
+	}
 }

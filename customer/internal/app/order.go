@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	pkgModels "github.com/Kabanya/YAFDS/pkg/repository/models"
-	pkgRepository "github.com/Kabanya/YAFDS/pkg/repository/postgres"
+	"github.com/Kabanya/YAFDS/customer/internal/usecase"
 
-	"github.com/Kabanya/YAFDS/pkg/app/client"
-	"github.com/Kabanya/YAFDS/pkg/common/utils"
-	"github.com/Kabanya/YAFDS/pkg/models"
-	"github.com/Kabanya/YAFDS/pkg/usecase"
+	"github.com/Kabanya/YAFDS/pkg/order/domain"
+	domainModels "github.com/Kabanya/YAFDS/pkg/order/domain"
+	usecaseModels "github.com/Kabanya/YAFDS/pkg/order/usecase"
+	"github.com/Kabanya/YAFDS/pkg/utils"
 	"github.com/google/uuid"
 )
 
@@ -40,9 +39,9 @@ type CreateOrderRequest struct {
 }
 
 type CreateOrderWithItemsRequest struct {
-	CustomerID string                     `json:"customer_id"`
-	CourierID  string                     `json:"courier_id"`
-	Items      []pkgModels.OrderItemInput `json:"items"`
+	CustomerID string                         `json:"customer_id"`
+	CourierID  string                         `json:"courier_id"`
+	Items      []usecaseModels.OrderItemInput `json:"items"`
 }
 
 type GetOrderRequest struct {
@@ -50,14 +49,14 @@ type GetOrderRequest struct {
 }
 
 type AcceptOrderRequest struct {
-	CustomerID string                     `json:"customer_id"`
-	CourierID  string                     `json:"courier_id"`
-	Items      []pkgModels.OrderItemInput `json:"items"`
-	Status     models.OrderStatus         `json:"status"`
+	CustomerID string                         `json:"customer_id"`
+	CourierID  string                         `json:"courier_id"`
+	Items      []usecaseModels.OrderItemInput `json:"items"`
+	Status     domain.OrderStatus             `json:"status"`
 }
 
 type UpdateOrderStatusRequest struct {
-	Status models.OrderStatus `json:"status"`
+	Status domain.OrderStatus `json:"status"`
 }
 
 type AddItemRequest struct {
@@ -94,12 +93,11 @@ func (h *OrderHandler) parseOrderID(w http.ResponseWriter, r *http.Request) (uui
 	return orderID, true
 }
 
-func (h *OrderHandler) OrdersHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
-	listHandler := NewListHandler(repo)
+func (h *OrderHandler) OrdersHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			listHandler(w, r)
+			h.ListOrders(w, r)
 		case http.MethodPost:
 			h.CreateOrder(w, r)
 		default:
@@ -108,44 +106,48 @@ func (h *OrderHandler) OrdersHandler(repo pkgRepository.OrderRepo) http.HandlerF
 	}
 }
 
-func NewListHandler(repo pkgRepository.OrderRepo) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-
-		status := r.URL.Query().Get("status")
-		customerIDStr := r.URL.Query().Get("customer_id")
-		courierIDStr := r.URL.Query().Get("courier_id")
-
-		var filter pkgModels.Filter
-		if status != "" {
-			filter.Status = status
-		}
-		if customerIDStr != "" {
-			if id, err := uuid.Parse(customerIDStr); err == nil {
-				filter.CustomerID = &id
-			}
-		}
-		if courierIDStr != "" {
-			if id, err := uuid.Parse(courierIDStr); err == nil {
-				filter.CourierID = &id
-			}
-		}
-
-		orders, err := repo.ListOrders(r.Context(), filter)
-		if err != nil {
-			utils.WriteError(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		if orders == nil {
-			orders = []models.Order{}
-		}
-
-		utils.WriteJSON(w, orders, http.StatusOK)
+func (h *OrderHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
+	status := r.URL.Query().Get("status")
+	customerIDStr := r.URL.Query().Get("customer_id")
+	courierIDStr := r.URL.Query().Get("courier_id")
+
+	var filter usecaseModels.Filter
+	if status != "" {
+		filter.Status = domainModels.OrderStatus(status)
+	}
+	if customerIDStr != "" {
+		id, err := uuid.Parse(customerIDStr)
+		if err != nil {
+			utils.WriteError(w, "invalid customer_id", http.StatusBadRequest)
+			return
+		}
+		filter.CustomerID = &id
+	}
+	if courierIDStr != "" {
+		id, err := uuid.Parse(courierIDStr)
+		if err != nil {
+			utils.WriteError(w, "invalid courier_id", http.StatusBadRequest)
+			return
+		}
+		filter.CourierID = &id
+	}
+
+	orders, err := h.orderUC.ListOrders(r.Context(), filter)
+	if err != nil {
+		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if orders == nil {
+		orders = []domainModels.Order{}
+	}
+
+	utils.WriteJSON(w, orders, http.StatusOK)
 }
 
 // POST /orders
@@ -302,7 +304,7 @@ func (h *OrderHandler) AcceptOrder(w http.ResponseWriter, r *http.Request) {
 
 	status := req.Status
 	if status == "" {
-		status = models.OrderStatusDeliveryPicking
+		status = domainModels.OrderStatusDeliveryPicking
 	}
 
 	err := h.orderUC.UpdateOrderStatus(r.Context(), orderID, status)
@@ -379,7 +381,7 @@ func (h *OrderHandler) AddItemIntoOrder(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	item := pkgModels.OrderItemInput{
+	item := usecaseModels.OrderItemInput{
 		RestaurantItemID: restaurantItemID,
 		Price:            req.Price,
 		Quantity:         req.Quantity,
@@ -421,7 +423,7 @@ func (h *OrderHandler) RemoveItemFromOrder(w http.ResponseWriter, r *http.Reques
 }
 
 // POST /orders/{order_id}/pay
-func (h *OrderHandler) PayOrder(w http.ResponseWriter, r *http.Request, walletClient client.WalletClient) {
+func (h *OrderHandler) PayOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteError(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -432,7 +434,7 @@ func (h *OrderHandler) PayOrder(w http.ResponseWriter, r *http.Request, walletCl
 		return
 	}
 
-	err := h.orderUC.PayOrder(r.Context(), orderID, walletClient)
+	err := h.orderUC.PayOrder(r.Context(), orderID)
 	if err != nil {
 		utils.WriteError(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -1,4 +1,4 @@
-module github.com/Kabanya/YAFDS/notification
+module sender
 
 go 1.25.5
 

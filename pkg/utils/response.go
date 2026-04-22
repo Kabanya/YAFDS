@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 
-	models "github.com/Kabanya/YAFDS/pkg/order/domain"
 	"github.com/google/uuid"
 )
 
 var UuidNil = uuid.Nil
+
+type ErrorResponse struct {
+	ErrorMessage string `json:"error_message"`
+}
 
 func WriteJSON(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
@@ -17,5 +20,5 @@ func WriteJSON(w http.ResponseWriter, data interface{}, statusCode int) {
 }
 
 func WriteError(w http.ResponseWriter, message string, statusCode int) {
-	WriteJSON(w, models.ErrorResponce{ErrorMessage: message}, statusCode)
+	WriteJSON(w, ErrorResponse{ErrorMessage: message}, statusCode)
 }

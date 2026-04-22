@@ -3,7 +3,7 @@ package id_test
 import (
 	"testing"
 
-	. "github.com/Kabanya/YAFDS/pkg/common/id"
+	. "github.com/Kabanya/YAFDS/pkg/id"
 	"github.com/google/uuid"
 )
 

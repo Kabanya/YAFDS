@@ -8,12 +8,12 @@ WORKDIR /app
 COPY pkg ./pkg
 WORKDIR /app/customer
 COPY customer/go.mod ./
+COPY customer/go.sum ./
 
 RUN go mod download
 
 COPY customer/cmd ./cmd
 COPY customer/internal ./internal
-COPY customer/models ./models
 COPY customer/config ./config
 
 RUN go mod tidy
