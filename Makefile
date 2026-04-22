@@ -15,6 +15,7 @@ RESET  := \033[0m
 SERVICES         := customer courier restaurant front
 BACKEND_SERVICES := customer courier restaurant
 GO_MODULES       := pkg customer courier restaurant
+SEND_REQUESTS_SCRIPT := scripts/yafds/send_requests.py
 
 # Тестовые доступы
 TEST_CUSTOMER_LOGIN   := "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
@@ -121,7 +122,7 @@ help:
 # --- Запуск всей системы ---
 
 start: check-docker
-	@echo -e "$(GREEN)🚀 Запуск всех сервисов (полный деплой)...$(RESET)"
+	@printf '%b\n' "$(GREEN)🚀 Запуск всех сервисов (полный деплой)...$(RESET)"
 	@cd restaurant && $(MAKE) launch-db
 	@cd customer && $(MAKE) launch-redis
 	@cd customer && $(MAKE) launch-minio
@@ -132,11 +133,11 @@ start: check-docker
 	@cd courier && $(MAKE) build-courier && $(MAKE) launch-courier
 	@cd restaurant && $(MAKE) build-restaurant && $(MAKE) launch-restaurant
 	@cd front && $(MAKE) run
-	@echo -e "$(GREEN)✅ Все сервисы запущены!$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все сервисы запущены!$(RESET)"
 	@$(MAKE) status
 
 start-dev: check-docker init-env setup-python-env
-	@echo -e "$(GREEN)🚀 Запуск всех сервисов с тестовыми данными...$(RESET)"
+	@printf '%b\n' "$(GREEN)🚀 Запуск всех сервисов с тестовыми данными...$(RESET)"
 	@cd restaurant && $(MAKE) launch-db
 	@cd customer && $(MAKE) launch-redis
 	@cd customer && $(MAKE) launch-minio
@@ -147,27 +148,27 @@ start-dev: check-docker init-env setup-python-env
 	@cd courier && $(MAKE) build-courier && $(MAKE) launch-courier
 	@cd restaurant && $(MAKE) build-restaurant && $(MAKE) launch-restaurant
 	@cd front && $(MAKE) run
-	@echo -e "$(GREEN)✅ Все сервисы запущены в dev режиме!$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все сервисы запущены в dev режиме!$(RESET)"
 	@sleep 3
 	@$(MAKE) status
-	@if [ -f "send_requests.py" ]; then \
-		echo -e "$(GREEN)🌱 Загрузка тестовых данных...$(RESET)"; \
-		. .venv-yafds/bin/activate && python send_requests.py; \
-		echo -e "$(GREEN)✅ Тестовые данные загружены!$(RESET)"; \
+	@if [ -f "$(SEND_REQUESTS_SCRIPT)" ]; then \
+		printf '%b\n' "$(GREEN)🌱 Загрузка тестовых данных...$(RESET)"; \
+		. .venv-yafds/bin/activate && python $(SEND_REQUESTS_SCRIPT) && \
+			printf '%b\n' "$(GREEN)✅ Тестовые данные загружены!$(RESET)"; \
 	else \
-		echo -e "$(YELLOW)⚠️  send_requests.py не найден, пропускаем$(RESET)"; \
+		printf '%b\n' "$(YELLOW)⚠️  $(SEND_REQUESTS_SCRIPT) не найден, пропускаем$(RESET)"; \
 	fi
 
 run: init-env clean-all start-dev
 
 stop:
-	@echo -e "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"
+	@printf '%b\n' "$(YELLOW)🛑 Остановка всех сервисов...$(RESET)"
 	@for service in $(SERVICES); do \
-		echo -e "$(CYAN)Останавливаем $$service...$(RESET)"; \
+		printf '%b\n' "$(CYAN)Останавливаем $$service...$(RESET)"; \
 		cd $$service && $(MAKE) clear-all 2>/dev/null || true; \
 		cd ..; \
 	done
-	@echo -e "$(GREEN)✅ Все сервисы остановлены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все сервисы остановлены$(RESET)"
 
 restart: stop
 	@sleep 2
@@ -248,121 +249,121 @@ build-front:
 # --- Миграции и БД ---
 
 migrate-up:
-	@echo -e "$(GREEN)📊 Применение всех миграций...$(RESET)"
+	@printf '%b\n' "$(GREEN)📊 Применение всех миграций...$(RESET)"
 	@cd migrations && $(MAKE) up
 
 migrate-down:
-	@echo -e "$(YELLOW)📊 Откат всех миграций...$(RESET)"
+	@printf '%b\n' "$(YELLOW)📊 Откат всех миграций...$(RESET)"
 	@cd migrations && $(MAKE) down
 
 migrate-status:
-	@echo -e "$(CYAN)📊 Статус миграций всех сервисов:$(RESET)"
+	@printf '%b\n' "$(CYAN)📊 Статус миграций всех сервисов:$(RESET)"
 	@cd migrations && $(MAKE) migrate-status
 
 db-clean:
-	@echo -e "$(YELLOW)🗑️  Очистка базы данных...$(RESET)"
+	@printf '%b\n' "$(YELLOW)🗑️  Очистка базы данных...$(RESET)"
 	@cd migrations && $(MAKE) clean
-	@echo -e "$(GREEN)✅ База данных очищена$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ База данных очищена$(RESET)"
 
 db-seed:
-	@echo -e "$(GREEN)🌱 Заполнение БД тестовыми данными...$(RESET)"
+	@printf '%b\n' "$(GREEN)🌱 Заполнение БД тестовыми данными...$(RESET)"
 	@cd customer && $(MAKE) seed-up
 	@cd courier && $(MAKE) seed-up
 	@cd restaurant && $(MAKE) seed-up
-	@echo -e "$(GREEN)✅ Тестовые данные загружены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Тестовые данные загружены$(RESET)"
 
 # --- Сборка ---
 
 build:
-	@echo -e "$(CYAN)🔨 Пересборка всех сервисов...$(RESET)"
+	@printf '%b\n' "$(CYAN)🔨 Пересборка всех сервисов...$(RESET)"
 	@for service in $(SERVICES); do \
-		echo -e "$(YELLOW)Сборка $$service...$(RESET)"; \
+		printf '%b\n' "$(YELLOW)Сборка $$service...$(RESET)"; \
 		cd $$service && $(MAKE) build-$$service 2>/dev/null || $(MAKE) build || true; \
 		cd ..; \
 	done
-	@echo -e "$(GREEN)✅ Все сервисы собраны$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все сервисы собраны$(RESET)"
 
 build-backend:
-	@echo -e "$(CYAN)🔨 Пересборка backend сервисов...$(RESET)"
+	@printf '%b\n' "$(CYAN)🔨 Пересборка backend сервисов...$(RESET)"
 	@for service in $(BACKEND_SERVICES); do \
-		echo -e "$(YELLOW)Сборка $$service...$(RESET)"; \
+		printf '%b\n' "$(YELLOW)Сборка $$service...$(RESET)"; \
 		cd $$service && $(MAKE) build-$$service; \
 		cd ..; \
 	done
-	@echo -e "$(GREEN)✅ Backend сервисы собраны$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Backend сервисы собраны$(RESET)"
 
 # --- Очистка ---
 
 clean: stop
-	@echo -e "$(RED)🧹 Удаление всех контейнеров...$(RESET)"
+	@printf '%b\n' "$(RED)🧹 Удаление всех контейнеров...$(RESET)"
 	@docker ps -a --filter "name=yafds" -q | xargs -r docker rm -f 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Контейнеры удалены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Контейнеры удалены$(RESET)"
 
 clean-images:
-	@echo -e "$(RED)🗑️  Удаление Docker образов...$(RESET)"
+	@printf '%b\n' "$(RED)🗑️  Удаление Docker образов...$(RESET)"
 	@docker images --filter "reference=yafds*" -q | xargs -r docker rmi -f 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Образы удалены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Образы удалены$(RESET)"
 
 clean-all: clean clean-images
-	@echo -e "$(RED)🗑️  Удаление volumes...$(RESET)"
+	@printf '%b\n' "$(RED)🗑️  Удаление volumes...$(RESET)"
 	@docker volume ls --filter "name=yafds" -q | xargs -r docker volume rm 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Полная очистка завершена$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Полная очистка завершена$(RESET)"
 
 # --- Мониторинг ---
 
 status:
-	@echo -e "$(CYAN)📊 Статус контейнеров YAFDS:$(RESET)"
-	@echo -e ""
+	@printf '%b\n' "$(CYAN)📊 Статус контейнеров YAFDS:$(RESET)"
+	@printf '\n'
 	@docker ps -a --filter "name=yafds" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || echo "Нет запущенных контейнеров"
 
 ps:
 	@docker ps -a --filter "name=yafds"
 
 logs:
-	@echo -e "$(CYAN)📜 Логи всех сервисов:$(RESET)"
+	@printf '%b\n' "$(CYAN)📜 Логи всех сервисов:$(RESET)"
 	@for service in customer courier restaurant; do \
-		echo -e "$(YELLOW)=== $$service ===$(RESET)"; \
+		printf '%b\n' "$(YELLOW)=== $$service ===$(RESET)"; \
 		docker logs yafds-$$service-service 2>/dev/null | tail -n 20 || echo "Контейнер не запущен"; \
 		echo ""; \
 	done
 
 logs-follow:
-	@echo -e "$(CYAN)📜 Следим за логами (Ctrl+C для выхода)...$(RESET)"
+	@printf '%b\n' "$(CYAN)📜 Следим за логами (Ctrl+C для выхода)...$(RESET)"
 	@docker logs -f yafds-customer-service 2>/dev/null || echo "Customer не запущен"
 
 health:
-	@echo -e "$(CYAN)🏥 Проверка здоровья сервисов:$(RESET)"
-	@echo -e "$(YELLOW)Customer:$(RESET)"
-	@curl -s http://localhost:8090/health 2>/dev/null && echo "$(GREEN)✅ OK$(RESET)" || echo "$(RED)❌ DOWN$(RESET)"
-	@echo -e "$(YELLOW)Courier:$(RESET)"
+	@printf '%b\n' "$(CYAN)🏥 Проверка здоровья сервисов:$(RESET)"
+	@printf '%b\n' "$(YELLOW)Customer:$(RESET)"
 	@curl -s http://localhost:8091/health 2>/dev/null && echo "$(GREEN)✅ OK$(RESET)" || echo "$(RED)❌ DOWN$(RESET)"
-	@echo -e "$(YELLOW)Restaurant:$(RESET)"
+	@printf '%b\n' "$(YELLOW)Courier:$(RESET)"
+	@curl -s http://localhost:8093/health 2>/dev/null && echo "$(GREEN)✅ OK$(RESET)" || echo "$(RED)❌ DOWN$(RESET)"
+	@printf '%b\n' "$(YELLOW)Restaurant:$(RESET)"
 	@curl -s http://localhost:8092/health 2>/dev/null && echo "$(GREEN)✅ OK$(RESET)" || echo "$(RED)❌ DOWN$(RESET)"
-	@echo -e "$(YELLOW)Frontend:$(RESET)"
+	@printf '%b\n' "$(YELLOW)Frontend:$(RESET)"
 	@curl -s http://localhost:5173 2>/dev/null > /dev/null && echo "$(GREEN)✅ OK$(RESET)" || echo "$(RED)❌ DOWN$(RESET)"
 
 # --- Диагностика ---
 
 check-docker:
-	@docker info > /dev/null 2>&1 || (echo -e "$(RED)❌ Docker не запущен!$(RESET)" && exit 1)
-	@echo -e "$(GREEN)✅ Docker запущен$(RESET)"
+	@docker info > /dev/null 2>&1 || (printf '%b\n' "$(RED)❌ Docker не запущен!$(RESET)" && exit 1)
+	@printf '%b\n' "$(GREEN)✅ Docker запущен$(RESET)"
 
 check-deps:
-	@echo -e "$(CYAN)🔍 Проверка зависимостей:$(RESET)"
-	@echo -n "Docker: ";      docker --version 2>/dev/null       && echo -e "$(GREEN)✅$(RESET)" || echo -e "$(RED)❌$(RESET)"
-	@echo -n "Docker Compose: "; docker compose version 2>/dev/null && echo -e "$(GREEN)✅$(RESET)" || echo -e "$(RED)❌$(RESET)"
-	@echo -n "Go: ";          go version 2>/dev/null             && echo -e "$(GREEN)✅$(RESET)" || echo -e "$(RED)❌$(RESET)"
-	@echo -n "Node.js: ";     node --version 2>/dev/null         && echo -e "$(GREEN)✅$(RESET)" || echo -e "$(RED)❌$(RESET)"
-	@echo -n "Goose: ";       goose --version 2>/dev/null        && echo -e "$(GREEN)✅$(RESET)" || echo -e "$(RED)❌$(RESET)"
+	@printf '%b\n' "$(CYAN)🔍 Проверка зависимостей:$(RESET)"
+	@printf "Docker: ";      docker --version 2>/dev/null       && printf '%b\n' "$(GREEN)✅$(RESET)" || printf '%b\n' "$(RED)❌$(RESET)"
+	@printf "Docker Compose: "; docker compose version 2>/dev/null && printf '%b\n' "$(GREEN)✅$(RESET)" || printf '%b\n' "$(RED)❌$(RESET)"
+	@printf "Go: ";          go version 2>/dev/null             && printf '%b\n' "$(GREEN)✅$(RESET)" || printf '%b\n' "$(RED)❌$(RESET)"
+	@printf "Node.js: ";     node --version 2>/dev/null         && printf '%b\n' "$(GREEN)✅$(RESET)" || printf '%b\n' "$(RED)❌$(RESET)"
+	@printf "Goose: ";       goose --version 2>/dev/null        && printf '%b\n' "$(GREEN)✅$(RESET)" || printf '%b\n' "$(RED)❌$(RESET)"
 
 # --- Утилиты ---
 
 init-env:
-	@echo -e "$(CYAN)📝 Копирование .env.example → .env для всех сервисов...$(RESET)"
+	@printf '%b\n' "$(CYAN)📝 Копирование .env.example → .env для всех сервисов...$(RESET)"
 	@for service in $(BACKEND_SERVICES); do \
 		(cd $$service && $(MAKE) copy-env); \
 	done
-	@echo -e "$(GREEN)✅ Все .env файлы созданы$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все .env файлы созданы$(RESET)"
 
 init: init-env
 
@@ -370,9 +371,9 @@ update-deps:
 	@./update_deps.sh
 
 test:
-	@echo -e "$(CYAN)🧪 Запуск тестов...$(RESET)"
+	@printf '%b\n' "$(CYAN)🧪 Запуск тестов...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		echo -e "$(YELLOW)Тестирование $$dir...$(RESET)"; \
+		printf '%b\n' "$(YELLOW)Тестирование $$dir...$(RESET)"; \
 		cd $$dir && go test ./... -v || true; \
 		cd ..; \
 	done
@@ -383,12 +384,12 @@ quick-restart: stop-customer stop-courier stop-restaurant
 	@$(MAKE) start-courier &
 	@$(MAKE) start-restaurant &
 	@wait
-	@echo -e "$(GREEN)✅ Backend сервисы перезапущены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Backend сервисы перезапущены$(RESET)"
 
 show-env:
-	@echo -e "$(CYAN)📋 Переменные окружения сервисов:$(RESET)"
+	@printf '%b\n' "$(CYAN)📋 Переменные окружения сервисов:$(RESET)"
 	@for service in $(BACKEND_SERVICES); do \
-		echo -e "$(YELLOW)=== $$service ===$(RESET)"; \
+		printf '%b\n' "$(YELLOW)=== $$service ===$(RESET)"; \
 		cat $$service/config/.env 2>/dev/null || echo "Файл .env не найден"; \
 		echo ""; \
 	done
@@ -398,140 +399,140 @@ show-env:
 # ============================================================================
 
 install-local:
-	@echo -e "$(CYAN)📦 Установка зависимостей локально...$(RESET)"
+	@printf '%b\n' "$(CYAN)📦 Установка зависимостей локально...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		echo -e "  $$dir..."; \
+		printf '%b\n' "  $$dir..."; \
 		cd $$dir && go mod download > /dev/null 2>&1 || true; \
 		cd ..; \
 	done
 	@cd front && npm install --silent
-	@echo -e "$(GREEN)✅ Все зависимости установлены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все зависимости установлены$(RESET)"
 
 build-local: install-local
-	@echo -e "$(CYAN)🔨 Локальная сборка всех сервисов...$(RESET)"
+	@printf '%b\n' "$(CYAN)🔨 Локальная сборка всех сервисов...$(RESET)"
 	@for service in $(BACKEND_SERVICES); do \
-		echo -e "  $$service..."; \
-		cd $$service && go build -o bin/$$service ./cmd/server && echo -e "    $(GREEN)✅$(RESET)" || echo -e "    $(RED)❌$(RESET)"; \
+		printf '%b\n' "  $$service..."; \
+		cd $$service && go build -o bin/$$service ./cmd/server && printf '%b\n' "    $(GREEN)✅$(RESET)" || printf '%b\n' "    $(RED)❌$(RESET)"; \
 		cd ..; \
 	done
-	@cd front && npm run build > /dev/null 2>&1 && echo -e "  $(GREEN)✅ front/dist$(RESET)" || echo -e "  $(RED)❌$(RESET)"
-	@echo -e "$(GREEN)✅ Локальная сборка завершена!$(RESET)"
+	@cd front && npm run build > /dev/null 2>&1 && printf '%b\n' "  $(GREEN)✅ front/dist$(RESET)" || printf '%b\n' "  $(RED)❌$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Локальная сборка завершена!$(RESET)"
 
 run-local: clean-local install-local
-	@echo -e "$(GREEN)🚀 Запуск всех сервисов локально (без Docker)...$(RESET)"
+	@printf '%b\n' "$(GREEN)🚀 Запуск всех сервисов локально (без Docker)...$(RESET)"
 	@cd customer && $(MAKE) run-local &
 	@cd courier && $(MAKE) run-local &
 	@cd restaurant && $(MAKE) run-local &
 	@sleep 2
 	@cd front && $(MAKE) dev &
-	@echo -e "$(GREEN)✅ Все сервисы запущены локально!$(RESET)"
-	@echo -e "$(CYAN)📍 Frontend: http://localhost:5173 | Customer: :8091 | Courier: :8090 | Restaurant: :8092$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все сервисы запущены локально!$(RESET)"
+	@printf '%b\n' "$(CYAN)📍 Frontend: http://localhost:5173 | Customer: :8091 | Courier: :8093 | Restaurant: :8092$(RESET)"
 	@wait
 
 stop-local:
-	@echo -e "$(YELLOW)🛑 Остановка всех локальных сервисов...$(RESET)"
+	@printf '%b\n' "$(YELLOW)🛑 Остановка всех локальных сервисов...$(RESET)"
 	@pkill -f "customer/cmd/server" 2>/dev/null || true
 	@pkill -f "courier/cmd/server" 2>/dev/null || true
 	@pkill -f "restaurant/cmd/server" 2>/dev/null || true
 	@pkill -f "vite" 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Все локальные сервисы остановлены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Все локальные сервисы остановлены$(RESET)"
 
 clean-local:
-	@echo -e "$(RED)🧹 Очистка локальных артефактов...$(RESET)"
+	@printf '%b\n' "$(RED)🧹 Очистка локальных артефактов...$(RESET)"
 	@for service in $(BACKEND_SERVICES); do rm -rf $$service/bin 2>/dev/null || true; done
 	@rm -rf front/dist front/node_modules 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Локальные артефакты очищены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Локальные артефакты очищены$(RESET)"
 
 # ============================================================================
 # PYTHON УТИЛИТЫ
 # ============================================================================
 
 setup-python-env:
-	@echo -e "$(CYAN)🐍 Подготовка Python окружения...$(RESET)"
+	@printf '%b\n' "$(CYAN)🐍 Подготовка Python окружения...$(RESET)"
 	@if [ ! -d ".venv-yafds" ]; then \
 		python3 -m venv .venv-yafds; \
-		echo -e "$(GREEN)✅ Виртуальное окружение создано$(RESET)"; \
+		printf '%b\n' "$(GREEN)✅ Виртуальное окружение создано$(RESET)"; \
 	fi
 	@. .venv-yafds/bin/activate && pip install --upgrade pip setuptools wheel > /dev/null 2>&1
 	@. .venv-yafds/bin/activate && pip install tqdm colorama pandas psycopg2-binary requests > /dev/null 2>&1
-	@echo -e "$(GREEN)✅ Зависимости Python установлены$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Зависимости Python установлены$(RESET)"
 
 prepare-python: setup-python-env
-	@echo -e "$(GREEN)✅ Python окружение готово$(RESET)"
-	@echo -e "$(CYAN)Активация: $(YELLOW)source .venv-yafds/bin/activate$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Python окружение готово$(RESET)"
+	@printf '%b\n' "$(CYAN)Активация: $(YELLOW)source .venv-yafds/bin/activate$(RESET)"
 
 send-test-data:
-	@[ -d ".venv-yafds" ] || (echo -e "$(RED)❌ Запустите make prepare-python$(RESET)" && exit 1)
-	@[ -f "send_requests.py" ] || (echo -e "$(RED)❌ send_requests.py не найден$(RESET)" && exit 1)
-	@echo -e "$(GREEN)🌱 Загрузка тестовых данных...$(RESET)"
-	@. .venv-yafds/bin/activate && python send_requests.py
-	@echo -e "$(GREEN)✅ Тестовые данные загружены!$(RESET)"
+	@[ -d ".venv-yafds" ] || (printf '%b\n' "$(RED)❌ Запустите make prepare-python$(RESET)" && exit 1)
+	@[ -f "$(SEND_REQUESTS_SCRIPT)" ] || (printf '%b\n' "$(RED)❌ $(SEND_REQUESTS_SCRIPT) не найден$(RESET)" && exit 1)
+	@printf '%b\n' "$(GREEN)🌱 Загрузка тестовых данных...$(RESET)"
+	@. .venv-yafds/bin/activate && python $(SEND_REQUESTS_SCRIPT)
+	@printf '%b\n' "$(GREEN)✅ Тестовые данные загружены!$(RESET)"
 
 generate-db-html:
-	@[ -d ".venv-yafds" ] || (echo -e "$(RED)❌ Запустите make prepare-python$(RESET)" && exit 1)
-	@[ -f "make_nice_sql_html.py" ] || (echo -e "$(RED)❌ make_nice_sql_html.py не найден$(RESET)" && exit 1)
-	@echo -e "$(GREEN)📊 Генерация HTML с содержимым БД...$(RESET)"
+	@[ -d ".venv-yafds" ] || (printf '%b\n' "$(RED)❌ Запустите make prepare-python$(RESET)" && exit 1)
+	@[ -f "make_nice_sql_html.py" ] || (printf '%b\n' "$(RED)❌ make_nice_sql_html.py не найден$(RESET)" && exit 1)
+	@printf '%b\n' "$(GREEN)📊 Генерация HTML с содержимым БД...$(RESET)"
 	@. .venv-yafds/bin/activate && python make_nice_sql_html.py
-	@echo -e "$(GREEN)✅ HTML файл сгенерирован$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ HTML файл сгенерирован$(RESET)"
 
 # ============================================================================
 # GO УТИЛИТЫ
 # ============================================================================
 
 go-tidy:
-	@echo -e "$(CYAN)🔨 go mod tidy для всех Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)🔨 go mod tidy для всех Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		cd $$dir && go mod tidy && echo -e "$(GREEN)✅ $$dir$(RESET)" || echo -e "$(RED)❌ $$dir$(RESET)"; \
+		cd $$dir && go mod tidy && printf '%b\n' "$(GREEN)✅ $$dir$(RESET)" || printf '%b\n' "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done
 
 go-fmt:
-	@echo -e "$(CYAN)🎨 go fmt для всех Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)🎨 go fmt для всех Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		cd $$dir && go fmt ./... && echo -e "$(GREEN)✅ $$dir$(RESET)" || echo -e "$(RED)❌ $$dir$(RESET)"; \
+		cd $$dir && go fmt ./... && printf '%b\n' "$(GREEN)✅ $$dir$(RESET)" || printf '%b\n' "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done
 
 go-vet:
-	@echo -e "$(CYAN)🔍 go vet для всех Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)🔍 go vet для всех Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		cd $$dir && go vet ./... && echo -e "$(GREEN)✅ $$dir$(RESET)" || echo -e "$(YELLOW)⚠️  $$dir$(RESET)"; \
+		cd $$dir && go vet ./... && printf '%b\n' "$(GREEN)✅ $$dir$(RESET)" || printf '%b\n' "$(YELLOW)⚠️  $$dir$(RESET)"; \
 		cd ..; \
 	done
 
 go-test:
-	@echo -e "$(CYAN)🧪 go test для всех Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)🧪 go test для всех Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		cd $$dir && go test -v -cover ./... || echo -e "$(YELLOW)⚠️  $$dir$(RESET)"; \
+		cd $$dir && go test -v -cover ./... || printf '%b\n' "$(YELLOW)⚠️  $$dir$(RESET)"; \
 		cd ..; \
 	done
 
 go-build:
-	@echo -e "$(CYAN)🏗️  go build для всех backend сервисов...$(RESET)"
+	@printf '%b\n' "$(CYAN)🏗️  go build для всех backend сервисов...$(RESET)"
 	@for service in $(BACKEND_SERVICES); do \
-		cd $$service && go build -o bin/$$service ./cmd/server && echo -e "$(GREEN)✅ $$service$(RESET)" || echo -e "$(RED)❌ $$service$(RESET)"; \
+		cd $$service && go build -o bin/$$service ./cmd/server && printf '%b\n' "$(GREEN)✅ $$service$(RESET)" || printf '%b\n' "$(RED)❌ $$service$(RESET)"; \
 		cd ..; \
 	done
 
 go-clean:
-	@echo -e "$(YELLOW)🧹 Очистка Go кэша и бинарников...$(RESET)"
+	@printf '%b\n' "$(YELLOW)🧹 Очистка Go кэша и бинарников...$(RESET)"
 	@go clean -cache
 	@for service in $(BACKEND_SERVICES); do \
 		cd $$service && go clean -v && rm -rf bin/ || true; \
 		cd ..; \
 	done
-	@echo -e "$(GREEN)✅ Очистка завершена$(RESET)"
+	@printf '%b\n' "$(GREEN)✅ Очистка завершена$(RESET)"
 
 go-deps-check:
-	@echo -e "$(CYAN)📦 Проверка зависимостей Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)📦 Проверка зависимостей Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
 		cd $$dir && go list -u -m all | grep -v indirect || true; \
 		cd ..; \
 	done
 
 go-upgrade-deps:
-	@echo -e "$(CYAN)📦 Обновление зависимостей Go модулей...$(RESET)"
+	@printf '%b\n' "$(CYAN)📦 Обновление зависимостей Go модулей...$(RESET)"
 	@for dir in $(GO_MODULES); do \
-		cd $$dir && go get -u ./... && go mod tidy && echo -e "$(GREEN)✅ $$dir$(RESET)" || echo -e "$(RED)❌ $$dir$(RESET)"; \
+		cd $$dir && go get -u ./... && go mod tidy && printf '%b\n' "$(GREEN)✅ $$dir$(RESET)" || printf '%b\n' "$(RED)❌ $$dir$(RESET)"; \
 		cd ..; \
 	done

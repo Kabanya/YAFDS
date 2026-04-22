@@ -1,4 +1,5 @@
--include config/.env
+CONFIG_FILE := $(if $(wildcard config/.env),config/.env,config/.env.example)
+include $(CONFIG_FILE)
 
 # Set PATH to include Go binaries
 ifeq ($(OS),Windows_NT)
@@ -63,7 +64,7 @@ build-courier:
 	docker build --build-arg BUILD_TIME=1 -t courier-app -f Dockerfile ..
 
 launch-courier:
-	-docker start $(COURIER_CONTAINER_NAME) 2>/dev/null || \
+	docker start $(COURIER_CONTAINER_NAME) 2>/dev/null || \
 		docker run --add-host host.docker.internal:host-gateway \
 			--name $(COURIER_CONTAINER_NAME) \
 			-e DB_HOST=host.docker.internal \
@@ -71,6 +72,7 @@ launch-courier:
 			-e REDIS_PASSWORD=$(REDIS_PASSWORD) \
 			-e REDIS_DB=$(REDIS_DB) \
 			-e SESSION_TTL=$(SESSION_TTL) \
+			-e COURIER_PORT=$(COURIER_PORT) \
 			-p $(COURIER_PORT):$(COURIER_PORT) -d courier-app
 
 clear-courier:
@@ -130,4 +132,4 @@ dev: clear-all build-all migrate-up launch-all seed-up
 run-local:
 	@echo "Starting Courier service locally on port $(COURIER_PORT)..."
 	@echo "Make sure PostgreSQL is running on $(DB_HOST):$(DB_PORT)"
-	@go run cmd/server/main.go
+	@COURIER_PORT=$(COURIER_PORT) go run cmd/server/main.go

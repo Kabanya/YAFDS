@@ -5,19 +5,23 @@ FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-COPY pkg ./pkg
-COPY customer /app/customer
+COPY pkg/go.mod pkg/go.sum ./pkg/
+COPY customer/go.mod customer/go.sum ./customer/
 WORKDIR /app/restaurant
 COPY restaurant/go.mod ./
+COPY restaurant/go.sum ./
 
 RUN go mod download
 
+WORKDIR /app
+COPY pkg ./pkg
+COPY customer ./customer
+WORKDIR /app/restaurant
 COPY restaurant/cmd ./cmd
 COPY restaurant/internal ./internal
 COPY restaurant/models ./models
+COPY restaurant/pkg ./pkg
 COPY restaurant/config ./config
-
-RUN go mod tidy
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /restaurant-app ./cmd/server
 

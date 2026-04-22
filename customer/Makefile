@@ -1,4 +1,5 @@
--include config/.env
+CONFIG_FILE := $(if $(wildcard config/.env),config/.env,config/.env.example)
+include $(CONFIG_FILE)
 
 help:
 	@echo "Makefile commands:"
